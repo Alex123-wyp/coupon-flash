@@ -43,9 +43,9 @@ import static org.javaup.utils.RedisConstants.LOCK_SHOP_KEY;
 import static org.javaup.utils.RedisConstants.SHOP_GEO_KEY;
 
 /**
- * @program: 黑马点评-plus升级版实战项目。添加 阿星不是程序员 微信，添加时备注 点评 来获取项目的完整资料
+ * @program: 黑马点评-plus升级版实战项目。添加 yupeng 微信，添加时备注 点评 来获取项目的完整资料
  * @description: 商铺 接口实现
- * @author: 阿星不是程序员
+ * @author: yupeng
  **/
 @Slf4j
 @Service
