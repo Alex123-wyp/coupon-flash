@@ -1,4 +1,4 @@
 org.springframework.boot.env.EnvironmentPostProcessor=\
-  org.javaup.environment.SpringEnvironment
+  org.yupeng.environment.SpringEnvironment
 org.springframework.context.ApplicationContextInitializer=\
-  org.javaup.core.SpringUtil
+  org.yupeng.core.SpringUtil

@@ -1,0 +1,29 @@
+package org.yupeng.service;
+
+import com.baomidou.mybatisplus.extension.service.IService;
+import org.yupeng.dto.VoucherReconcileLogDto;
+import org.yupeng.entity.VoucherReconcileLog;
+import org.yupeng.kafka.message.SeckillVoucherMessage;
+import org.yupeng.message.MessageExtend;
+
+/**
+ * @program: 黑马点评-plus升级版实战项目。添加 yupeng 微信，添加时备注 点评 来获取项目的完整资料
+ * @description: 对账日志 接口
+ * @author: yupeng
+ **/
+public interface IVoucherReconcileLogService extends IService<VoucherReconcileLog> {
+    
+    boolean saveReconcileLog(Integer logType,
+                             Integer businessType,
+                             String detail,
+                             MessageExtend<SeckillVoucherMessage> message);
+    
+    boolean saveReconcileLog(Integer logType,
+                             Integer businessType,
+                             String detail,
+                             Long traceId,
+                             MessageExtend<SeckillVoucherMessage> message);
+    
+    
+    boolean saveReconcileLog(VoucherReconcileLogDto voucherReconcileLogDto);
+}

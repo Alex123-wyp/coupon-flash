@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.javaup</groupId>
+        <groupId>org.yupeng</groupId>
         <artifactId>hmdp-redisson-service-framework</artifactId>
         <version>${revision}</version>
     </parent>
@@ -17,7 +17,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.javaup</groupId>
+            <groupId>org.yupeng</groupId>
             <artifactId>hmdp-common</artifactId>
             <version>${revision}</version>
         </dependency>

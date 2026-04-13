@@ -4,11 +4,10 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.javaup</groupId>
+        <groupId>org.yupeng</groupId>
         <artifactId>hmdp-plus</artifactId>
         <version>${revision}</version>
     </parent>
-
 
     <artifactId>hmdp-core-service</artifactId>
 
@@ -16,7 +15,7 @@
     <description>黑马点评核心服务</description>
     <dependencies>
         <dependency>
-            <groupId>org.javaup</groupId>
+            <groupId>org.yupeng</groupId>
             <artifactId>hmdp-sharding</artifactId>
             <version>${revision}</version>
         </dependency>
@@ -64,52 +63,54 @@
             <version>${hutool.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.javaup</groupId>
+            <groupId>org.yupeng</groupId>
             <artifactId>hmdp-redis-framework</artifactId>
             <version>${revision}</version>
         </dependency>
+
         <dependency>
-            <groupId>org.javaup</groupId>
+            <groupId>org.yupeng</groupId>
             <artifactId>hmdp-redis-rate-limit-framework</artifactId>
             <version>${revision}</version>
         </dependency>
+
         <dependency>
-            <groupId>org.javaup</groupId>
+            <groupId>org.yupeng</groupId>
             <artifactId>hmdp-service-lock-framework</artifactId>
             <version>${revision}</version>
         </dependency>
         <dependency>
-            <groupId>org.javaup</groupId>
+            <groupId>org.yupeng</groupId>
             <artifactId>hmdp-bloom-filter-framework</artifactId>
             <version>${revision}</version>
         </dependency>
         <dependency>
-            <groupId>org.javaup</groupId>
+            <groupId>org.yupeng</groupId>
             <artifactId>hmdp-repeat-execute-limit-framework</artifactId>
             <version>${revision}</version>
         </dependency>
         <dependency>
-            <groupId>org.javaup</groupId>
+            <groupId>org.yupeng</groupId>
             <artifactId>hmdp-id-generator-framework</artifactId>
             <version>${revision}</version>
         </dependency>
         <dependency>
-            <groupId>org.javaup</groupId>
+            <groupId>org.yupeng</groupId>
             <artifactId>hmdp-parameter</artifactId>
             <version>${revision}</version>
         </dependency>
         <dependency>
-            <groupId>org.javaup</groupId>
+            <groupId>org.yupeng</groupId>
             <artifactId>hmdp-mq-producer-framework</artifactId>
             <version>${revision}</version>
         </dependency>
         <dependency>
-            <groupId>org.javaup</groupId>
+            <groupId>org.yupeng</groupId>
             <artifactId>hmdp-mq-consumer-framework</artifactId>
             <version>${revision}</version>
         </dependency>
         <dependency>
-            <groupId>org.javaup</groupId>
+            <groupId>org.yupeng</groupId>
             <artifactId>hmdp-service-delay-queue-framework</artifactId>
             <version>${revision}</version>
         </dependency>
@@ -138,7 +139,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>${spring-boot.version}</version>
                 <configuration>
-                    <mainClass>org.javaup.HmDianPingApplication</mainClass>
+                    <mainClass>org.yupeng.HmDianPingApplication</mainClass>
                 </configuration>
                 <executions>
                     <execution>

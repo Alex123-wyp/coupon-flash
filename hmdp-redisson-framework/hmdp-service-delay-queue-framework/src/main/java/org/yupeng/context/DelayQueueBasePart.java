@@ -1,0 +1,20 @@
+package org.yupeng.context;
+
+import org.yupeng.config.DelayQueueProperties;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import org.redisson.api.RedissonClient;
+
+/**
+ * @program: 黑马点评-plus升级版实战项目。添加 yupeng 微信，添加时备注 点评 来获取项目的完整资料 
+ * @description: 延迟队列配置信息
+ * @author: yupeng
+ **/
+@Data
+@AllArgsConstructor
+public class DelayQueueBasePart {
+    
+    private final RedissonClient redissonClient;
+    
+    private final DelayQueueProperties delayQueueProperties;
+}

@@ -1,0 +1,22 @@
+package org.yupeng.context;
+
+import org.yupeng.core.ConsumerTask;
+import lombok.Data;
+
+/**
+ * @program: 黑马点评-plus升级版实战项目。添加 yupeng 微信，添加时备注 点评 来获取项目的完整资料 
+ * @description: 消息主题
+ * @author: yupeng
+ **/
+@Data
+public class DelayQueuePart {
+    
+    private final DelayQueueBasePart delayQueueBasePart;
+ 
+    private final ConsumerTask consumerTask;
+    
+    public DelayQueuePart(DelayQueueBasePart delayQueueBasePart, ConsumerTask consumerTask){
+        this.delayQueueBasePart = delayQueueBasePart;
+        this.consumerTask = consumerTask;
+    }
+}

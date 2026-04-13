@@ -50,13 +50,13 @@ spring:
     listener:
       ack-mode: manual_immediate
 mybatis-plus:
-  type-aliases-package: org.javaup.entity # 别名扫描包
+  type-aliases-package: org.yupeng.entity # 别名扫描包
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
     local-cache-scope: statement
 logging:
   level:
-    org.javaup: info
+    org.yupeng: info
     AUDIT: INFO
   pattern:
     dateformat: mm:ss.SSS
