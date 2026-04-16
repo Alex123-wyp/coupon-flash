@@ -67,37 +67,61 @@ public class SeckillVoucherServiceImpl extends ServiceImpl<SeckillVoucherMapper,
                 RedisKeyBuild.createRedisKey(RedisKeyManage.SECKILL_VOUCHER_TAG_KEY, voucherId);
         RedisKeyBuild seckillVoucherNullRedisKey =
                 RedisKeyBuild.createRedisKey(RedisKeyManage.SECKILL_VOUCHER_NULL_TAG_KEY, voucherId);
+
+        //Find in local cache first
         SeckillVoucherFullModel localCacheHit = seckillVoucherLocalCache.get(seckillVoucherRedisKey.getRelKey());
+
+        //find  in local cache, then return directly
         if (Objects.nonNull(localCacheHit)) {
             return localCacheHit;
         }
+
+        //if not find in local cache, then find in redis chache
         SeckillVoucherFullModel seckillVoucherFullModel =
                 redisCache.get(seckillVoucherRedisKey, SeckillVoucherFullModel.class);
+
+        //find in redis cache, then put this voucher in the local cache, then return
         if (Objects.nonNull(seckillVoucherFullModel)) {
             seckillVoucherLocalCache.put(seckillVoucherRedisKey.getRelKey(), seckillVoucherFullModel);
             return seckillVoucherFullModel;
         }
+
+        //log info: Find voucher: not find in Redis cache, id: vocherId
         log.info("查询秒杀优惠券 从Redis缓存没有查询到 秒杀优惠券的优惠券id : {}",voucherId);
+
+        //call bloomFilterHandlerFactory if not exist, return RuntimeException
         if (!bloomFilterHandlerFactory.get(BLOOM_FILTER_HANDLER_VOUCHER).contains(String.valueOf(voucherId))) {
             log.info("查询秒杀优惠券 布隆过滤器判断不存在 秒杀优惠券id : {}",voucherId);
             throw new RuntimeException("查询秒杀优惠券不存在");
         }
+
+        //bloom filter said, it may exsit, then find the redis, if not exist, return RuntimeException
         Boolean existResult = redisCache.hasKey(seckillVoucherNullRedisKey);
         if (existResult){
             throw new RuntimeException("查询秒杀优惠券不存在");
         }
+        //exist, then get lock
         RLock lock = serviceLockTool.getLock(LockType.Reentrant, LOCK_SECKILL_VOUCHER_KEY, new String[]{String.valueOf(voucherId)});
         lock.lock();
         try {
+
+            //If find voucher full model in redis cache, then record in local cache, and return voucher.
+            //The reason why it check redis again after lock is: to avoid high concurrency problem, to avoid that threadA did hit the redis but meanwhile thread B write to redis
+            //It is called: Double-Checking after Locking
+
             seckillVoucherFullModel = redisCache.get(seckillVoucherRedisKey, SeckillVoucherFullModel.class);
             if (Objects.nonNull(seckillVoucherFullModel)) {
                 seckillVoucherLocalCache.put(seckillVoucherRedisKey.getRelKey(), seckillVoucherFullModel);
                 return seckillVoucherFullModel;
             }
+
+            //If find seckill voucher null redis key exist, then throw RuntimeException
             existResult = redisCache.hasKey(seckillVoucherNullRedisKey);
             if (existResult){
                 throw new RuntimeException("查询优惠券不存在");
             }
+
+            //Find in database, if seckillVoucher is null, if it is null, then set seckillVoucherNullRedisKey in redis and return RuntimeException
             SeckillVoucher seckillVoucher = lambdaQuery().eq(SeckillVoucher::getVoucherId,voucherId).one();
             if (Objects.isNull(seckillVoucher)) {
                 redisCache.set(seckillVoucherNullRedisKey,
@@ -106,25 +130,38 @@ public class SeckillVoucherServiceImpl extends ServiceImpl<SeckillVoucherMapper,
                         TimeUnit.MINUTES);
                 throw new RuntimeException("查询秒杀优惠券不存在");
             }
+
             long ttlSeconds = Math.max(
                     LocalDateTimeUtil.between(LocalDateTimeUtil.now(), seckillVoucher.getEndTime()).getSeconds(),
                     1L
             );
+
+            //Below is the case that voucher exists in database
+            //Find local voucher in local database
             Voucher voucher = voucherService.lambdaQuery().eq(Voucher::getId, voucherId).one();
+
             seckillVoucherFullModel = new SeckillVoucherFullModel();
             BeanUtils.copyProperties(seckillVoucher, seckillVoucherFullModel);
+
+            //create a voucher full model object
             seckillVoucherFullModel.setShopId(voucher.getShopId());
             seckillVoucherFullModel.setStatus(voucher.getStatus());
             seckillVoucherFullModel.setStock(null);
+
+            //Put the voucher full model in redis cache
             redisCache.set(
                     seckillVoucherRedisKey,
                     seckillVoucherFullModel,
                     ttlSeconds,
                     TimeUnit.SECONDS
             );
+
+            //Put voucher full model in local cache
             seckillVoucherLocalCache.put(seckillVoucherRedisKey.getRelKey(), seckillVoucherFullModel);
             return seckillVoucherFullModel;
         }finally {
+
+            //Unlock
             lock.unlock();
         }
     }

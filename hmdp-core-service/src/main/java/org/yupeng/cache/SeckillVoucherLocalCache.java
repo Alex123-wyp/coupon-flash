@@ -20,6 +20,15 @@ public class SeckillVoucherLocalCache {
     private final Cache<String, SeckillVoucherFullModel> cache = Caffeine.newBuilder()
             .maximumSize(10000)
             .expireAfter(new Expiry<String, SeckillVoucherFullModel>() {
+
+                /**
+                 * There is a stale window: when created voucher is expired, it will still get into logic for 1 second, at this time a user can get an expired voucher,
+                 * we are tolerant to this case, but we are strictly check the expired time when user order it;
+                 * @param key
+                 * @param value
+                 * @param currentTime
+                 * @return
+                 */
                 @Override
                 public long expireAfterCreate(String key, SeckillVoucherFullModel value, long currentTime) {
                     long ttlSeconds = 60L;
@@ -43,6 +52,8 @@ public class SeckillVoucherLocalCache {
                 }
             })
             .build();
+
+
     
     public SeckillVoucherFullModel get(String voucherId) {
         return cache.getIfPresent(voucherId);

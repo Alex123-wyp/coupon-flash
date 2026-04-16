@@ -74,8 +74,7 @@ public class SeckillVoucherConsumer extends AbstractConsumerHandler<SeckillVouch
     
     @Resource
     private IAutoIssueNotifyService autoIssueNotifyService;
-    
-    
+
     private static final int CPU_CORES = Runtime.getRuntime().availableProcessors();
     private static final int EXECUTOR_THREADS = Math.max(2, CPU_CORES);
     private static final int EXECUTOR_QUEUE_CAPACITY = 1024 * Math.max(1, CPU_CORES);

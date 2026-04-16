@@ -31,9 +31,13 @@ public abstract class AbstractProducerHandler<M extends MessageExtend<?>> {
     private final KafkaTemplate<String, M> kafkaTemplate;
     
     public final CompletableFuture<SendResult<String, M>> sendMqMessage(String topic, M message) {
+        //Check if the topic and message are null or not
         Assert.hasText(topic, "topic must not be blank");
         Assert.notNull(message, "message must not be null");
+
+        //If format is OK, then do:
         try {
+            //
             CompletableFuture<SendResult<String, M>> future = kafkaTemplate.send(topic, message);
             return future.whenComplete((result, throwable) -> {
                 if (throwable == null) {

@@ -94,19 +94,27 @@ public class VoucherServiceImpl extends ServiceImpl<VoucherMapper, Voucher> impl
     
     @Override
     public Long addVoucher(VoucherDto voucherDto) {
+
+        //Get the current voucher with the largest voucher ID
         Voucher one = lambdaQuery().orderByDesc(Voucher::getId).one();
+        //Set the voucher id = 1 by default
         long newId = 1L;
+        //If the table is empty, then the default new voucher id = 1; If not, the new voucher id = one + 1
         if (one != null) {
             newId = one.getId() + 1;
         }
+        //Save new voucher to the database
         Voucher voucher = new Voucher();
         BeanUtil.copyProperties(voucherDto, voucher);
         voucher.setId(newId);
         save(voucher);
+
+        //Add new voucher to the bloomFilter
         bloomFilterHandlerFactory.get(BLOOM_FILTER_HANDLER_VOUCHER).add(voucher.getId().toString());
         return voucher.getId();
     }
-    
+
+
     @Override
     public Result<List<Voucher>> queryVoucherOfShop(Long shopId) {
         // 查询优惠券信息
@@ -193,39 +201,57 @@ public class VoucherServiceImpl extends ServiceImpl<VoucherMapper, Voucher> impl
     @ServiceLock(lockType= LockType.Write,name = UPDATE_SECKILL_VOUCHER_STOCK_LOCK,keys = {"#updateSeckillVoucherDto.voucherId"})
     @Transactional(rollbackFor = Exception.class)
     public void updateSeckillVoucherStock(UpdateSeckillVoucherStockDto updateSeckillVoucherDto) {
+
+
+        //Find the secKillVoucher that need to update
         SeckillVoucher seckillVoucher = seckillVoucherService.lambdaQuery()
                 .eq(SeckillVoucher::getVoucherId, updateSeckillVoucherDto.getVoucherId()).one();
         if (Objects.isNull(seckillVoucher)) {
             throw new HmdpFrameException(BaseCode.SECKILL_VOUCHER_NOT_EXIST);
         }
+        //oldStock: the current stock
         Integer oldStock = seckillVoucher.getStock();
+        //oldInitStock: get current init stock
         Integer oldInitStock = seckillVoucher.getInitStock();
+        //newInitStock: get the init stock the seller want to set
         Integer newInitStock = updateSeckillVoucherDto.getInitStock();
+
+        //If newInit == old stock, return directly
         int changeStock = newInitStock - oldInitStock;
         if (changeStock == 0) {
             return;
         }
+        //new stock: the number of stock the seller wants to add
         int newStock = oldStock + changeStock;
+        //The seller can not deduct stock end with negative number
         if (newStock < 0 ) {
             throw new HmdpFrameException(BaseCode.AFTER_SECKILL_VOUCHER_REMAIN_STOCK_NOT_NEGATIVE_NUMBER);
         }
+
         StockUpdateType stockUpdateType = StockUpdateType.INCREASE;
         if (changeStock < 0) {
             stockUpdateType = StockUpdateType.DECREASE;
         }
+
         seckillVoucherService.lambdaUpdate()
                 .set(SeckillVoucher::getStock, newStock)
                 .set(SeckillVoucher::getInitStock, newInitStock)
                 .set(SeckillVoucher::getUpdateTime, LocalDateTimeUtil.now())
                 .eq(SeckillVoucher::getVoucherId, seckillVoucher.getVoucherId())
                 .update();
+        //get the old voucher stock in the redis.
         String oldRedisStockStr = redisCache.get(RedisKeyBuild.createRedisKey(RedisKeyManage.SECKILL_STOCK_TAG_KEY, 
                 updateSeckillVoucherDto.getVoucherId()), String.class);
+
         Integer newRedisStock = null;
+
+        //If old voucher stock does not exist in redis(expired), then create another SECKILL_STOCK_TAG_KEY
         if (StrUtil.isBlank(oldRedisStockStr)) {
             redisCache.set(RedisKeyBuild.createRedisKey(RedisKeyManage.SECKILL_STOCK_TAG_KEY,
                     updateSeckillVoucherDto.getVoucherId()),String.valueOf(newInitStock));
-        }else {
+        }
+        //If the SECKILL_STOCK_TAG_KEY exists in redis, then:
+        else {
             int oldRedisStock = Integer.parseInt(oldRedisStockStr);
             newRedisStock = oldRedisStock + changeStock;
             if (newRedisStock < 0 ) {
@@ -241,6 +267,7 @@ public class VoucherServiceImpl extends ServiceImpl<VoucherMapper, Voucher> impl
                 newInitStock,
                 newRedisStock
                 );
+
         //如果是增加库存,尝试将资格自动分配给订阅队列中最早的未购用户
         if (stockUpdateType == StockUpdateType.INCREASE) {
             SECKILL_ORDER_EXECUTOR.execute(() -> voucherOrderService
@@ -260,9 +287,12 @@ public class VoucherServiceImpl extends ServiceImpl<VoucherMapper, Voucher> impl
                 TimeUnit.SECONDS
         );
         if (Objects.isNull(ttlSeconds) || ttlSeconds <= 0) {
+
+            //Find the seckill voucher from the database
             SeckillVoucher sv = seckillVoucherService.lambdaQuery()
                     .eq(SeckillVoucher::getVoucherId, voucherId)
                     .one();
+            //If sv exists and sv end time exists: then set the ttlSeconds
             if (Objects.nonNull(sv) && Objects.nonNull(sv.getEndTime())) {
                 ttlSeconds = Math.max(
                         LocalDateTimeUtil.between(LocalDateTimeUtil.now(), sv.getEndTime()).getSeconds(),
@@ -416,7 +446,13 @@ public class VoucherServiceImpl extends ServiceImpl<VoucherMapper, Voucher> impl
         }
         return res;
     }
-    
+
+
+    /**
+     * Old Version, do not use
+     * @param seckillVoucherDto
+     * @return
+     */
     public Long doAddSeckillVoucherV1(SeckillVoucherDto seckillVoucherDto) {
         VoucherDto voucherDto = new VoucherDto();
         BeanUtil.copyProperties(seckillVoucherDto, voucherDto);
@@ -444,10 +480,13 @@ public class VoucherServiceImpl extends ServiceImpl<VoucherMapper, Voucher> impl
     }
     
     public Long doAddSeckillVoucherV2(SeckillVoucherDto seckillVoucherDto) {
+
         VoucherDto voucherDto = new VoucherDto();
         BeanUtil.copyProperties(seckillVoucherDto, voucherDto);
         Long voucherId = addVoucher(voucherDto);
         SeckillVoucher seckillVoucher = new SeckillVoucher();
+
+        //Generate seckill voucher Id by snowflakeIdGenerator, and save the seckillVoucher to the database
         seckillVoucher.setId(snowflakeIdGenerator.nextId());
         seckillVoucher.setVoucherId(voucherId);
         seckillVoucher.setInitStock(seckillVoucherDto.getStock());
@@ -457,10 +496,13 @@ public class VoucherServiceImpl extends ServiceImpl<VoucherMapper, Voucher> impl
         seckillVoucher.setAllowedLevels(seckillVoucherDto.getAllowedLevels());
         seckillVoucher.setMinLevel(seckillVoucherDto.getMinLevel());
         seckillVoucherService.save(seckillVoucher);
+
+        //Set ttl of the voucher
         long ttlSeconds = Math.max(
                 LocalDateTimeUtil.between(LocalDateTimeUtil.now(), seckillVoucher.getEndTime()).getSeconds(),
                 1L
         );
+        //Set the SECKILL_STOCK_TAG_KEY into redis
         redisCache.set(
                 RedisKeyBuild.createRedisKey(RedisKeyManage.SECKILL_STOCK_TAG_KEY, voucherId),
                 String.valueOf(seckillVoucher.getStock()),
@@ -468,40 +510,60 @@ public class VoucherServiceImpl extends ServiceImpl<VoucherMapper, Voucher> impl
                 TimeUnit.SECONDS
         );
         seckillVoucher.setStock(null);
+
+        //Set the SECKILL_VOUCHER_TAG_KEY into redis
         redisCache.set(
                 RedisKeyBuild.createRedisKey(RedisKeyManage.SECKILL_VOUCHER_TAG_KEY, voucherId),
                 seckillVoucher,
                 ttlSeconds,
                 TimeUnit.SECONDS
         );
+
         sendDelayedVoucherReminder(seckillVoucher);
         return voucherId;
     }
     
     public void sendDelayedVoucherReminder(SeckillVoucher seckillVoucher){
+
+
         LocalDateTime beginTime = seckillVoucher.getBeginTime();
+
+        //If beginTime == null, return directly
         if (beginTime == null) {
             log.warn("[DELAY_REMINDER] beginTime为空，跳过调度 voucherId={}", seckillVoucher.getVoucherId());
             return;
         }
+
+
         long secondsUntilBegin = Math.max(
                 LocalDateTimeUtil.between(LocalDateTimeUtil.now(), beginTime).getSeconds(),
                 0L
         );
+
+
+        //Set up how much time does the reminder should delay
         long delaySeconds = secondsUntilBegin - Math.max(reminderAheadSeconds, 0L);
+
+        //If delay seconds less than 0, then return directly
         if (delaySeconds <= 0) {
             log.info("[DELAY_REMINDER] beginTime过近或已开始，不进行延迟调度 voucherId={} beginTime={} delaySeconds={}",
                     seckillVoucher.getVoucherId(), beginTime, delaySeconds);
             return;
         }
-        
+
+        //Create delayed voucher reminder message
         DelayedVoucherReminderMessage msg = new DelayedVoucherReminderMessage(
                 seckillVoucher.getVoucherId(),
                 beginTime
         );
+
+        //Convert content to JSON format
         String content = JSON.toJSONString(msg);
 
+        //Define Topic
         String topic = SpringUtil.getPrefixDistinctionName() + "-" + DELAY_VOUCHER_REMINDER;
+
+        //Send message to Kafka queue
         delayQueueContext.sendMessage(topic, content, delaySeconds, TimeUnit.SECONDS);
         log.info("[DELAY_REMINDER] 已调度提醒消息 voucherId={} delaySeconds={} topic={}", seckillVoucher.getVoucherId(), delaySeconds, topic);
     }

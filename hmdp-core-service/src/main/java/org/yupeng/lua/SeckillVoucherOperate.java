@@ -36,9 +36,12 @@ public class SeckillVoucherOperate {
             log.error("redisScript init lua error",e);
         }
     }
-    
+
+
     public SeckillVoucherDomain execute(List<String> keys, String[] args){
+
         Object object = redisCache.getInstance().execute(redisScript, keys, args);
+
         return JSON.parseObject((String)object, SeckillVoucherDomain.class);
     }
 }

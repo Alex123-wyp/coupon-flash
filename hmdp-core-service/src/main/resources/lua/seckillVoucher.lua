@@ -35,6 +35,8 @@ end
 if (redis.call('sismember', seckillUserKey, userId) == 1) then
     return string.format('{"%s": %d}', 'code', 10006)
 end
+
+
 local beforeQty = tonumber(stock)
 local changeQty = 1
 local afterQty = beforeQty - changeQty

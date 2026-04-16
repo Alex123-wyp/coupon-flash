@@ -93,6 +93,13 @@ import static org.yupeng.constant.RepeatExecuteLimitConstants.SECKILL_VOUCHER_OR
 @Service
 public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, VoucherOrder> implements IVoucherOrderService {
 
+    /*
+     * Structure guide for this class:
+     * Active path: seckillVoucher() -> doSeckillVoucherV2() -> Kafka -> createVoucherOrderV2().
+     * Legacy path kept for comparison/reference: doSeckillVoucherV1(), VoucherOrderHandler,
+     * handleVoucherOrder(), and createVoucherOrderV1().
+     */
+
     @Resource
     private IVoucherService voucherService;
     
@@ -139,6 +146,7 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
     private IVoucherReconcileLogService voucherReconcileLogService;
     
 
+    // Legacy V1 Lua entry. The current main flow uses SeckillVoucherOperate instead.
     private static final DefaultRedisScript<Long> SECKILL_SCRIPT;
 
     static {
@@ -147,7 +155,17 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
         SECKILL_SCRIPT.setResultType(Long.class);
     }
 
+    // Shared background executor. The old stream handler no longer starts here,
+    // but this pool is still reused by other async tasks such as auto-issue.
     public static final ThreadPoolExecutor SECKILL_ORDER_EXECUTOR =
+            /**
+             * corePoolSize: Always keep one worker thread
+             * maximumPoolSize: At most one worker thread (So this is effectively a single-thread executor)
+             * keepAliveTime: Extra thread will die immediately when idle
+             * LinkedBlockingQueue<>(1024): If tasks arrive faster than they can run, they wait in a queue. The queue can hold 1024 tasks at once
+             * NamedThreadFactory(""seckill-order-", false): custom thread creator
+             * ThreadPoolExecutor.CallerRunsPolicy() - rejection policy
+             */
             new ThreadPoolExecutor(
                     1,
                     1,
@@ -182,7 +200,8 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
     
     @PostConstruct
     private void init(){
-        // 这是黑马点评的普通版本，升级版本中不再使用此方式
+        // Legacy Redis Stream bootstrap intentionally disabled.
+        // Current async order persistence uses Kafka instead of starting VoucherOrderHandler here.
         //SECKILL_ORDER_EXECUTOR.submit(new VoucherOrderHandler());
     }
 
@@ -199,6 +218,8 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
         }
     }
 
+    // Legacy Redis Stream consumer from the older version.
+    // It is kept here for learning/reference, but init() no longer starts it.
     private class VoucherOrderHandler implements Runnable{
         private final String queueName = "stream.orders";
         @Override
@@ -281,6 +302,8 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
         }
     }
 
+
+    // Legacy helper used only by the disabled VoucherOrderHandler path.
     private void handleVoucherOrder(VoucherOrder voucherOrder) {
         Long userId = voucherOrder.getId();
         // 创建锁对象
@@ -303,16 +326,20 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
         }
     }
 
+    // Legacy self-proxy used by the V1 flow to trigger transactional methods through Spring AOP.
     IVoucherOrderService proxy;
     /**
      * 抢优惠券下单
      * */
     @Override
     public Result<Long> seckillVoucher(Long voucherId) {
+        // Active entry: V2 is the live path.
         //return doSeckillVoucherV1(voucherId);
         return doSeckillVoucherV2(voucherId);
     }
     
+    // Legacy entry kept for comparison with the current Kafka-based implementation.
+    // It is no longer selected by seckillVoucher().
     public Result<Long> doSeckillVoucherV1(Long voucherId) {
         Long userId = UserHolder.getUser().getId();
         long orderId = snowflakeIdGenerator.nextId();
@@ -335,17 +362,50 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
     }
     
     public Result<Long> doSeckillVoucherV2(Long voucherId) {
+
+        //Call queryByVoucherId method to find seckillVoucherFullModel in redis first
         SeckillVoucherFullModel seckillVoucherFullModel = seckillVoucherService.queryByVoucherId(voucherId);
+
+        //Call the method to load stock into redis
         seckillVoucherService.loadVoucherStock(voucherId);
+
+        //Get user ID from threadLocal
         Long userId = UserHolder.getUser().getId();
+
+        //Verify user level
         verifyUserLevel(seckillVoucherFullModel,userId);
+
+        //Generate orderId and traceId by snowflakeIdGenerator
         long orderId = snowflakeIdGenerator.nextId();
         long traceId = snowflakeIdGenerator.nextId();
+
+        /**
+         * Create key list: SECKILL_STOCK_TAG_KEY, SECKILL_USER_TAG_KEY, SECKILL_TRACE_LOG_TAG_KEY
+         * seckillVoucher.lua side:
+         * local stockKey = KEYS[1]
+         * local seckillUserKey = KEYS[2]
+         * local traceLogKey = KEYS[3]
+         */
         List<String> keys = ListUtil.of(
                 RedisKeyBuild.createRedisKey(RedisKeyManage.SECKILL_STOCK_TAG_KEY, voucherId).getRelKey(),
                 RedisKeyBuild.createRedisKey(RedisKeyManage.SECKILL_USER_TAG_KEY, voucherId).getRelKey(),
                 RedisKeyBuild.createRedisKey(RedisKeyManage.SECKILL_TRACE_LOG_TAG_KEY, voucherId).getRelKey()
         );
+
+        //Builds 9 lua arguments in args array
+        /**
+         * Build 9 lua arguments in args array
+         * seckillVoucher.lua side:
+         * local voucherId = ARGV[1]
+         * local userId = ARGV[2]
+         * local beginTime = tonumber(ARGV[3])
+         * local endTime = tonumber(ARGV[4])
+         * local status = tonumber(ARGV[5])
+         * local orderId = ARGV[6]
+         * local traceId = ARGV[7]
+         * local logType = ARGV[8]
+         * local ttlSeconds = tonumber(ARGV[9])
+         */
         String[] args = new String[9];
         args[0] = voucherId.toString();
         args[1] = userId.toString();
@@ -354,17 +414,25 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
         args[4] = String.valueOf(seckillVoucherFullModel.getStatus());
         args[5] = String.valueOf(orderId);
         args[6] = String.valueOf(traceId);
+        //Generate traceId - LogType.DEDUCT.getCode() -> -1
         args[7] = String.valueOf(LogType.DEDUCT.getCode());
         long secondsUntilEnd = Duration.between(LocalDateTimeUtil.now(), seckillVoucherFullModel.getEndTime()).getSeconds();
+        //The trace log expired day: add one more day from remaining time
         long ttlSeconds = Math.max(1L, secondsUntilEnd + Duration.ofDays(1).getSeconds());
         args[8] = String.valueOf(ttlSeconds);
+
+        //pass the keys and args to lua script to execute, return SeckillVoucherDomain class.
         SeckillVoucherDomain seckillVoucherDomain = seckillVoucherOperate.execute(
                 keys,
                 args
         );
+
+        //If Lua script did not return success, then throws an HmdpFrameException
         if (!seckillVoucherDomain.getCode().equals(BaseCode.SUCCESS.getCode())) {
             throw new HmdpFrameException(Objects.requireNonNull(BaseCode.getRc(seckillVoucherDomain.getCode())));
         }
+
+        //If Lua script returns success, then generate a SeckillVoucher message, and send it to kafka message queue
         SeckillVoucherMessage seckillVoucherMessage = new SeckillVoucherMessage(
                 userId,
                 voucherId,
@@ -375,21 +443,28 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
                 seckillVoucherDomain.getAfterQty(),
                 Boolean.FALSE
         );
+
+        //Send message to kafka to ask database to change the value
         seckillVoucherProducer.sendPayload(
                 SpringUtil.getPrefixDistinctionName() + "-" + SECKILL_VOUCHER_TOPIC, 
                 seckillVoucherMessage);
-        
         return Result.ok(orderId);
     }
     
     public void verifyUserLevel(SeckillVoucherFullModel seckillVoucherFullModel,Long userId){
+
+        //Get allowedLevelsStr from seckillVoucherFullModel stored in redis
         String allowedLevelsStr = seckillVoucherFullModel.getAllowedLevels();
+        //Get min level from seckillVoucherFullModel stored in redis
         Integer minLevel = seckillVoucherFullModel.getMinLevel();
+        //If allowedLevelsStr is blank or minLevel is null, return directly (In this case treat user can buy the voucher by default)
         boolean hasLevelRule = StrUtil.isNotBlank(allowedLevelsStr) || Objects.nonNull(minLevel);
         if (!hasLevelRule) {
             return;
         }
+        //in terms of user, get userInfo first in redis, then in db
         UserInfo userInfo = userInfoService.getByUserId(userId);
+        //If userInfo is empty, throw an exception which is USER_NOT_EXIST
         if (Objects.isNull(userInfo)) {
             throw new HmdpFrameException(BaseCode.USER_NOT_EXIST);
         }
@@ -397,6 +472,7 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
         Integer level = userInfo.getLevel();
         if (StrUtil.isNotBlank(allowedLevelsStr)) {
             try {
+                //This block of code converts array into a set called allowedLevels
                 Set<Integer> allowedLevels = Arrays.stream(allowedLevelsStr.split(","))
                         .map(String::trim)
                         .filter(StrUtil::isNotBlank)
@@ -411,15 +487,19 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
                         allowedLevelsStr, parseEx);
             }
         }
+        //If the level of user contained in the level set of voucher, and the level of user >= minLevel of voucher, allow
         if (allowed && Objects.nonNull(minLevel)) {
             allowed = Objects.nonNull(level) && level >= minLevel;
         }
+
+        //If not then throw exception, not allowed
         if (!allowed) {
             throw new HmdpFrameException("当前会员级别不满足参与条件");
         }
     }
 
    
+    // Currently unused placeholder for future audience-rule expansion.
     private static class AudienceRule {
         public Set<Integer> allowedLevels;
         public Integer minLevel;
@@ -435,6 +515,8 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    // Legacy persistence step for the disabled Redis Stream/V1 path.
+    // The current persistence path is createVoucherOrderV2(), called by Kafka consumer.
     public void createVoucherOrderV1(VoucherOrder voucherOrder) {
         // 5.一人一单
         Long userId = voucherOrder.getUserId();
@@ -467,7 +549,11 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
     @Override
     @RepeatExecuteLimit(name = SECKILL_VOUCHER_ORDER,keys = {"#message.uuid"})
     @Transactional(rollbackFor = Exception.class)
+    // Active persistence path: Kafka consumer lands here after Redis/Lua reservation succeeds.
+
+
     public boolean createVoucherOrderV2(MessageExtend<SeckillVoucherMessage> message) {
+
         SeckillVoucherMessage messageBody = message.getMessageBody();
         Long userId = messageBody.getUserId();
         VoucherOrder normalVoucherOrder = lambdaQuery()
@@ -750,7 +836,12 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
         return Math.max(1L, secondsUntilEnd + Duration.ofDays(1).getSeconds());
     }
 
+
+
     /*
+     * Historical implementations below are fully disabled and kept only as migration notes
+     * from older blocking-queue / direct-lock versions before the current Lua + Kafka flow.
+     *
     private BlockingQueue<VoucherOrder> orderTasks = new ArrayBlockingQueue<>(1024 * 1024);
     private class VoucherOrderHandler implements Runnable{
         @Override

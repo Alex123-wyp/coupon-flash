@@ -107,6 +107,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         UserPhone userPhone = userPhoneService.lambdaQuery().eq(UserPhone::getPhone, phone).one();
 
         User user = null;
+
         // 5.判断用户是否存在
         if (userPhone == null) {
             // 6.不存在，创建新用户并保存
@@ -120,9 +121,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         String token = UUID.randomUUID().toString(true);
         // 7.2.将User对象转为HashMap存储
         UserDTO userDTO = BeanUtil.copyProperties(user, UserDTO.class);
+
         Map<String, Object> userMap = BeanUtil.beanToMap(userDTO, new HashMap<>(),
                 CopyOptions.create()
                         .setIgnoreNullValue(true)
+                        //Convert hash value to string, redis hash value is expected to string
                         .setFieldValueEditor((fieldName, fieldValue) -> fieldValue.toString()));
         // 7.3.存储
         String tokenKey = LOGIN_USER_KEY + token;
@@ -228,7 +231,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         userPhoneService.save(userPhone);
         return user;
     }
-    
+
+    //Assign user to redis set group by user level
     private void maintainLevelSetMembership(Long userId) {
         if (userId == null) {
             return;

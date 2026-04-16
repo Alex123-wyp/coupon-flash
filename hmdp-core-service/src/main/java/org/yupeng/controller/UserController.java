@@ -42,6 +42,8 @@ public class UserController {
     /**
      * 发送手机验证码
      */
+    //In Spring MVC, if HttpSession has been declared in controller layer or service entry method parameter, everytime access, Spring will resolve it from
+    //the current Http request automatically
     @PostMapping("code")
     public Result<String> sendCode(@RequestParam("phone") String phone, HttpSession session) {
         // 发送短信验证码并保存验证码
