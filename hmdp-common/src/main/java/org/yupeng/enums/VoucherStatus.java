@@ -3,13 +3,13 @@ package org.yupeng.enums;
 import lombok.Getter;
 
 /**
- * @program: 黑马点评-plus升级版实战项目。添加 yupeng 微信，添加时备注 点评 来获取项目的完整资料
- * @description: 优惠券状态
+ * @program: High-Concurrency Voucher Seckill Platform (HMDP Plus). Email: wyupeng072@gmail.com
+ * @description: Voucher status
  * @author: yupeng
  **/
 public enum VoucherStatus {
     /**
-     * 优惠券状态 
+     * Coupon status 
      * */
     AVAILABLE(1, "上架"),
     UNAVAILABLE(2, "下架"),

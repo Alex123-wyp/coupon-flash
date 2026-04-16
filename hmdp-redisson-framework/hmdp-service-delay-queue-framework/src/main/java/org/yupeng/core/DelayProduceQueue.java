@@ -10,32 +10,32 @@ import org.redisson.client.codec.Codec;
 import java.util.concurrent.TimeUnit;
 
 /**
- * @program: 黑马点评-plus升级版实战项目。添加 yupeng 微信，添加时备注 点评 来获取项目的完整资料 
- * @description: 延迟队列 延迟队列
+ * @program: High-Concurrency Voucher Seckill Platform (HMDP Plus). Email: wyupeng072@gmail.com 
+ * @description: Delay queue delay queue
  * @author: yupeng
  **/
 public class DelayProduceQueue extends DelayBaseQueue{
     
     /**
-     * 虽然 RDelayedQueue 这里提示了是过期，建议使用{@link RReliableQueue}来代替，
+     * Although RDelayedQueue is expired here, it is recommended to use {@link RReliableQueue} instead.
      * <p>
-     * 但是，RReliableQueue 是 pro 版本才能使用的功能，社区版本如果使用会直接抛出“不支持的”异常：
+     * However, RRelableQueue is a function that can only be used in the pro version. If used in the community version, an "unsupported" exception will be thrown directly:
      * <p>
-     * 源码位置：
+     * Source code location:
      * <p>
      * <ul>
      *     <li>{@link Redisson#getReliableQueue(String)}</li>
      *     <li>{@link Redisson#getReliableQueue(String, Codec)}</li>
      *     <li>{@link Redisson#getReliableQueue(PlainOptions)}</li>
      * </ul>
-     * 官网说明：
+     * Official website description:
      * <p>
      * <ul>
      *     <li><a href="https://redisson.pro/feature-comparison.html">https://redisson.pro/feature-comparison.html</a></li>
      *     <li><a href="https://redisson.pro/docs/data-and-services/queues/">https://redisson.pro/docs/data-and-services/queues</a></li>
      * </ul>
      * 
-     * 使用 RDelayedQueue 也是足够了，因为我们可以使用消息对账功能来完善可靠性，大麦项目就是这么做的
+     * Using RDelayedQueue is also enough, because we can use the message reconciliation function to improve reliability, which is what the Damai project does
      * */
     private final RDelayedQueue<String> delayedQueue;
     public DelayProduceQueue(RedissonClient redissonClient, final String relTopic) {

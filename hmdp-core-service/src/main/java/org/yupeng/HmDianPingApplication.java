@@ -6,8 +6,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
 /**
- * @program: 黑马点评-plus升级版实战项目。添加 yupeng 微信，添加时备注 点评 来获取项目的完整资料
- * @description: 服务启动-黑马点评普通版本和plus版本使用
+ * @program: High-Concurrency Voucher Seckill Platform (HMDP Plus). Email: wyupeng072@gmail.com
+ * @description: Service bootstrap for the regular and plus HMDP versions
  * @author: yupeng
  **/
 @EnableAspectJAutoProxy(exposeProxy = true)

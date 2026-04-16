@@ -6,8 +6,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.data.redis.core.StringRedisTemplate;
 
 /**
- * @program: 黑马点评-plus升级版实战项目。添加 yupeng 微信，添加时备注 点评 来获取项目的完整资料
- * @description: redis封装实现配置
+ * @program: High-Concurrency Voucher Seckill Platform (HMDP Plus). Email: wyupeng072@gmail.com
+ * @description: Redis wrapper implementation configuration
  * @author: yupeng
  **/
 public class RedisCacheAutoConfig {

@@ -69,19 +69,19 @@ class HmDianPingApplicationTests {
 
     @Test
     void loadShopData() {
-        // 1.查询店铺信息
+        // 1. Query shop information
         List<Shop> list = shopService.list();
-        // 2.把店铺分组，按照typeId分组，typeId一致的放到一个集合
+        // 2. Group the stores according to typeId, and put the typeId into a collection consistently.
         Map<Long, List<Shop>> map = list.stream().collect(Collectors.groupingBy(Shop::getTypeId));
-        // 3.分批完成写入Redis
+        // 3. Complete writing to Redis in batches
         for (Map.Entry<Long, List<Shop>> entry : map.entrySet()) {
-            // 3.1.获取类型id
+            // 3.1. Get type id
             Long typeId = entry.getKey();
             String key = SHOP_GEO_KEY + typeId;
-            // 3.2.获取同类型的店铺的集合
+            // 3.2. Obtain a collection of stores of the same type
             List<Shop> value = entry.getValue();
             List<RedisGeoCommands.GeoLocation<String>> locations = new ArrayList<>(value.size());
-            // 3.3.写入redis GEOADD key 经度 纬度 member
+            // 3.3. Write redis GEOADD key longitude latitude member
             for (Shop shop : value) {
                 // stringRedisTemplate.opsForGeo().add(key, new Point(shop.getX(), shop.getY()), shop.getId().toString());
                 locations.add(new RedisGeoCommands.GeoLocation<>(
@@ -101,11 +101,11 @@ class HmDianPingApplicationTests {
             j = i % 1000;
             values[j] = "user_" + i;
             if(j == 999){
-                // 发送到Redis
+                // Send to Redis
                 stringRedisTemplate.opsForHyperLogLog().add("hl2", values);
             }
         }
-        // 统计数量
+        // Statistical quantity
         Long count = stringRedisTemplate.opsForHyperLogLog().size("hl2");
         System.out.println("count = " + count);
     }

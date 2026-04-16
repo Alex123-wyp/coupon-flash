@@ -11,8 +11,8 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
- * @program: 黑马点评-plus升级版实战项目。添加 yupeng 微信，添加时备注 点评 来获取项目的完整资料
- * @description: 优惠券
+ * @program: High-Concurrency Voucher Seckill Platform (HMDP Plus). Email: wyupeng072@gmail.com
+ * @description: Voucher
  * @author: yupeng
  **/
 @Data
@@ -24,76 +24,76 @@ public class Voucher implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * 主键
+     * primary key
      */
     @TableId(value = "id")
     private Long id;
 
     /**
-     * 商铺id
+     * shop ID
      */
     private Long shopId;
 
     /**
-     * 代金券标题
+     * Voucher title
      */
     private String title;
 
     /**
-     * 副标题
+     * subtitle
      */
     private String subTitle;
 
     /**
-     * 使用规则
+     * Usage rules
      */
     private String rules;
 
     /**
-     * 支付金额
+     * Payment amount
      */
     private Long payValue;
 
     /**
-     * 抵扣金额
+     * Deduction amount
      */
     private Long actualValue;
 
     /**
-     * 优惠券类型
+     * Coupon type
      */
     private Integer type;
 
     /**
-     * 优惠券状态 1,上架; 2,下架; 3,过期
+     * Coupon status 1, on the shelves; 2, off the shelves; 3, expired
      */
     private Integer status;
     /**
-     * 库存
+     * in stock
      */
     @TableField(exist = false)
     private Integer stock;
 
     /**
-     * 生效时间
+     * effective time
      */
     @TableField(exist = false)
     private LocalDateTime beginTime;
 
     /**
-     * 失效时间
+     * expiration time
      */
     @TableField(exist = false)
     private LocalDateTime endTime;
 
     /**
-     * 创建时间
+     * create time
      */
     private LocalDateTime createTime;
 
 
     /**
-     * 更新时间
+     * update time
      */
     private LocalDateTime updateTime;
 

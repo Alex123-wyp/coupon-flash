@@ -2,13 +2,13 @@ package org.yupeng.servicelock.info;
 
 
 /**
- * @program: 黑马点评-plus升级版实战项目。添加 yupeng 微信，添加时备注 点评 来获取项目的完整资料 
- * @description: 策略
+ * @program: High-Concurrency Voucher Seckill Platform (HMDP Plus). Email: wyupeng072@gmail.com 
+ * @description: Strategy
  * @author: yupeng
  **/
 public enum LockTimeOutStrategy implements LockTimeOutHandler{
     /**
-     * 快速失败
+     * fail fast
      * */
     FAIL(){
         @Override

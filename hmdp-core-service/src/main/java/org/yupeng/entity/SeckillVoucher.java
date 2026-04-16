@@ -11,8 +11,8 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
- * @program: 黑马点评-plus升级版实战项目。添加 yupeng 微信，添加时备注 点评 来获取项目的完整资料
- * @description: 秒杀优惠券表，与优惠券是一对一关系
+ * @program: High-Concurrency Voucher Seckill Platform (HMDP Plus). Email: wyupeng072@gmail.com
+ * @description: Seckill voucher table has a one-to-one relationship with coupons
  * @author: yupeng
  **/
 @Data
@@ -25,53 +25,53 @@ public class SeckillVoucher implements Serializable {
     private static final long serialVersionUID = 1L;
     
     /**
-     * 主键
+     * primary key
      */
     @TableId(value = "id")
     private Long id;
     
     /**
-     * 关联的优惠券的id
+     * The id of the associated coupon
      */
     private Long voucherId;
     
     /**
-     * 初始化库存
+     * InitializeInventory
      */
     private Integer initStock;
 
     /**
-     * 库存
+     * in stock
      */
     private Integer stock;
 
     /**
-     * 允许参与的会员等级，逗号分隔，如："1,2,3"
+     * Member levels allowed to participate, separated by commas, such as: "1,2,3"
      */
     private String allowedLevels;
 
     /**
-     * 最低会员等级
+     * Minimum membership level
      */
     private Integer minLevel;
 
     /**
-     * 创建时间
+     * create time
      */
     private LocalDateTime createTime;
 
     /**
-     * 生效时间
+     * effective time
      */
     private LocalDateTime beginTime;
 
     /**
-     * 失效时间
+     * expiration time
      */
     private LocalDateTime endTime;
 
     /**
-     * 更新时间
+     * update time
      */
     private LocalDateTime updateTime;
 

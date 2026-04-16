@@ -15,7 +15,7 @@ const router = useRouter()
 const route = useRoute()
 const userStore = useUserStore()
 
-// 数据定义
+// Data definitions
 const user = ref({})
 const loginUser = ref({})
 const activeName = ref('1')
@@ -24,13 +24,13 @@ const blogs = ref([])
 const followed = ref(false) // 是否关注了
 const commonFollows = ref([]) // 共同关注
 
-// 生命周期钩子
+// Lifecycle hooks
 onMounted(() => {
   queryUser()
   queryLoginUser()
 })
 
-// 方法定义
+// Method definitions
 const queryBlogs = () => {
   getBlogsOfUser(user.value.id, 1)
     .then(({ data }) => {
@@ -42,10 +42,10 @@ const queryBlogs = () => {
 }
 
 const queryLoginUser = () => {
-  // 查询用户信息
+  // Query user information
   getUser()
     .then(({ data }) => {
-      // 保存用户
+      // save user
       loginUser.value = data
     })
     .catch(() => {
@@ -54,19 +54,19 @@ const queryLoginUser = () => {
 }
 
 const queryUser = () => {
-  // 查询用户信息
+  // Query user information
   const id = route.query.id
   console.log('id', id)
   getUser(id)
     .then(({ data }) => {
-      // 保存用户
+      // save user
       user.value = data
       console.log('user.value', user.value)
-      // 查询用户详情
+      // Query user details
       queryUserInfo()
-      // 查询用户笔记
+      // Query user notes
       queryBlogs()
-      // 是否被关注
+      // Is it being followed?
       isFollowed(id)
         .then(({ data }) => {
           followed.value = data
@@ -90,9 +90,9 @@ const queryUserInfo = () => {
       if (!data) {
         return
       }
-      // 保存用户详情
+      // Save user details
       info.value = data
-      // 保存到本地
+      // Save locally
       userStore.setUserInfo(data)
     })
     .catch(() => {

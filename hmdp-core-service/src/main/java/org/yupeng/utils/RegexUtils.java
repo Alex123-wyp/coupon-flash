@@ -3,38 +3,38 @@ package org.yupeng.utils;
 import cn.hutool.core.util.StrUtil;
 
 /**
- * @program: 黑马点评-plus升级版实战项目。添加 yupeng 微信，添加时备注 点评 来获取项目的完整资料
- * @description: 正则表达式工具-黑马点评普通版本和plus版本使用
+ * @program: High-Concurrency Voucher Seckill Platform (HMDP Plus). Email: wyupeng072@gmail.com
+ * @description: Regex utilities for the regular and plus HMDP versions
  * @author: yupeng
  **/
 public class RegexUtils {
     /**
-     * 是否是无效手机格式
-     * @param phone 要校验的手机号
-     * @return true:符合，false：不符合
+     * Is it an invalid mobile phone format?
+     * @param phone The mobile phone number to be verified
+     * @return true: consistent, false: not consistent
      */
     public static boolean isPhoneInvalid(String phone){
         return mismatch(phone, RegexPatterns.PHONE_REGEX);
     }
     /**
-     * 是否是无效邮箱格式
-     * @param email 要校验的邮箱
-     * @return true:符合，false：不符合
+     * Is it an invalid email format?
+     * @param email The email address to be verified
+     * @return true: consistent, false: not consistent
      */
     public static boolean isEmailInvalid(String email){
         return mismatch(email, RegexPatterns.EMAIL_REGEX);
     }
 
     /**
-     * 是否是无效验证码格式
-     * @param code 要校验的验证码
-     * @return true:符合，false：不符合
+     * Is it an invalid verification code format?
+     * @param code Verification code to be verified
+     * @return true: consistent, false: not consistent
      */
     public static boolean isCodeInvalid(String code){
         return mismatch(code, RegexPatterns.VERIFY_CODE_REGEX);
     }
 
-    // 校验是否不符合正则格式
+    // Check whether it does not conform to the regular format
     private static boolean mismatch(String str, String regex){
         if (StrUtil.isBlank(str)) {
             return true;

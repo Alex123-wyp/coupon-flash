@@ -5,71 +5,71 @@ import org.redisson.api.RLock;
 import java.util.concurrent.TimeUnit;
 
 /**
- * @program: 黑马点评-plus升级版实战项目。添加 yupeng 微信，添加时备注 点评 来获取项目的完整资料 
- * @description: 方法抽象
+ * @program: High-Concurrency Voucher Seckill Platform (HMDP Plus). Email: wyupeng072@gmail.com 
+ * @description: Method abstraction
  * @author: yupeng
  **/
 public interface ServiceLocker {
     
     /**
-     * 获取锁
-     * @param lockKey 锁的key
-     * @return 结果
+     * Get lock
+     * @param lockKey lock key
+     * @return result
      * */
     RLock getLock(String lockKey);
     
     /**
-     * 加锁
-     * @param lockKey 锁的key
-     * @return 结果
+     * Lock
+     * @param lockKey lock key
+     * @return result
      * */
     RLock lock(String lockKey);
     
     /**
-     * 加锁
-     * @param lockKey 锁的key
-     * @param leaseTime 释放时间
-     * @return 结果
+     * Lock
+     * @param lockKey lock key
+     * @param leaseTime release time
+     * @return result
      * */
     RLock lock(String lockKey, long leaseTime);
     
     /**
-     * 加锁
-     * @param lockKey 锁的key
-     * @param unit 时间单位
-     * @param leaseTime 释放时间
-     * @return 结果
+     * Lock
+     * @param lockKey lock key
+     * @param unit time unit
+     * @param leaseTime release time
+     * @return result
      * */
     RLock lock(String lockKey, TimeUnit unit, long leaseTime);
     
     /**
-     * 加锁
-     * @param lockKey 锁的key
-     * @param unit 时间单位
-     * @param waitTime 等待时间
-     * @return 结果
+     * Lock
+     * @param lockKey lock key
+     * @param unit time unit
+     * @param waitTime waiting time
+     * @return result
      * */
     boolean tryLock(String lockKey, TimeUnit unit, long waitTime);
     
     /**
-     * 加锁
-     * @param lockKey 锁的key
-     * @param unit 时间单位
-     * @param waitTime 等待时间
-     * @param leaseTime 释放时间
-     * @return 结果
+     * Lock
+     * @param lockKey lock key
+     * @param unit time unit
+     * @param waitTime waiting time
+     * @param leaseTime release time
+     * @return result
      * */
     boolean tryLock(String lockKey, TimeUnit unit, long waitTime, long leaseTime);
     
     /**
-     * 解锁
-     * @param lockKey 锁的key
+     * Unlock
+     * @param lockKey lock key
      * */
     void unlock(String lockKey);
     
     /**
-     * 解锁
-     * @param lock 锁
+     * Unlock
+     * @param lock lock
      * */
     void unlock(RLock lock);
 }

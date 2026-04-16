@@ -44,8 +44,8 @@ import static org.yupeng.utils.RedisConstants.USER_SIGN_KEY;
 import static org.yupeng.utils.SystemConstants.USER_NICK_NAME_PREFIX;
 
 /**
- * @program: 黑马点评-plus升级版实战项目。添加 yupeng 微信，添加时备注 点评 来获取项目的完整资料
- * @description: 用户 接口实现
+ * @program: High-Concurrency Voucher Seckill Platform (HMDP Plus). Email: wyupeng072@gmail.com
+ * @description: User interface implementation
  * @author: yupeng
  **/
 @Slf4j
@@ -69,57 +69,57 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
 
     @Override
     public Result<String> sendCode(String phone, HttpSession session) {
-        // 1.校验手机号
+        // 1. Verify mobile phone number
         if (RegexUtils.isPhoneInvalid(phone)) {
-            // 2.如果不符合，返回错误信息
+            // 2. If it does not match, return an error message
             return Result.fail("手机号格式错误！");
         }
-        // 3.符合，生成验证码
+        // 3. Comply and generate verification code
         String code = RandomUtil.randomNumbers(6);
 
-        // 4.保存验证码到 session
+        // 4. Save the verification code to session
         stringRedisTemplate.opsForValue().set(LOGIN_CODE_KEY + phone, code, LOGIN_CODE_TTL, TimeUnit.MINUTES);
 
-        // 5.发送验证码
+        // 5.Send verification code
         log.info("发送短信验证码成功，验证码：{}", code);
-        // 返回ok
+        // Return OK
         return Result.ok(code);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Result<String> login(LoginFormDTO loginForm, HttpSession session) {
-        // 1.校验手机号
+        // 1. Verify mobile phone number
         String phone = loginForm.getPhone();
         if (RegexUtils.isPhoneInvalid(phone)) {
-            // 2.如果不符合，返回错误信息
+            // 2. If it does not match, return an error message
             return Result.fail("手机号格式错误！");
         }
-        // 3.从redis获取验证码并校验
+        // 3. Get the verification code from redis and verify it
         String cacheCode = stringRedisTemplate.opsForValue().get(LOGIN_CODE_KEY + phone);
         String code = loginForm.getCode();
         if (cacheCode == null || !cacheCode.equals(code)) {
-            // 不一致，报错
+            // Inconsistent, error reported
             return Result.fail("验证码错误");
         }
 
-        // 4.根据手机号查询用户
+        // 4. Query users based on mobile phone number
         UserPhone userPhone = userPhoneService.lambdaQuery().eq(UserPhone::getPhone, phone).one();
 
         User user = null;
 
-        // 5.判断用户是否存在
+        // 5. Determine whether the user exists
         if (userPhone == null) {
-            // 6.不存在，创建新用户并保存
+            // 6. Does not exist, create a new user and save it
             user = createUserWithPhone(phone);
         }else {
             user = lambdaQuery().eq(User::getPhone, userPhone.getPhone()).one();
         }
 
-        // 7.保存用户信息到 redis中
-        // 7.1.随机生成token，作为登录令牌
+        // 7. Save user information to redis
+        // 7.1. Randomly generate token as login token
         String token = UUID.randomUUID().toString(true);
-        // 7.2.将User对象转为HashMap存储
+        // 7.2. Convert User object to HashMap storage
         UserDTO userDTO = BeanUtil.copyProperties(user, UserDTO.class);
 
         Map<String, Object> userMap = BeanUtil.beanToMap(userDTO, new HashMap<>(),
@@ -127,92 +127,92 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
                         .setIgnoreNullValue(true)
                         //Convert hash value to string, redis hash value is expected to string
                         .setFieldValueEditor((fieldName, fieldValue) -> fieldValue.toString()));
-        // 7.3.存储
+        // 7.3.Storage
         String tokenKey = LOGIN_USER_KEY + token;
         stringRedisTemplate.opsForHash().putAll(tokenKey, userMap);
-        // 7.4.设置token有效期（按秒设置，避免 Redisson pExpire 递归问题）
+        // 7.4. Set the token validity period (set in seconds to avoid Redisson pExpire recursion problems)
         stringRedisTemplate.expire(
                 tokenKey,
                 TimeUnit.SECONDS.convert(LOGIN_USER_TTL, TimeUnit.MINUTES),
                 TimeUnit.SECONDS
         );
 
-        // 8.返回token
+        // 8.Return token
         try {
             maintainLevelSetMembership(user.getId());
         } catch (Exception e) {
-            // 忽略异常，避免影响登录
+            // Ignore exceptions to avoid affecting login
         }
         return Result.ok(token);
     }
 
     @Override
     public Result<Void> sign() {
-        // 1.获取当前登录用户
+        // 1. Get the current logged in user
         Long userId = UserHolder.getUser().getId();
-        // 2.获取日期
+        // 2. Get the date
         LocalDateTime now = LocalDateTime.now();
-        // 3.拼接key
+        // 3. Splice key
         String keySuffix = now.format(DateTimeFormatter.ofPattern(":yyyyMM"));
         String key = USER_SIGN_KEY + userId + keySuffix;
-        // 4.获取今天是本月的第几天
+        // 4. Get the day of the month today is
         int dayOfMonth = now.getDayOfMonth();
-        // 5.写入Redis SETBIT key offset 1
+        // 5. Write Redis SETBIT key offset 1
         stringRedisTemplate.opsForValue().setBit(key, dayOfMonth - 1, true);
         return Result.ok();
     }
 
     @Override
     public Result<Integer> signCount() {
-        // 1.获取当前登录用户
+        // 1. Get the current logged in user
         Long userId = UserHolder.getUser().getId();
-        // 2.获取日期
+        // 2. Get the date
         LocalDateTime now = LocalDateTime.now();
-        // 3.拼接key
+        // 3. Splice key
         String keySuffix = now.format(DateTimeFormatter.ofPattern(":yyyyMM"));
         String key = USER_SIGN_KEY + userId + keySuffix;
-        // 4.获取今天是本月的第几天
+        // 4. Get the day of the month today is
         int dayOfMonth = now.getDayOfMonth();
-        // 5.获取本月截止今天为止的所有的签到记录，返回的是一个十进制的数字 BITFIELD sign:5:202203 GET u14 0
+        // 5. Get all the sign-in records of this month as of today, and return a decimal number BITFIELD sign:5:202203 GET u14 0
         List<Long> result = stringRedisTemplate.opsForValue().bitField(
                 key,
                 BitFieldSubCommands.create()
                         .get(BitFieldSubCommands.BitFieldType.unsigned(dayOfMonth)).valueAt(0)
         );
         if (result == null || result.isEmpty()) {
-            // 没有任何签到结果
+            // No sign-in results
             return Result.ok(0);
         }
         Long num = result.get(0);
         if (num == null || num == 0) {
             return Result.ok(0);
         }
-        // 6.循环遍历
+        // 6. Loop through
         int count = 0;
         while (true) {
-            // 6.1.让这个数字与1做与运算，得到数字的最后一个bit位  // 判断这个bit位是否为0
+            // 6.1. Let this number be ANDed with 1 to get the last bit of the number // Determine whether this bit is 0
             if ((num & 1) == 0) {
-                // 如果为0，说明未签到，结束
+                // If it is 0, it means no sign-in, end
                 break;
             }else {
-                // 如果不为0，说明已签到，计数器+1
+                // If it is not 0, it means you have signed in and the counter +1
                 count++;
             }
-            // 把数字右移一位，抛弃最后一个bit位，继续下一个bit位
+            // Shift the number one bit to the right, discard the last bit, and continue with the next bit.
             num >>>= 1;
         }
         return Result.ok(count);
     }
     
     private User createUserWithPhone(String phone) {
-        // 1.创建用户
+        // 1.Create user
         User user = new User();
         user.setId(snowflakeIdGenerator.nextId());
         user.setPhone(phone);
         user.setNickName(USER_NICK_NAME_PREFIX + RandomUtil.randomString(10));
-        // 2.保存用户
+        // 2.Save user
         save(user);
-        // 3.保存用户信息
+        // 3. Save user information
         UserInfo userInfo = new UserInfo();
         userInfo.setId(snowflakeIdGenerator.nextId());
         userInfo.setUserId(user.getId());
@@ -221,9 +221,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         try {
             maintainLevelSetMembership(user.getId());
         } catch (Exception e) {
-            // 忽略异常，避免影响注册逻辑
+            // Ignore exceptions to avoid affecting registration logic
         }
-        // 4.保存用户手机信息
+        // 4. Save user mobile phone information
         UserPhone userPhone = new UserPhone();
         userPhone.setId(snowflakeIdGenerator.nextId());
         userPhone.setUserId(user.getId());

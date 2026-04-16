@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
- * @program: 黑马点评-plus升级版实战项目。添加 yupeng 微信，添加时备注 点评 来获取项目的完整资料 
- * @description: 延迟队列 发送者 分片选择
+ * @program: High-Concurrency Voucher Seckill Platform (HMDP Plus). Email: wyupeng072@gmail.com 
+ * @description: Delay queue sender fragment selection
  * @author: yupeng
  **/
 public class DelayQueueProduceCombine {

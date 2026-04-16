@@ -40,7 +40,7 @@
     align-items: start;
 }
 input[type="radio"] + label::before {
-    content: "\a0"; /*不换行空格*/
+    content: "\a0"; /* non-breaking space */
     display: inline-block;
     vertical-align: middle;
     font-size: 12px;

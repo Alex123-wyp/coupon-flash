@@ -10,8 +10,8 @@ import java.io.Serial;
 import java.io.Serializable;
 
 /**
- * @program: 黑马点评-plus升级版实战项目。添加 yupeng 微信，添加时备注 点评 来获取项目的完整资料
- * @description: 优惠券
+ * @program: High-Concurrency Voucher Seckill Platform (HMDP Plus). Email: wyupeng072@gmail.com
+ * @description: Voucher
  * @author: yupeng
  **/
 @Data
@@ -23,49 +23,49 @@ public class VoucherDto implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * 商铺id
+     * shop ID
      */
     @NotNull
     private Long shopId;
 
     /**
-     * 代金券标题
+     * Voucher title
      */
     @NotBlank
     private String title;
 
     /**
-     * 副标题
+     * subtitle
      */
     @NotBlank
     private String subTitle;
 
     /**
-     * 使用规则
+     * Usage rules
      */
     @NotBlank
     private String rules;
 
     /**
-     * 支付金额
+     * Payment amount
      */
     @NotNull
     private Long payValue;
 
     /**
-     * 抵扣金额
+     * Deduction amount
      */
     @NotNull
     private Long actualValue;
 
     /**
-     * 优惠券类型 0,普通券；1,秒杀券
+     * Coupon type 0, ordinary coupon; 1, flash sale coupon
      */
     @NotNull
     private Integer type;
 
     /**
-     * 优惠券状态 1,上架; 2,下架; 3,过期
+     * Coupon status 1, on the shelves; 2, off the shelves; 3, expired
      */
     @NotNull
     private Integer status;

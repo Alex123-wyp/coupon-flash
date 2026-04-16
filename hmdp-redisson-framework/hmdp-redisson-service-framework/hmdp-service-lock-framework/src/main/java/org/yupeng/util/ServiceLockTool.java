@@ -14,8 +14,8 @@ import org.redisson.api.RLock;
 import java.util.concurrent.TimeUnit;
 
 /**
- * @program: 黑马点评-plus升级版实战项目。添加 yupeng 微信，添加时备注 点评 来获取项目的完整资料 
- * @description: 分布式锁 方法类型操作
+ * @program: High-Concurrency Voucher Seckill Platform (HMDP Plus). Email: wyupeng072@gmail.com 
+ * @description: Distributed lock utility operations
  * @author: yupeng
  **/
 @AllArgsConstructor
@@ -26,10 +26,10 @@ public class ServiceLockTool {
     private final ServiceLockFactory serviceLockFactory;
     
     /**
-     * 没有返回值的加锁执行
-     * @param taskRun 要执行的任务
-     * @param name 锁的业务名
-     * @param keys 锁的标识
+     * Locked execution without return value
+     * @param taskRun The task to be executed
+     * @param name The business name of the lock
+     * @param keys identification of the lock
      *
      * */
     public void execute(TaskRun taskRun,String name,String [] keys) {
@@ -37,11 +37,11 @@ public class ServiceLockTool {
     } 
 
     /**
-     * 没有返回值的加锁执行
-     * @param taskRun 要执行的任务
-     * @param name 锁的业务名
-     * @param keys 锁的标识
-     * @param waitTime 等待时间
+     * Locked execution without return value
+     * @param taskRun The task to be executed
+     * @param name The business name of the lock
+     * @param keys identification of the lock
+     * @param waitTime waiting time
      * 
      * */
     public void execute(TaskRun taskRun,String name,String [] keys,long waitTime){
@@ -49,11 +49,11 @@ public class ServiceLockTool {
     }
     
     /**
-     * 没有返回值的加锁执行
-     * @param lockType 锁类型
-     * @param taskRun 要执行的任务
-     * @param name 锁的业务名
-     * @param keys 锁的标识
+     * Locked execution without return value
+     * @param lockType lock type
+     * @param taskRun The task to be executed
+     * @param name The business name of the lock
+     * @param keys identification of the lock
      *
      * */
     public void execute(LockType lockType,TaskRun taskRun,String name,String [] keys) {
@@ -61,12 +61,12 @@ public class ServiceLockTool {
     }
     
     /**
-     * 没有返回值的加锁执行
-     * @param lockType 锁类型
-     * @param taskRun 要执行的任务
-     * @param name 锁的业务名
-     * @param keys 锁的标识
-     * @param waitTime 等待时间
+     * Locked execution without return value
+     * @param lockType lock type
+     * @param taskRun The task to be executed
+     * @param name The business name of the lock
+     * @param keys identification of the lock
+     * @param waitTime waiting time
      *
      * */
     public void execute(LockType lockType,TaskRun taskRun,String name,String [] keys,long waitTime) {
@@ -86,11 +86,11 @@ public class ServiceLockTool {
     }
 
     /**
-     * 有返回值的加锁执行
-     * @param taskCall 要执行的任务
-     * @param name 锁的业务名
-     * @param keys 锁的标识
-     * @return 要执行的任务的返回值
+     * Locked execution with return value
+     * @param taskCall The task to be executed
+     * @param name The business name of the lock
+     * @param keys identification of the lock
+     * @return The return value of the task to be performed
      * */
     public <T> T submit(TaskCall<T> taskCall,String name,String [] keys){
         LockInfoHandle lockInfoHandle = lockInfoHandleFactory.getLockInfoHandle(LockInfoType.SERVICE_LOCK);
@@ -110,10 +110,10 @@ public class ServiceLockTool {
     }
     
     /**
-     * 获得锁
-     * @param lockType 锁类型
-     * @param name 锁的业务名
-     * @param keys 锁的标识
+     * get lock
+     * @param lockType lock type
+     * @param name The business name of the lock
+     * @param keys identification of the lock
      *
      * */
     public RLock getLock(LockType lockType, String name, String [] keys) {
@@ -124,9 +124,9 @@ public class ServiceLockTool {
     }
     
     /**
-     * 获得锁
-     * @param lockType 锁类型
-     * @param lockName 锁名
+     * get lock
+     * @param lockType lock type
+     * @param lockName lock name
      *
      * */
     public RLock getLock(LockType lockType, String lockName) {

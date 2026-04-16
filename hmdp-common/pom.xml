@@ -11,7 +11,7 @@
     
     <artifactId>hmdp-common</artifactId>
     <name>hmdp-common</name>
-    <description>公共</description>
+    <description>Common</description>
     
     <dependencies>
         <dependency>

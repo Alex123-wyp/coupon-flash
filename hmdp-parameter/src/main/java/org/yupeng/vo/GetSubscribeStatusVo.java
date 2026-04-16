@@ -8,8 +8,8 @@ import java.io.Serial;
 import java.io.Serializable;
 
 /**
- * @program: 黑马点评-plus升级版实战项目。添加 yupeng 微信，添加时备注 点评 来获取项目的完整资料
- * @description: 优惠券订阅状态
+ * @program: High-Concurrency Voucher Seckill Platform (HMDP Plus). Email: wyupeng072@gmail.com
+ * @description: Voucher subscription status
  * @author: yupeng
  **/
 @Data
@@ -21,12 +21,12 @@ public class GetSubscribeStatusVo implements Serializable {
     private static final long serialVersionUID = 1L;
     
     /**
-     * 优惠券id
+     * voucher ID
      * */
     private Long voucherId;
     
     /**
-     * 是否订阅 1：已订阅  0：没有订阅
+     * Whether to subscribe 1: Subscribed 0: Not subscribed
      * */
     private Integer subscribeStatus;
 }

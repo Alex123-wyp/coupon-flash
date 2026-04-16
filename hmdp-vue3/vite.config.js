@@ -24,25 +24,25 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url))
     }
   },
-  // // 配置开发服务器相关选项
+  // //Configure development server related options
   // server: {
-  //   // 自动打开浏览器
+  //   // Automatically open the browser
   //   open: true,
-  //   // 指定服务器运行的端口号为1010
+  //   //Specify the port number the server is running on as 1010
   //   // port: 1010,
-  //   // 启用热模块替换（Hot Module Replacement，HMR）
-  //   // 在开发过程中，修改代码时，浏览器可以实时更新而无需完全刷新页面
+  //   // Enable hot module replacement (Hot Module Replacement, HMR)
+  //   // During the development process, when modifying the code, the browser can update in real time without completely refreshing the page.
   //   hmr: true,
   //   proxy: {
   //     '/api': {
-  //       // 目标服务器地址，这里是本地的另一个服务，运行在端口1011上
+  //       // Target server address, here is another local service running on port 1011
   //       target: 'http://localhost:8085',
-  //       // 是否改变请求的源（Origin），设置为true时，会将请求的源修改为目标服务器的源
+  //       // Whether to change the source of the request (Origin). When set to true, the source of the request will be modified to the source of the target server.
   //       changeOrigin: true,
-  //       // 路径重写规则，将以/api开头的路径替换为空字符串
-  //       // 例如，请求/api/users会被转发到目标服务器的/users路径
+  //       // Path rewriting rules, replace paths starting with /api with empty strings
+  //       // For example, requests for /api/users will be forwarded to the /users path of the target server
   //       rewrite: (path) => path.replace(/^\/api/, '')
-  //       // 另一种常见的路径重写方式，效果与上面的rewrite函数相同
+  //       // Another common path rewriting method, the effect is the same as the rewrite function above
   //       // "^/api": "",
   //     }
   //   }

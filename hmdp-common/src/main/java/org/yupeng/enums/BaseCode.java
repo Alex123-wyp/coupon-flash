@@ -3,13 +3,13 @@ package org.yupeng.enums;
 import lombok.Getter;
 
 /**
- * @program: 黑马点评-plus升级版实战项目。 添加 yupeng 微信，添加时备注 点评 来获取项目的完整资料
- * @description: 接口返回code码
+ * @program: High-Concurrency Voucher Seckill Platform (HMDP Plus). Email: wyupeng072@gmail.com
+ * @description: API response code
  * @author: yupeng
  **/
 public enum BaseCode {
     /**
-     * 基础code码
+     * Basic code
      * */
     SUCCESS(0, "OK"),
     

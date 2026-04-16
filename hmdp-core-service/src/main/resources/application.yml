@@ -20,7 +20,7 @@ spring:
     servlet:
       load-on-startup: 1    
   jackson:
-    default-property-inclusion: non_null # JSON处理时忽略非空字段
+    default-property-inclusion: non_null # Ignore null fields during JSON processing
     time-zone: GMT+8
     date-format: yyyy-MM-dd HH:mm:ss
     generator:
@@ -36,21 +36,21 @@ spring:
         enable.idempotence: true
         max.in.flight.requests.per.connection: 5
     consumer:
-      #默认的消费组ID
+      # Default consumer group ID
       group-id: create_voucher_order
-      #是否自动提交offset
+      # Whether to auto-commit offsets
       enable-auto-commit: false
-      # 当kafka中没有初始offset或offset超出范围时将自动重置offset
-      # earliest:重置为分区中最小的offset;
-      # latest:重置为分区中最新的offset(消费分区中新产生的数据);
-      # none:只要有一个分区不存在已提交的offset,就抛出异常;
+      # Automatically reset the offset when Kafka has no initial offset or the offset is out of range
+      # earliest: reset to the smallest offset in the partition;
+      # latest: reset to the newest offset in the partition (consume newly produced data);
+      # none: throw an exception as long as any partition has no committed offset;
       auto-offset-reset: latest
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
     listener:
       ack-mode: manual_immediate
 mybatis-plus:
-  type-aliases-package: org.yupeng.entity # 别名扫描包
+  type-aliases-package: org.yupeng.entity # Type alias scan package
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
     local-cache-scope: statement

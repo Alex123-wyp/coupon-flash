@@ -25,7 +25,7 @@ export default defineConfig([
   },
   {
     rules: {
-      // 使用插件提供的规则（格式：`插件名/规则名`）
+      // Use the rules provided by the plug-in (format: `plug-in name/rule name`)
       'vue/multi-word-component-names': [
         'warn',
         {
@@ -33,16 +33,16 @@ export default defineConfig([
         }
       ],
       'vue/no-setup-props-destructure': ['off'], // 关闭 props 解构的校验
-      // 💡 添加未定义变量错误提示，create-vue@3.6.3 关闭，这里加上是为了支持下一个章节演示。
+      // 💡 Add undefined variable error message, create-vue@3.6.3 is closed, added here to support the next chapter demonstration.
       'no-undef': 'off',
-      // 新增规则
+      // Add new rule
       'space-before-function-paren': ['error', 'always'] // ← 添加在此处
-      // // 禁用自动导入规则
+      // //Disable automatic import rules
       // 'import/named': 'off',
       // 'import/namespace': 'off',
-      // // 禁用未使用变量的自动删除（如果不需要）
+      // // Disable automatic deletion of unused variables (if not needed)
       // 'no-unused-vars': 'off',
-      // // 如果使用 TypeScript 相关规则，也需禁用
+      // // If you use TypeScript related rules, they also need to be disabled
       // '@typescript-eslint/no-unused-vars': 'off'
     }
   },

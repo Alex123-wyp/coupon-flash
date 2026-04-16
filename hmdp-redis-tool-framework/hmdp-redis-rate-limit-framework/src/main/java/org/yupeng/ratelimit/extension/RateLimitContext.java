@@ -5,8 +5,8 @@ import lombok.Data;
 import java.util.List;
 
 /**
- * @program: 黑马点评-plus升级版实战项目。添加 yupeng 微信，添加时备注 点评 来获取项目的完整资料
- * @description: 限流执行上下文
+ * @program: High-Concurrency Voucher Seckill Platform (HMDP Plus). Email: wyupeng072@gmail.com
+ * @description: Rate-limit execution context
  * @author: yupeng
  **/
 @Data

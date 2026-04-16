@@ -12,8 +12,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
- * @program: 黑马点评-plus升级版实战项目。添加 yupeng 微信，添加时备注 点评 来获取项目的完整资料
- * @description: 缓存对象映射工具
+ * @program: High-Concurrency Voucher Seckill Platform (HMDP Plus). Email: wyupeng072@gmail.com
+ * @description: Cache object mapping tool
  * @author: yupeng
  **/
 public class CacheUtil {
@@ -21,7 +21,7 @@ public class CacheUtil {
     public static final TimeUnit DEFAULT_TIME_UNIT = TimeUnit.SECONDS;
 
     /**
-     * 构建类型
+     * Build type
      *
      * @param types
      * @return
@@ -43,7 +43,7 @@ public class CacheUtil {
     }
 
     /**
-     * 检查 Key 是否为空或空的字符串
+     * Check if Key is empty or an empty string
      *
      * @param key
      */
@@ -56,9 +56,9 @@ public class CacheUtil {
     }
 
     /**
-     * 检查 redisKeyBuild 中的key是否为空或空的字符串
+     * Check whether the key in redisKeyBuild is empty or an empty string
      *
-     * @param redisKeyBuild key包装
+     * @param redisKeyBuild key wrapper
      */
     public static void checkNotBlank(RedisKeyBuild redisKeyBuild) {
         if (StrUtil.isEmpty(redisKeyBuild.getRelKey())) {
@@ -67,7 +67,7 @@ public class CacheUtil {
     }
 
     /**
-     * 检查 list 是否为空或空的字符串
+     * Checks whether list is empty or an empty string
      *
      * @param list
      */
@@ -80,9 +80,9 @@ public class CacheUtil {
     }
 
     /**
-     * 检查 list 是否为空或空的字符串
+     * Checks whether list is empty or an empty string
      *
-     * @param list key集合
+     * @param list key collection
      */
     public static void checkNotEmpty(Collection<?> list) {
         for (Object o : list) {
@@ -93,7 +93,7 @@ public class CacheUtil {
     }
 
     /**
-     * 检查 object 是否为空
+     * Check if object is empty
      *
      * @param object
      */
@@ -104,7 +104,7 @@ public class CacheUtil {
     }
     
     /**
-     * 判断 object 是否为空
+     * Determine whether object is empty
      *
      */
     public static boolean isEmpty(Object object) {

@@ -11,7 +11,7 @@
 
     <artifactId>hmdp-redisson-framework</artifactId>
     <name>hmdp-redisson-framework</name>
-    <description>redisson封装</description>
+    <description>Redisson wrappers</description>
     <packaging>pom</packaging>
 
     <modules>

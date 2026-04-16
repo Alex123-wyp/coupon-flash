@@ -3,8 +3,8 @@ package org.yupeng.service;
 import org.yupeng.entity.RollbackFailureLog;
 
 /**
- * @program: 黑马点评-plus升级版实战项目。添加 yupeng 微信，添加时备注 点评 来获取项目的完整资料
- * @description: 回滚失败通知服务：用于发送短信/邮件告警（可插拔实现）。
+ * @program: High-Concurrency Voucher Seckill Platform (HMDP Plus). Email: wyupeng072@gmail.com
+ * @description: Rollback failure notification service for sending SMS/email alerts (pluggable implementation).
  * @author: yupeng
  **/
 public interface IRollbackAlertService {

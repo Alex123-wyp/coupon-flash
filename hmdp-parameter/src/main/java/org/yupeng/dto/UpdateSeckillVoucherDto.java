@@ -11,8 +11,8 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
- * @program: 黑马点评-plus升级版实战项目。添加 yupeng 微信，添加时备注 点评 来获取项目的完整资料
- * @description: 取消优惠券订单
+ * @program: High-Concurrency Voucher Seckill Platform (HMDP Plus). Email: wyupeng072@gmail.com
+ * @description: Cancel voucher order
  * @author: yupeng
  **/
 @Data
@@ -24,70 +24,70 @@ public class UpdateSeckillVoucherDto implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * 优惠券id
+     * voucher ID
      */
     @NotNull
     private Long voucherId;
 
     /**
-     * 代金券标题
+     * Voucher title
      */
     private String title;
 
     /**
-     * 副标题
+     * subtitle
      */
     private String subTitle;
 
     /**
-     * 使用规则（普通券可用，秒杀受众不再依赖该字段）
+     * Usage rules (normal coupons are available, flash sale audiences no longer rely on this field)
      */
     private String rules;
 
     /**
-     * 支付金额
+     * Payment amount
      */
     private Long payValue;
 
     /**
-     * 抵扣金额
+     * Deduction amount
      */
     private Long actualValue;
 
     /**
-     * 优惠券类型 0,普通券；1,秒杀券
+     * Coupon type 0, ordinary coupon; 1, flash sale coupon
      */
     private Integer type;
 
     /**
-     * 优惠券状态 1,上架; 2,下架; 3,过期
+     * Coupon status 1, on the shelves; 2, off the shelves; 3, expired
      */
     private Integer status;
     
     /**
-     * 生效时间
+     * effective time
      */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime beginTime;
     
     /**
-     * 失效时间
+     * expiration time
      */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime endTime;
 
     /**
-     * 允许参与的会员等级，逗号分隔，如："1,2,3"
+     * Member levels allowed to participate, separated by commas, such as: "1,2,3"
      */
     private String allowedLevels;
 
     /**
-     * 最低会员等级
+     * Minimum membership level
      */
     private Integer minLevel;
 
     /**
-     * 允许参与的城市，逗号分隔，如："北京,上海"
+     * Cities allowed to participate, separated by commas, such as: "Beijing, Shanghai"
      */
     private String allowedCities;
 }

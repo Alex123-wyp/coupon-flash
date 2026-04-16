@@ -3,13 +3,13 @@ package org.yupeng.enums;
 import lombok.Getter;
 
 /**
- * @program: 黑马点评-plus升级版实战项目。添加 yupeng 微信，添加时备注 点评 来获取项目的完整资料
- * @description: 库存操作类型
+ * @program: High-Concurrency Voucher Seckill Platform (HMDP Plus). Email: wyupeng072@gmail.com
+ * @description: Stock operation type
  * @author: yupeng
  **/
 public enum StockUpdateType {
     /**
-     * 库存操作类型
+     * Inventory operation type
      * */
     DECREASE(-1, "扣减"),
     

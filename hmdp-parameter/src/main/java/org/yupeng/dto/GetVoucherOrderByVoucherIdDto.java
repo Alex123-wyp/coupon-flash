@@ -8,8 +8,8 @@ import java.io.Serial;
 import java.io.Serializable;
 
 /**
- * @program: 黑马点评-plus升级版实战项目。添加 yupeng 微信，添加时备注 点评 来获取项目的完整资料
- * @description: 通过优惠券id获取优惠券订单
+ * @program: High-Concurrency Voucher Seckill Platform (HMDP Plus). Email: wyupeng072@gmail.com
+ * @description: Get voucher order by voucher ID
  * @author: yupeng
  **/
 @Data
@@ -20,7 +20,7 @@ public class GetVoucherOrderByVoucherIdDto implements Serializable {
     private static final long serialVersionUID = 1L;
     
     /**
-     * 优惠券id
+     * voucher ID
      */
     @NotNull
     private Long voucherId;

@@ -21,8 +21,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * @program: 黑马点评-plus升级版实战项目。添加 yupeng 微信，添加时备注 点评 来获取项目的完整资料
- * @description: 关注接口实现
+ * @program: High-Concurrency Voucher Seckill Platform (HMDP Plus). Email: wyupeng072@gmail.com
+ * @description: Follow interface implementation
  * @author: yupeng
  **/
 @Service
@@ -37,27 +37,27 @@ public class FollowServiceImpl extends ServiceImpl<FollowMapper, Follow> impleme
 
     @Override
     public Result follow(Long followUserId, Boolean isFollow) {
-        // 1.获取登录用户
+        // 1. Get the logged in user
         Long userId = UserHolder.getUser().getId();
         String key = "follows:" + userId;
-        // 1.判断到底是关注还是取关
+        // 1. Decide whether to follow or unfollow
         if (isFollow) {
-            // 2.关注，新增数据
+            // 2. Follow and add new data
             Follow follow = new Follow();
             follow.setId(snowflakeIdGenerator.nextId());
             follow.setUserId(userId);
             follow.setFollowUserId(followUserId);
             boolean isSuccess = save(follow);
             if (isSuccess) {
-                // 把关注用户的id，放入redis的set集合 sadd userId followerUserId
+                // Put the id of the following user into the redis set collection sadd userId followerUserId
                 stringRedisTemplate.opsForSet().add(key, followUserId.toString());
             }
         } else {
-            // 3.取关，删除 delete from tb_follow where user_id = ? and follow_user_id = ?
+            // 3. Delete delete from tb_follow where user_id = ? and follow_user_id = ?
             boolean isSuccess = remove(new QueryWrapper<Follow>()
                     .eq("user_id", userId).eq("follow_user_id", followUserId));
             if (isSuccess) {
-                // 把关注用户的id从Redis集合中移除
+                // Remove the id of the following user from the Redis collection
                 stringRedisTemplate.opsForSet().remove(key, followUserId.toString());
             }
         }
@@ -66,29 +66,29 @@ public class FollowServiceImpl extends ServiceImpl<FollowMapper, Follow> impleme
 
     @Override
     public Result isFollow(Long followUserId) {
-        // 1.获取登录用户
+        // 1. Get the logged in user
         Long userId = UserHolder.getUser().getId();
-        // 2.查询是否关注 select count(*) from tb_follow where user_id = ? and follow_user_id = ?
+        // 2. Query whether to follow select count(*) from tb_follow where user_id = ? and follow_user_id = ?
         Long count = query().eq("user_id", userId).eq("follow_user_id", followUserId).count();
-        // 3.判断
+        // 3. Judgment
         return Result.ok(count > 0);
     }
 
     @Override
     public Result followCommons(Long id) {
-        // 1.获取当前用户
+        // 1. Get the current user
         Long userId = UserHolder.getUser().getId();
         String key = "follows:" + userId;
-        // 2.求交集
+        // 2. Find intersection
         String key2 = "follows:" + id;
         Set<String> intersect = stringRedisTemplate.opsForSet().intersect(key, key2);
         if (intersect == null || intersect.isEmpty()) {
-            // 无交集
+            // No intersection
             return Result.ok(Collections.emptyList());
         }
-        // 3.解析id集合
+        // 3. Parse the id collection
         List<Long> ids = intersect.stream().map(Long::valueOf).collect(Collectors.toList());
-        // 4.查询用户
+        // 4. Query users
         List<UserDTO> users = userService.listByIds(ids)
                 .stream()
                 .map(user -> BeanUtil.copyProperties(user, UserDTO.class))

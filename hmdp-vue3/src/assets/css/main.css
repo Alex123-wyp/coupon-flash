@@ -51,7 +51,7 @@ html,body,#app{
     align-items: center;
     justify-content: center;
 }
-/* 移除圆形背景，保留纯图标样式 */
+/* Remove the circular background and keep the plain icon style */
 .foot-text{
     font-size: 12px;
     margin-top: 4px;
@@ -63,12 +63,12 @@ html,body,#app{
     color: #ff6633;
 }
 
-/*element-ui的评价星星间隙*/
+/* Spacing between Element UI rating stars */
 .el-rate__icon {
     margin-right: 0;
 }
 
-/* 秒杀确认遮罩的强化视觉效果 */
+/* Enhanced visual effect for the seckill confirmation overlay */
 .seckill-overlay {
     z-index: 5000 !important;
     backdrop-filter: blur(3px);

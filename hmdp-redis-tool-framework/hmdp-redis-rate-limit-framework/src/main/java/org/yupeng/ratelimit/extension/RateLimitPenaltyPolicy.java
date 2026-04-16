@@ -3,16 +3,16 @@ package org.yupeng.ratelimit.extension;
 import org.yupeng.enums.BaseCode;
 
 /**
- * @program: 黑马点评-plus升级版实战项目。添加 yupeng 微信，添加时备注 点评 来获取项目的完整资料
- * @description: 惩罚策略扩展点：在命中限流后可执行封禁、打标、告警等动作。
+ * @program: High-Concurrency Voucher Seckill Platform (HMDP Plus). Email: wyupeng072@gmail.com
+ * @description: Penalty strategy extension point: executes actions such as blocking, tagging, or alerting after rate limiting is triggered.
  * @author: yupeng
  **/
 public interface RateLimitPenaltyPolicy {
 
     /**
-     * 应用惩罚策略
-     * @param ctx    当前限流上下文
-     * @param reason 命中原因（IP/USER 限流等）
+     * Apply the penalty policy
+     * @param ctx    current rate-limit context
+     * @param reason trigger reason (IP/user rate limiting, etc.)
      */
     void apply(RateLimitContext ctx, BaseCode reason);
 }

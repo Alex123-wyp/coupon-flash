@@ -16,7 +16,7 @@ const form = ref({
   radio: ''
 })
 
-// 修改为异步请求
+// Modify to asynchronous request
 const sendCode = async () => {
   try {
     await formRef.value.validateField('phone')
@@ -45,7 +45,7 @@ const sendCode = async () => {
 
 const userStore = useUserStore()
 const login = async () => {
-  // 登录
+  // Log in
   try {
     await formRef.value.validate()
     const res = await userLogin(form.value)

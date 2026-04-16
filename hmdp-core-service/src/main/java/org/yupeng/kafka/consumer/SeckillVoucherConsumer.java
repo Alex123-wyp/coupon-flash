@@ -42,8 +42,8 @@ import static org.yupeng.constant.Constant.SPRING_INJECT_PREFIX_DISTINCTION_NAME
 
 
 /**
- * @program: 黑马点评-plus升级版实战项目。添加 yupeng 微信，添加时备注 点评 来获取项目的完整资料
- * @description: Kafka 消费者：处理秒杀券下单消息。
+ * @program: High-Concurrency Voucher Seckill Platform (HMDP Plus). Email: wyupeng072@gmail.com
+ * @description: Kafka consumer: processes seckill voucher order messages.
  * @author: yupeng
  **/
 
@@ -134,7 +134,7 @@ public class SeckillVoucherConsumer extends AbstractConsumerHandler<SeckillVouch
     protected Boolean beforeConsume(MessageExtend<SeckillVoucherMessage> message) {
         long producerTimeTimestamp = message.getProducerTime().getTime();
         long delayTime = System.currentTimeMillis() - producerTimeTimestamp;
-        //如果消息超时时间达到了阈值（10秒）
+        //If the message timeout reaches the threshold (10 seconds)
         if (delayTime > MESSAGE_DELAY_TIME){
             log.info("消费到kafka的创建优惠券消息延迟时间大于了 {} 毫秒 此订单消息被丢弃 订单号 : {}",
                     delayTime,message.getMessageBody().getOrderId());
@@ -145,7 +145,7 @@ public class SeckillVoucherConsumer extends AbstractConsumerHandler<SeckillVouch
                     message.getMessageBody().getVoucherId(),
                     message.getMessageBody().getUserId(),
                     message.getMessageBody().getOrderId(),
-                    // 这是回滚操作，所以redis中扣减前和扣减后的数量要和消息中的反过来
+                    // This is a rollback operation, so the quantities before and after deduction in redis must be the opposite of those in the message.
                     message.getMessageBody().getAfterQty(),
                     message.getMessageBody().getChangeQty(),
                     message.getMessageBody().getBeforeQty()

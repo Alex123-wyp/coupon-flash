@@ -17,14 +17,14 @@ import { formatTime } from '@/utils/format'
 const route = useRoute()
 const router = useRouter()
 
-// 数据定义
+// Data definitions
 const blog = ref({})
 const shop = ref({})
 const likes = ref([])
 const user = ref({})
 const followed = ref(false)
 const score = ref(4.5)
-// 轮播图相关
+// Carousel chart related
 const swiper = ref(null)
 const _width = ref(0)
 // const duration = ref(300)
@@ -36,7 +36,7 @@ const sensitivity = ref(60)
 const resistance = ref(0.3)
 const isMoving = ref(false)
 
-// 初始化数据
+// Initializedata
 const initData = async () => {
   const id = route.params.id
   console.log('id', id)
@@ -70,7 +70,7 @@ onMounted(() => {
   initData()
 })
 
-// 查询店铺信息
+// Query shop information
 const queryShopById = async (shopId) => {
   try {
     const { data } = await getShopById(shopId)
@@ -87,7 +87,7 @@ const queryShopById = async (shopId) => {
   }
 }
 
-// 查询点赞列表
+// Query the like list
 const queryLikeList = async (id) => {
   try {
     const { data } = await getBlogLikes(id)
@@ -98,7 +98,7 @@ const queryLikeList = async (id) => {
   }
 }
 
-// 点赞功能
+// Like function
 const addLike = async () => {
   try {
     await likeBlog(blog.value.id)
@@ -112,7 +112,7 @@ const addLike = async () => {
   }
 }
 
-// 查询登录用户
+// Query logged in users
 const queryLoginUser = async () => {
   try {
     const { data } = await getUser()
@@ -125,7 +125,7 @@ const queryLoginUser = async () => {
   }
 }
 
-// 检查是否关注
+// Check if you are following
 const checkFollowed = async () => {
   try {
     const { data } = await isFollowed(blog.value.userId)
@@ -136,7 +136,7 @@ const checkFollowed = async () => {
   }
 }
 
-// 关注/取消关注
+// Follow/Unfollow
 const handleFollow = async () => {
   try {
     await follow(blog.value.userId, !followed.value)
@@ -148,12 +148,12 @@ const handleFollow = async () => {
   }
 }
 
-// 返回上一页
+// Go back to the previous page
 const goBack = () => {
   router.back()
 }
 
-// 跳转到用户信息页
+// Jump to user information page
 const toOtherInfo = () => {
   console.log('blog.value.userId', blog.value.userId)
   console.log('user.value.id', user.value.id)
@@ -164,7 +164,7 @@ const toOtherInfo = () => {
   }
 }
 
-// 轮播图相关方法
+// Carousel chart related methods
 const initSwiper = () => {
   const container = swiper.value
   items.value = container.querySelectorAll('.swiper-item')

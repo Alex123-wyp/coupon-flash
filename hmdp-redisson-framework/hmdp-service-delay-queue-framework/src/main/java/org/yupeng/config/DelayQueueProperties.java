@@ -8,8 +8,8 @@ import java.util.concurrent.TimeUnit;
 import static org.yupeng.config.DelayQueueProperties.PREFIX;
 
 /**
- * @program: 黑马点评-plus升级版实战项目。添加 yupeng 微信，添加时备注 点评 来获取项目的完整资料 
- * @description: 延迟队列 配置属性
+ * @program: High-Concurrency Voucher Seckill Platform (HMDP Plus). Email: wyupeng072@gmail.com 
+ * @description: Delay queue configuration properties
  * @author: yupeng
  **/
 @Data
@@ -19,29 +19,29 @@ public class DelayQueueProperties {
     public static final String PREFIX = "delay.queue";
     
     /**
-     * 从队列拉取数据的线程池中的核心线程数量，如果业务过慢可调大
+     * core thread count in the thread pool that pulls data from the queue，increase this value if the business processing is too slow
      * */
     private Integer corePoolSize = 4;
     /**
-     * 从队列拉取数据的线程池中的最大线程数量，如果业务过慢可调大
+     * maximum thread count in the thread pool that pulls data from the queue，increase this value if the business processing is too slow
      * */
     private Integer maximumPoolSize = 4;
     
     /**
-     * 从队列拉取数据的线程池中的最大线程回收时间
+     * maximum idle thread keep-alive time in the thread pool that pulls data from the queue
      * */
     private long keepAliveTime = 30;
     /**
-     * 从队列拉取数据的线程池中的最大线程回收时间的时间单位
+     * The time unit of maximum idle thread keep-alive time in the thread pool that pulls data from the queue
      * */
     private TimeUnit unit = TimeUnit.SECONDS;
     /**
-     * 从队列拉取数据的线程池中的队列数量，如果业务过慢可调大
+     * queue size in the thread pool that pulls data from the queue，increase this value if the business processing is too slow
      * */
     private Integer workQueueSize = 256;
     
     /**
-     * 延时队列的隔离分区数，延时有瓶颈时 可调大次数，但会增大redis的cpu消耗(同一个topic发送者和消费者的隔离分区数必须相同)
+     * number of isolated partitions for the delay queue; increase it when latency becomes a bottleneck, but it will increase Redis CPU usage (producer and consumer partition counts must match for the same topic)
      * */
     private Integer isolationRegionCount = 5;
 }

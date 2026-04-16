@@ -3,13 +3,13 @@ package org.yupeng.enums;
 import lombok.Getter;
 
 /**
- * @program: 黑马点评-plus升级版实战项目。添加 yupeng 微信，添加时备注 点评 来获取项目的完整资料
- * @description: 是否删除秒杀优惠券订单记录
+ * @program: High-Concurrency Voucher Seckill Platform (HMDP Plus). Email: wyupeng072@gmail.com
+ * @description: Whether to delete flash sale coupon order records
  * @author: yupeng
  **/
 public enum SubscribeStatus {
     /**
-     * 是否删除秒杀优惠券订单记录
+     * Whether to delete flash sale coupon order records
      * */
     UNSUBSCRIBED(0, "已取消订阅或未订阅"),
     

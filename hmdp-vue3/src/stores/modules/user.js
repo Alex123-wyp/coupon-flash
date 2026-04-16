@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
-// 用户模块
+// User store module
 export const useUserStore = defineStore(
   'Hmdp-User',
   () => {
@@ -16,7 +16,7 @@ export const useUserStore = defineStore(
       return token.value
     }
 
-    // 创建个人信息的ref
+    // Create a ref of personal information
     const userInfo = ref({})
     const getUserInfo = () => userInfo.value
     const setUserInfo = (obj) => (userInfo.value = obj)

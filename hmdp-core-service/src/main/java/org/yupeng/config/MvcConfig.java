@@ -10,8 +10,8 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
- * @program: 黑马点评-plus升级版实战项目。添加 yupeng 微信，添加时备注 点评 来获取项目的完整资料
- * @description: 跨域配置
+ * @program: High-Concurrency Voucher Seckill Platform (HMDP Plus). Email: wyupeng072@gmail.com
+ * @description: CORS configuration
  * @author: yupeng
  **/
 @Configuration
@@ -23,7 +23,7 @@ public class MvcConfig implements WebMvcConfigurer {
 
 //    @Override
 //    public void addInterceptors(InterceptorRegistry registry) {
-//        // 登录拦截器
+//        //Login interceptor
 //        registry.addInterceptor(new LoginInterceptor())
 //                .excludePathPatterns(
 //                        "/shop/**",
@@ -34,7 +34,7 @@ public class MvcConfig implements WebMvcConfigurer {
 //                        "/user/code",
 //                        "/user/login"
 //                ).order(1);
-//        // token刷新的拦截器
+//        //Token refresh interceptor
 //        registry.addInterceptor(new RefreshTokenInterceptor(stringRedisTemplate)).addPathPatterns("/**").order(0);
 //    }
 

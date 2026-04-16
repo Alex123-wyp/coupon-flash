@@ -1,4 +1,4 @@
-/*搜索栏：加大高度与内边距，缓解挤压感*/
+/* Search bar: increase height and padding to reduce crowding */
 .search-bar {
     background-color: #ff6633;
     color: white;
@@ -54,7 +54,7 @@
     margin-bottom: 10px;
 }
 
-/*达人探店列表*/
+/* Creator shop-exploration list */
 .blog-list {
     background-color: #eee;
     width: 100%;

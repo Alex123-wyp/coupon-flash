@@ -13,7 +13,7 @@
     <artifactId>hmdp-mq-common-framework</artifactId>
 
     <name>hmdp-mq-common-framework</name>
-    <description>mq公共封装</description>
+    <description>MQ common wrappers</description>
 
     <dependencies>
         <dependency>

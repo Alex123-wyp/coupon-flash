@@ -11,7 +11,7 @@
 
     <artifactId>hmdp-redis-tool-framework</artifactId>
     <name>hmdp-redis-tool-framework</name>
-    <description>redis工具组件</description>
+    <description>Redis tool components</description>
     <packaging>pom</packaging>
 
     <modules>

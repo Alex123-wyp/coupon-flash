@@ -24,8 +24,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * @program: 黑马点评-plus升级版实战项目。添加 yupeng 微信，添加时备注 点评 来获取项目的完整资料 
- * @description: 此类在 6.1其实被废弃，但是只能这个类才能实现对 #对象.属性 的spel解析，所以还得加上
+ * @program: High-Concurrency Voucher Seckill Platform (HMDP Plus). Email: wyupeng072@gmail.com 
+ * @description: This class was actually deprecated in 6.1, but it is still required to resolve SpEL expressions like #object.property.
  * @author: yupeng
  **/
 public class LocalVariableTableParameterNameDiscoverer implements ParameterNameDiscoverer {
@@ -60,7 +60,7 @@ public class LocalVariableTableParameterNameDiscoverer implements ParameterNameD
 	}
 
 	/**
-	 * 以下方法是从 SpringBoot 3.0.0 复制过来的
+	 * The following methods are copied from SpringBoot 3.0.0
 	 * Inspects the target class.
 	 * <p>Exceptions will be logged, and a marker map returned to indicate the
 	 * lack of debug information.

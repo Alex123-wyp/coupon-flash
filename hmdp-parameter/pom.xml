@@ -11,7 +11,7 @@
     
     <artifactId>hmdp-parameter</artifactId>
     <name>hmdp-parameter</name>
-    <description>参数</description>
+    <description>Parameters</description>
     
     <dependencies>
         <dependency>

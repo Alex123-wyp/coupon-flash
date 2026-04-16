@@ -14,8 +14,8 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * @program: 黑马点评-plus升级版实战项目。添加 yupeng 微信，添加时备注 点评 来获取项目的完整资料
- * @description: 自定义json序列化
+ * @program: High-Concurrency Voucher Seckill Platform (HMDP Plus). Email: wyupeng072@gmail.com
+ * @description: Custom JSON serializer
  * @author: yupeng
  **/
 public class JsonCustomSerializer extends BeanSerializerModifier {

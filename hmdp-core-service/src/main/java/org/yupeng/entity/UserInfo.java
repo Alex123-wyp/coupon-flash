@@ -11,8 +11,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /**
- * @program: 黑马点评-plus升级版实战项目。添加 yupeng 微信，添加时备注 点评 来获取项目的完整资料
- * @description: 用户信息
+ * @program: High-Concurrency Voucher Seckill Platform (HMDP Plus). Email: wyupeng072@gmail.com
+ * @description: User information
  * @author: yupeng
  **/
 @Data
@@ -24,63 +24,63 @@ public class UserInfo implements Serializable {
     private static final long serialVersionUID = 1L;
     
     /**
-     * 主键
+     * primary key
      */
     @TableId(value = "id")
     private Long id;
     
     /**
-     * 用户id
+     * user ID
      */
     private Long userId;
 
     /**
-     * 城市名称
+     * city ​​name
      */
     private String city;
 
     /**
-     * 个人介绍，不要超过128个字符
+     * Personal introduction, no more than 128 characters
      */
     private String introduce;
 
     /**
-     * 粉丝数量
+     * Number of fans
      */
     private Integer fans;
 
     /**
-     * 关注的人的数量
+     * number of people following
      */
     private Integer followee;
 
     /**
-     * 性别，0：男，1：女
+     * Gender, 0: male, 1: female
      */
     private Boolean gender;
 
     /**
-     * 生日
+     * Birthday
      */
     private LocalDate birthday;
 
     /**
-     * 积分
+     * integral
      */
     private Integer credits;
 
     /**
-     * 会员级别，0~9级,0代表未开通会员
+     * Membership level, 0~9, 0 represents unactivated membership
      */
     private Integer level;
 
     /**
-     * 创建时间
+     * create time
      */
     private LocalDateTime createTime;
 
     /**
-     * 更新时间
+     * update time
      */
     private LocalDateTime updateTime;
 

@@ -1,8 +1,8 @@
 package org.yupeng.constant;
 
 /**
- * @program: 极度真实还原大麦网高并发实战项目。 添加 yupeng 微信，添加时备注 大麦 来获取项目的完整资料 
- * @description: 分布式锁 业务名管理
+ * @program: A highly realistic Damai high-concurrency practice project. Contact yupeng on WeChat and note Damai to get the full project materials. 
+ * @description: Distributed lock business-name registry
  * @author: yupeng
  **/
 public class DistributedLockConstants {

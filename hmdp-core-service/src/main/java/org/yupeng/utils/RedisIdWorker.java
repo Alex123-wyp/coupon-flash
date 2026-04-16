@@ -8,18 +8,18 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 
 /**
- * @program: 黑马点评-plus升级版实战项目。添加 yupeng 微信，添加时备注 点评 来获取项目的完整资料
- * @description: redisId-黑马点评普通版本使用
+ * @program: High-Concurrency Voucher Seckill Platform (HMDP Plus). Email: wyupeng072@gmail.com
+ * @description: Redis ID worker for the regular HMDP version
  * @author: yupeng
  **/
 @Component
 public class RedisIdWorker {
     /**
-     * 开始时间戳
+     * start timestamp
      */
     private static final long BEGIN_TIMESTAMP = 1640995200L;
     /**
-     * 序列号的位数
+     * Number of digits in the serial number
      */
     private static final int COUNT_BITS = 32;
 
@@ -30,18 +30,18 @@ public class RedisIdWorker {
     }
 
     public long nextId(String keyPrefix) {
-        // 1.生成时间戳
+        // 1. Generate timestamp
         LocalDateTime now = LocalDateTime.now();
         long nowSecond = now.toEpochSecond(ZoneOffset.UTC);
         long timestamp = nowSecond - BEGIN_TIMESTAMP;
 
-        // 2.生成序列号
-        // 2.1.获取当前日期，精确到天
+        // 2. Generate serial number
+        // 2.1. Get the current date, accurate to the day
         String date = now.format(DateTimeFormatter.ofPattern("yyyy:MM:dd"));
-        // 2.2.自增长
+        // 2.2. Self-growth
         long count = stringRedisTemplate.opsForValue().increment("icr:" + keyPrefix + ":" + date);
 
-        // 3.拼接并返回
+        // 3. Splice and return
         return timestamp << COUNT_BITS | count;
     }
 }

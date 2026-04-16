@@ -1,4 +1,4 @@
-// 节流函数
+// Throttle function
 export const throttle = (fn, delay) => {
   let timer = null
   return function (...args) {
@@ -10,12 +10,12 @@ export const throttle = (fn, delay) => {
   }
 }
 
-// 获取滚动位置
+// Get the scroll position
 export const getScrollTop = () => {
   return document.documentElement.scrollTop || document.body.scrollTop
 }
 
-// 设置滚动位置
+// Set the scroll position
 export const setScrollTop = (value) => {
   document.documentElement.scrollTop = value
   document.body.scrollTop = value

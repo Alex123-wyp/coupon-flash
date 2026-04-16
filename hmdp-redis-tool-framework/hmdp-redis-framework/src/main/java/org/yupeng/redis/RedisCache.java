@@ -15,314 +15,314 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 /**
- * @program: 黑马点评-plus升级版实战项目。添加 yupeng 微信，添加时备注 点评 来获取项目的完整资料
- * @description: redis方法抽象
+ * @program: High-Concurrency Voucher Seckill Platform (HMDP Plus). Email: wyupeng072@gmail.com
+ * @description: Redis abstraction interface
  * @author: yupeng
  **/
 public interface RedisCache {
 
     /**
-     * 获取字符串对象
+     * Get string object
      *
      * @param redisKeyBuild   RedisKeyBuild
-     * @param clazz 类对象
+     * @param clazz class object
      * @param <T>   T
-     * @return T 普通对象
+     * @return T ordinary object
      */
     <T> T get(RedisKeyBuild redisKeyBuild, Class<T> clazz);
     
     /**
-     * 获取字符串对象(如果缓存中不存在，则执行给定的supplier接口)
+     * Get the string object (if it does not exist in the cache, execute the given supplier interface)
      *
      * @param redisKeyBuild   RedisKeyBuild
-     * @param clazz 类对象
+     * @param clazz class object
      * @param <T>   T
-     * @param supplier 缓存为空时，执行的逻辑
-     * @param ttl      过期时间
-     * @param timeUnit 时间单位
-     * @return T 普通对象
+     * @param supplier The logic executed when the cache is empty
+     * @param ttl expiration time
+     * @param timeUnit time unit
+     * @return T ordinary object
      */
     <T> T get(RedisKeyBuild redisKeyBuild, Class<T> clazz, Supplier<T> supplier, long ttl, TimeUnit timeUnit);
 
     /**
-     * 返回 key 中字符串值的子字符
-     * @param redisKeyBuild 缓存key
-     * @param start 开始
-     * @param end 结束
-     * @return 结果
+     * Returns the subcharacter of the string value in key
+     * @param redisKeyBuild cache key
+     * @param start start
+     * @param end end
+     * @return result
      */
     String getRange(RedisKeyBuild redisKeyBuild, long start, long end);
 
     /**
-     * 获取字符串对象, 并且字符串中是集合内容
+     * Get the string object, and the string is the collection content
      *
-     * @param redisKeyBuild 缓存key
-     * @param clazz 类型
-     * @param <T> 指定泛型
+     * @param redisKeyBuild cache key
+     * @param clazz type
+     * @param <T> specifies the generic type
      * @return List<T>
      */
     <T> List<T> getValueIsList(RedisKeyBuild redisKeyBuild, Class<T> clazz);
     
     /**
-     * 获取字符串对象, 并且字符串中是集合内容(如果缓存中不存在，则执行给定的supplier接口)
+     * Get the string object, and the string is the collection content (if it does not exist in the cache, the given supplier interface is executed)
      *
-     * @param redisKeyBuild 缓存key
-     * @param clazz 类型
-     * @param <T> 指定泛型
-     * @param supplier 缓存为空时，执行的逻辑
-     * @param ttl      过期时间
-     * @param timeUnit 时间单位
+     * @param redisKeyBuild cache key
+     * @param clazz type
+     * @param <T> specifies the generic type
+     * @param supplier The logic executed when the cache is empty
+     * @param ttl expiration time
+     * @param timeUnit time unit
      * @return List<T>
      */
     <T> List<T> getValueIsList(RedisKeyBuild redisKeyBuild, Class<T> clazz, Supplier<List<T>> supplier, long ttl, TimeUnit timeUnit);
 
 
     /**
-     * 通过多个key批量获取多个value
+     * Get multiple values ​​in batches through multiple keys
      *
-     * @param keyList key集合
+     * @param keyList key collection
      * @return List<String>
      */
     List<String> getKeys(List<RedisKeyBuild> keyList);
 
     /**
-     * 判断key是否存在
+     * Determine whether the key exists
      *
      * @param redisKeyBuild redisKeyBuild
-     * @return 是否存在 可能为空
+     * @return exists or may be empty
      */
     Boolean hasKey(RedisKeyBuild redisKeyBuild);
 
     /**
-     * 删除key
+     * Delete key
      *
-     * @param redisKeyBuild 缓存key
+     * @param redisKeyBuild cache key
      * @return
      */
     void del(RedisKeyBuild redisKeyBuild);
 
 
     /**
-     * 批量删除key
+     * Delete keys in batches
      *
-     * @param keys key集合
+     * @param keys key collection
      */
     void del(Collection<RedisKeyBuild> keys);
 
     /**
-     * 设置key过期时间
+     * Set key expiration time
      *
      * @param redisKeyBuild      RedisKeyBuild
-     * @param ttl      过期时间
-     * @param timeUnit 时间单位
-     * @return 是否成功
+     * @param ttl expiration time
+     * @param timeUnit time unit
+     * @return whether successful
      */
     Boolean expire(RedisKeyBuild redisKeyBuild, long ttl, TimeUnit timeUnit);
 
     /**
-     * 获取key超时时间
+     * Get key timeout
      *
      * @param redisKeyBuild redisKeyBuild
-     * @return 超时时间
+     * @return timeout
      */
     Long getExpire(RedisKeyBuild redisKeyBuild);
     
     /**
-     * 获取key超时时间
+     * Get key timeout
      *
      * @param redisKeyBuild redisKeyBuild
-     * @param timeUnit 时间单位
-     * @return 超时时间
+     * @param timeUnit time unit
+     * @return timeout
      */
     Long getExpire(RedisKeyBuild redisKeyBuild,TimeUnit timeUnit);
 
     /**
-     * 查找匹配的key
+     * Find matching key
      *
-     * @param pattern 缓存key
+     * @param pattern cache key
      * @return keys
      */
     Set<String> keys(String pattern);
 
     /**
-     * 将当前数据库的 key 移动到给定的数据库 db 当中
+     * Move the key of the current database to the given database db
      *
-     * @param redisKeyBuild 缓存key
+     * @param redisKeyBuild cache key
      * @param dbIndex
      * @return
      */
     Boolean move(RedisKeyBuild redisKeyBuild, int dbIndex);
 
     /**
-     * 移除 key 的过期时间，key 将持久保持
+     * Remove the expiration time of the key and the key will be persisted
      *
-     * @param redisKeyBuild 缓存key
+     * @param redisKeyBuild cache key
      * @return
      */
     Boolean persist(RedisKeyBuild redisKeyBuild);
 
     /**
-     * 从当前数据库中随机返回一个 key
+     * Returns a random key from the current database
      *
      * @return
      */
     String randomKey();
 
     /**
-     * 修改 key 的名称
+     * Modify key name
      *
-     * @param oldKey 缓存key
-     * @param newKey 缓存key
+     * @param oldKey cache key
+     * @param newKey cache key
      */
     void rename(RedisKeyBuild oldKey, RedisKeyBuild newKey);
 
     /**
-     * 仅当 newKey 不存在时，将 oldKey 改名为 newKey
+     * Rename oldKey to newKey only if newKey does not exist
      *
-     * @param oldKey 缓存key
-     * @param newKey 缓存key
+     * @param oldKey cache key
+     * @param newKey cache key
      * @return
      */
     Boolean renameIfAbsent(RedisKeyBuild oldKey, RedisKeyBuild newKey);
 
     /**
-     * 返回 key 所储存的值的类型
+     * Returns the type of value stored in key
      *
-     * @param redisKeyBuild 缓存key
+     * @param redisKeyBuild cache key
      * @return
      */
     DataType type(RedisKeyBuild redisKeyBuild);
 
     /**
-     * 设置缓存
+     * Set up cache
      *
-     * @param redisKeyBuild        缓存key
-     * @param object     缓存对象
+     * @param redisKeyBuild cache key
+     * @param object cache object
      */
     void set(RedisKeyBuild redisKeyBuild, Object object);
 
     /**
-     * 设置缓存
+     * Set up cache
      *
-     * @param redisKeyBuild        缓存key
-     * @param object     缓存对象
-     * @param ttl 过期时间
+     * @param redisKeyBuild cache key
+     * @param object cache object
+     * @param ttl expiration time
      */
     void set(RedisKeyBuild redisKeyBuild, Object object, long ttl);
 
     /**
-     * 设置缓存
+     * Set up cache
      *
-     * @param redisKeyBuild      缓存key
-     * @param object   缓存对象
-     * @param ttl      过期时间
-     * @param timeUnit 时间单位
+     * @param redisKeyBuild cache key
+     * @param object cache object
+     * @param ttl expiration time
+     * @param timeUnit time unit
      */
     void set(RedisKeyBuild redisKeyBuild, Object object, long ttl, TimeUnit timeUnit);
 
     /**
-     * 只有在 key 不存在时设置 key 的值
+     * Set the value of key only if key does not exist
      *
-     * @param redisKeyBuild  缓存key
-     * @param object 对象
-     * @return 之前已经存在返回false,不存在返回true
+     * @param redisKeyBuild cache key
+     * @param object object
+     * @return Returns false if it already exists, returns true if it does not exist
      */
     boolean setIfAbsent(RedisKeyBuild redisKeyBuild, Object object);
     
     /**
-     * 只有在 key 不存在时设置 key 的值
+     * Set the value of key only if key does not exist
      *
-     * @param redisKeyBuild  缓存key
-     * @param object         对象
-     * @param ttl            过期时间
-     * @param timeUnit       时间单位
-     * @return 之前已经存在返回false,不存在返回true
+     * @param redisKeyBuild cache key
+     * @param object object
+     * @param ttl expiration time
+     * @param timeUnit time unit
+     * @return Returns false if it already exists, returns true if it does not exist
      */
     boolean setIfAbsent(RedisKeyBuild redisKeyBuild, Object object, long ttl, TimeUnit timeUnit);
 
     /**
-     * 获取字符串的长度
+     * Get the length of a string
      *
-     * @param redisKeyBuild 缓存key
-     * @return 长度
+     * @param redisKeyBuild cache key
+     * @return length
      */
     Long size(RedisKeyBuild redisKeyBuild);
 
     /**
-     * 批量添加
+     * Add in batches
      *
-     * @param map 对象
+     * @param map object
      */
     void multiSet(Map<RedisKeyBuild, ?> map);
 
     /**
-     * 同时设置一个或多个 key-value 对，当且仅当所有给定 key 都不存在
+     * Set one or more key-value pairs at the same time if and only if all given keys do not exist
      *
-     * @param map 对象
-     * @return 之前已经存在返回false,不存在返回true
+     * @param map object
+     * @return Returns false if it already exists, returns true if it does not exist
      */
     boolean multiSetIfAbsent(Map<RedisKeyBuild, ?> map);
 
     /**
-     * 增加(自增长), 负数则为自减
+     * Increase (self-increasing), negative number is self-decreasing
      *
-     * @param redisKeyBuild 缓存key
-     * @param increment 步长
+     * @param redisKeyBuild cache key
+     * @param increment step size
      * @return
      */
     Long incrBy(RedisKeyBuild redisKeyBuild, long increment);
 
     /**
-     * double类型增加(自增长), 负数则为自减
-     * @param redisKeyBuild 缓存key
-     * @param increment 步长
+     * The double type increases (self-increasing), and the negative number is self-decreasing.
+     * @param redisKeyBuild cache key
+     * @param increment step size
      * @return
      */
     Double incrByDouble(RedisKeyBuild redisKeyBuild, double increment);
 
     /**
-     * 追加到末尾
+     * Append to the end
      *
-     * @param redisKeyBuild 缓存key
-     * @param value 值
+     * @param redisKeyBuild cache key
+     * @param value value
      * @return
      */
     Integer append(RedisKeyBuild redisKeyBuild, String value);
 
-    /** -------------------hash相关操作------------------------- */
+    /** ------------------Hash related operations-------------------------------- */
 
     /**
-     * 放置一个键值对
+     * Place a key-value pair
      *
-     * @param redisKeyBuild     hash键
+     * @param redisKeyBuild hash key
      * @param hashKey hash key
      * @param value   hash value
      */
     void putHash(RedisKeyBuild redisKeyBuild, String hashKey, Object value);
 
     /**
-     * 放置一个键值对 并设置过期时间
+     * Place a key-value pair and set the expiration time
      *
-     * @param redisKeyBuild           hash键
+     * @param redisKeyBuild hash key
      * @param hashKey       hash key
      * @param value         hash value
-     * @param ttl    过期时间
+     * @param ttl expiration time
      */
     void putHash(RedisKeyBuild redisKeyBuild, String hashKey, Object value, long ttl);
 
     /**
-     * 放置一个键值对 并设置过期时间
+     * Place a key-value pair and set the expiration time
      *
-     * @param redisKeyBuild       hash键
+     * @param redisKeyBuild hash key
      * @param hashKey   hash key
      * @param value     hash value
-     * @param ttl       过期时间
-     * @param timeUnit  时间单位
+     * @param ttl expiration time
+     * @param timeUnit time unit
      */
     void putHash(RedisKeyBuild redisKeyBuild, String hashKey, Object value, long ttl, TimeUnit timeUnit);
 
     /**
-     * 放入map中所有键值对
+     * Put all key-value pairs in the map
      *
      * @param redisKeyBuild key
      * @param map hash
@@ -330,184 +330,184 @@ public interface RedisCache {
     void putHash(RedisKeyBuild redisKeyBuild, Map<String, ?> map);
 
     /**
-     * 放入map中所有键值对 并设置过期时间
+     * Put all the key-value pairs in the map and set the expiration time
      *
      * @param redisKeyBuild key
      * @param map hash
-     * @param ttl 过期时间
+     * @param ttl expiration time
      */
     void putHash(RedisKeyBuild redisKeyBuild, Map<String, ?> map, long ttl);
 
     /**
-     * 放入 Map 中所有键值对 并设置过期时间和时间单位
+     * Put all the key-value pairs in the Map and set the expiration time and time unit
      *
      * @param redisKeyBuild key
      * @param map hash
-     * @param ttl 过期时间
-     * @param timeUnit 时间单位
+     * @param ttl expiration time
+     * @param timeUnit time unit
      */
     void putHash(RedisKeyBuild redisKeyBuild, Map<String, ?> map, long ttl, TimeUnit timeUnit);
 
     /**
-     * 仅当hashKey不存在时才设置
+     * Set only if hashKey does not exist
      *
-     * @param redisKeyBuild 缓存key
-     * @param hashKey hash中key
-     * @param value 对象
+     * @param redisKeyBuild cache key
+     * @param hashKey key in hash
+     * @param value object
      * @return
      */
     Boolean putHashIfAbsent(RedisKeyBuild redisKeyBuild, String hashKey, Object value);
 
     /**
-     * 从 Hash 中获取普通对象
+     * Get ordinary objects from Hash
      *
      * @param redisKeyBuild     key
      * @param hashKey hash key
-     * @param clazz   类对象
+     * @param clazz class object
      * @param <T>     T
-     * @return 普通对象
+     * @return ordinary object
      */
     @SuppressWarnings("all")
     <T> T getForHash(RedisKeyBuild redisKeyBuild, String hashKey, Class<T> clazz);
 
     /**
-     * Hash的value是字符串集合，进行提取
+     * The value of Hash is a collection of strings, which can be extracted
      *
      * @param redisKeyBuild     key
      * @param hashKey hash key
-     * @param clazz   类对象
+     * @param clazz class object
      * @param <T>     T
-     * @return 普通对象
+     * @return ordinary object
      */
     <T> List<T> getValueIsListForHash(RedisKeyBuild redisKeyBuild, String hashKey, Class<T> clazz);
 
     /**
-     * 从 {@code key} 处获取给定 {@code hashKeys} 的值
+     * Get the value of the given {@code hashKeys} from {@code key}
      *
      * @param redisKeyBuild      key
      * @param hashKeys hashKeys
-     * @param clazz    类对象
+     * @param clazz class object
      * @param <T>      T
      * @return
      */
     <T> List<T> multiGetForHash(RedisKeyBuild redisKeyBuild, List<String> hashKeys, Class<T> clazz);
 
     /**
-     * 谨慎使用！
-     * 获取 Hash Key 下所有值
+     * Use with caution!
+     * Get all values ​​under Hash Key
      *
-     * @param redisKeyBuild 缓存key
-     * @param clazz 类型
-     * @param <T> 泛型
+     * @param redisKeyBuild cache key
+     * @param clazz type
+     * @param <T> Generic
      * @return
      */
     <T> List<T> getAllForHash(RedisKeyBuild redisKeyBuild, Class<T> clazz);
     
     /**
-     * 谨慎使用！
-     * 获取 Hash Key 下所有值，返回值为map
+     * Use with caution!
+     * Get all values ​​under Hash Key, the return value is map
      *
-     * @param redisKeyBuild 缓存key
-     * @param clazz 类型
-     * @param <T> 泛型
+     * @param redisKeyBuild cache key
+     * @param clazz type
+     * @param <T> Generic
      * @return
      */
     <T> Map<String,T> getAllMapForHash(RedisKeyBuild redisKeyBuild, Class<T> clazz);
     /**
-     * 判断hash中 key是否存在
+     * Determine whether the key in the hash exists
      *
-     * @param redisKeyBuild 缓存key
-     * @param hashKey hash中key
-     * @return 结果
+     * @param redisKeyBuild cache key
+     * @param hashKey key in hash
+     * @return result
      */
     Boolean hasKeyForHash(RedisKeyBuild redisKeyBuild, String hashKey);
 
     /**
-     * 删除hash key
+     * Delete hash key
      *
-     * @param redisKeyBuild 缓存key
-     * @param hashKey hash中key
-     * @return 结果
+     * @param redisKeyBuild cache key
+     * @param hashKey key in hash
+     * @return result
      */
     Long delForHash(RedisKeyBuild redisKeyBuild, String hashKey);
 
     /**
-     * 批量删除hash key
+     * Delete hash keys in batches
      *
-     * @param redisKeyBuild 缓存key
-     * @param hashKeys hash中key
-     * @return 结果
+     * @param redisKeyBuild cache key
+     * @param hashKeys key in hash
+     * @return result
      */
     Long delForHash(RedisKeyBuild redisKeyBuild, Collection<String> hashKeys);
 
     /**
-     * 为哈希表 key 中的指定字段的整数值加上增量 increment
+     * Add increment to the integer value of the specified field in the hash table key
      *
-     * @param redisKeyBuild 缓存key
-     * @param hashKey hash中key
-     * @param increment 步长
-     * @return 结果
+     * @param redisKeyBuild cache key
+     * @param hashKey key in hash
+     * @param increment step size
+     * @return result
      */
     Long incrByForHash(RedisKeyBuild redisKeyBuild, String hashKey, long increment);
 
     /**
-     * 为哈希表 key 中的指定字段的整数值加上增量 increment(double类型)
+     * Add increment (double type) to the integer value of the specified field in the hash table key
      *
-     * @param redisKeyBuild 缓存key
-     * @param hashKey hash中key
-     * @param delta 步长
-     * @return 结果
+     * @param redisKeyBuild cache key
+     * @param hashKey key in hash
+     * @param delta step size
+     * @return result
      */
     Double incrByDoubleForHash(RedisKeyBuild redisKeyBuild, String hashKey, double delta);
 
     /**
-     * 获取所有哈希表中的hashKey
+     * Get hashKey in all hash tables
      *
-     * @param redisKeyBuild 缓存key
-     * @return 结果
+     * @param redisKeyBuild cache key
+     * @return result
      */
     Set<String> hashKeysForHash(RedisKeyBuild redisKeyBuild);
 
     /**
-     * 获取哈希表中字段的数量
+     * Get the number of fields in a hash table
      *
-     * @param redisKeyBuild 缓存key
-     * @return 结果
+     * @param redisKeyBuild cache key
+     * @return result
      */
     Long sizeForHash(RedisKeyBuild redisKeyBuild);
 
-    /** ------------------------list相关操作---------------------------- */
+    /**------------------------list related operations------------------------------ */
 
     /**
-     * 通过索引获取列表中的元素
+     * Get an element in a list by index
      *
-     * @param redisKeyBuild 缓存key
-     * @param index 索引
-     * @param clazz 类型
-     * @return 结果
+     * @param redisKeyBuild cache key
+     * @param index index
+     * @param clazz type
+     * @return result
      */
     <T> T indexForList(RedisKeyBuild redisKeyBuild, long index, Class<T> clazz);
 
     /**
-     * List 从左边放入元素
+     * List puts elements from the left
      *
      * @param redisKeyBuild   key
      * @param value value
-     * @return 改动行数
+     * @return Change the number of lines
      */
     Long leftPushForList(RedisKeyBuild redisKeyBuild, Object value);
 
     /**
-     * List 从左边放入元素
+     * List puts elements from the left
      *
      * @param redisKeyBuild   key
      * @param valueList valueList
-     * @return 改动行数
+     * @return Change the number of lines
      */
     Long leftPushAllForList(RedisKeyBuild redisKeyBuild, List<?> valueList);
 
     /**
-     * List 从左边放入元素(当list存在的时候才加入)
+     * List puts elements from the left (only adds them when the list exists)
      *
      * @param redisKeyBuild
      * @param value
@@ -516,108 +516,108 @@ public interface RedisCache {
     Long leftPushIfPresentForList(RedisKeyBuild redisKeyBuild, Object value);
 
     /**
-     * 如果pivot存在,在pivot左边添加
+     * If pivot exists, add it to the left of pivot
      *
-     * @param redisKeyBuild 缓存key
+     * @param redisKeyBuild cache key
      * @param pivot pivot
-     * @param value 对象
-     * @return 结果
+     * @param value object
+     * @return result
      */
     Long leftPushForList(RedisKeyBuild redisKeyBuild, Object pivot, Object value);
 
     /**
-     * List 从右边放入元素
+     * List puts elements from the right
      *
      * @param redisKeyBuild   key
      * @param value value
-     * @return 改动行数
+     * @return Change the number of lines
      */
     Long rightPushForList(RedisKeyBuild redisKeyBuild, Object value);
 
     /**
-     * List 从右边放入元素
+     * List puts elements from the right
      *
      * @param redisKeyBuild   key
      * @param valueList valueList
-     * @return 改动行数
+     * @return Change the number of lines
      */
     Long rightPushAllForList(RedisKeyBuild redisKeyBuild, List<Object> valueList);
 
     /**
-     * List 从右边放入元素(当list存在的时候才加入)
+     * List puts elements from the right (added when list already exists)
      *
-     * @param redisKeyBuild 缓存key
-     * @param value 对象
-     * @return 结果
+     * @param redisKeyBuild cache key
+     * @param value object
+     * @return result
      */
     Long rightPushIfPresentForList(RedisKeyBuild redisKeyBuild, Object value);
 
     /**
-     * 如果pivot存在,在pivot右边添加
+     * If pivot exists, add it to the right of pivot
      *
-     * @param redisKeyBuild 缓存key
+     * @param redisKeyBuild cache key
      * @param pivot pivot
-     * @param value 对象
-     * @return 结果
+     * @param value object
+     * @return result
      */
     Long rightPushForList(RedisKeyBuild redisKeyBuild, Object pivot, Object value);
 
     /**
-     * 通过索引设置列表元素的值
+     * Set the value of a list element by index
      *
-     * @param redisKeyBuild 缓存key
+     * @param redisKeyBuild cache key
      * @param index
-     *            位置
-     * @param value 对象
+     *            Location
+     * @param value object
      */
     void setForList(RedisKeyBuild redisKeyBuild, long index, Object value);
 
     /**
-     * 移出并获取列表的第一个元素
+     * Remove and get the first element of the list
      *
-     * @param redisKeyBuild 缓存key
-     * @param clazz 类型
-     * @return 删除的元素
+     * @param redisKeyBuild cache key
+     * @param clazz type
+     * @return deleted element
      */
     <T> T leftPopForList(RedisKeyBuild redisKeyBuild, Class<T> clazz);
 
     /**
-     * 移出并获取列表的第一个元素， 如果列表没有元素会阻塞列表直到等待超时或发现可弹出元素为止
+     * Remove and get the first element of the list. If there is no element in the list, the list will be blocked until the wait times out or a pop-up element is found.
      *
-     * @param redisKeyBuild 缓存key
-     * @param clazz 类型
+     * @param redisKeyBuild cache key
+     * @param clazz type
      * @param timeout
-     *            等待时间
+     *            waiting time
      * @param unit
-     *            时间单位
+     *            time unit
      * @return
      */
     <T> T leftPopBlockForList(RedisKeyBuild redisKeyBuild, Class<T> clazz, long timeout, TimeUnit unit);
 
     /**
-     * 移除并获取列表最后一个元素
+     * Remove and get the last element of the list
      *
-     * @param redisKeyBuild 缓存key
-     * @param clazz 类型
-     * @return 删除的元素
+     * @param redisKeyBuild cache key
+     * @param clazz type
+     * @return deleted element
      */
     <T> T rightPopForList(RedisKeyBuild redisKeyBuild, Class<T> clazz);
 
     /**
-     * 移出并获取列表的最后一个元素， 如果列表没有元素会阻塞列表直到等待超时或发现可弹出元素为止
+     * Remove and get the last element of the list. If there is no element in the list, the list will be blocked until the wait times out or a pop-up element is found.
      *
-     * @param redisKeyBuild 缓存key
-     * @param clazz 类型
+     * @param redisKeyBuild cache key
+     * @param clazz type
      * @param timeout
-     *            等待时间
+     *            waiting time
      * @param unit
-     *            时间单位
+     *            time unit
      * @return
      */
     <T> T rightPopBlockForList(RedisKeyBuild redisKeyBuild, Class<T> clazz, long timeout, TimeUnit unit);
 
     /**
-     * 移除列表的最后一个元素，并将该元素添加到另一个列表并返回
+     * Removes the last element of a list and adds that element to another list and returns
      *
      * @param sourceKey
      * @param destinationKey
@@ -627,54 +627,54 @@ public interface RedisCache {
     <T> T rightPopAndLeftPushForList(RedisKeyBuild sourceKey, RedisKeyBuild destinationKey, Class<T> clazz);
 
     /**
-     * 从列表中弹出一个值，将弹出的元素插入到另外一个列表中并返回它； 如果列表没有元素会阻塞列表直到等待超时或发现可弹出元素为止
+     * Pop a value from the list, insert the popped element into another list and return it; if the list has no elements, the list will be blocked until the wait times out or a popable element is found.
      *
-     * @param sourceKey 缓存key
-     * @param destinationKey 弹出key
-     * @param clazz 类型
-     * @param timeout 时间
-     * @param unit 时间单位
-     * @return 结果
+     * @param sourceKey cache key
+     * @param destinationKey popup key
+     * @param clazz type
+     * @param timeout time
+     * @param unit time unit
+     * @return result
      */
     <T> T rightPopBlockAndLeftPushForList(RedisKeyBuild sourceKey, RedisKeyBuild destinationKey, Class<T> clazz, long timeout, TimeUnit unit);
 
     /**
-     * 获取 List 全部数据
+     * Get all data of List
      *
-     * @param redisKeyBuild 缓存key
-     * @param <T> 泛型
-     * @param clazz 类型
+     * @param redisKeyBuild cache key
+     * @param <T> Generic
+     * @param clazz type
      * @return
      */
     <T> List<T> getAllForList(RedisKeyBuild redisKeyBuild, Class<T> clazz);
 
     /**
-     * 获取列表指定范围内的元素
+     * Get elements within a specified range of a list
      *
-     * @param redisKeyBuild 缓存key
-     * @param start 开始位置, 0是开始位置
-     * @param end 结束位置, -1返回所有
-     * @param clazz 类型
-     * @return 结果
+     * @param redisKeyBuild cache key
+     * @param start starting position, 0 is the starting position
+     * @param end end position, -1 returns all
+     * @param clazz type
+     * @return result
      */
     <T> List<T> rangeForList(RedisKeyBuild redisKeyBuild, long start, long end, Class<T> clazz);
 
 
     /**
-     * 删除集合中值等于value得元素
+     * Delete the elements in the collection whose value is equal to value
      *
-     * @param redisKeyBuild 缓存key
+     * @param redisKeyBuild cache key
      * @param index
-     *            index=0, 删除所有值等于value的元素; index>0, 从头部开始删除第一个值等于value的元素;
-     *            index<0, 从尾部开始删除第一个值等于value的元素;
-     * @param value 对象
-     * @return 结果
+     *            index=0, delete all elements whose value is equal to value; index>0, delete the first element whose value is equal to value from the head;
+     *            index<0, delete the first element whose value is equal to value from the end;
+     * @param value object
+     * @return result
      */
     Long removeForList(RedisKeyBuild redisKeyBuild, long index, Object value);
 
 
     /**
-     * 裁剪list
+     * crop list
      *
      * @param redisKeyBuild
      * @param start
@@ -683,7 +683,7 @@ public interface RedisCache {
     void trimForList(RedisKeyBuild redisKeyBuild, long start, long end);
 
     /**
-     * 获取列表长度
+     * Get list length
      *
      * @param redisKeyBuild
      * @return
@@ -691,10 +691,10 @@ public interface RedisCache {
     Long lenForList(RedisKeyBuild redisKeyBuild);
 
 
-    /** --------------------set相关操作-------------------------- */
+    /**--------------------set related operations-------------------------- */
 
     /**
-     * set添加元素
+     * setadd element
      *
      * @param redisKeyBuild
      * @param value
@@ -703,7 +703,7 @@ public interface RedisCache {
     Long addForSet(RedisKeyBuild redisKeyBuild, Object value);
 
     /**
-     * set批量添加元素
+     * set adds elements in batches
      *
      * @param redisKeyBuild
      * @param values
@@ -712,7 +712,7 @@ public interface RedisCache {
     Long addForSet(RedisKeyBuild redisKeyBuild, List<?> values);
 
     /**
-     * set移除元素
+     * set removes elements
      *
      * @param redisKeyBuild
      * @param value
@@ -721,7 +721,7 @@ public interface RedisCache {
     Long removeForSet(RedisKeyBuild redisKeyBuild, Object value);
 
     /**
-     * set批量移除元素
+     * set removes elements in batches
      *
      * @param redisKeyBuild
      * @param values
@@ -730,7 +730,7 @@ public interface RedisCache {
     Long removeForSet(RedisKeyBuild redisKeyBuild, List<?> values);
 
     /**
-     * 移除并返回集合的一个随机元素
+     * Removes and returns a random element of the collection
      *
      * @param redisKeyBuild
      * @param clazz
@@ -739,7 +739,7 @@ public interface RedisCache {
     <T> T popForSet(RedisKeyBuild redisKeyBuild, Class<T> clazz);
 
     /**
-     * 将元素value从一个集合移到另一个集合
+     * Move element value from one collection to another
      *
      * @param redisKeyBuild
      * @param value
@@ -749,7 +749,7 @@ public interface RedisCache {
     boolean moveForSet(RedisKeyBuild redisKeyBuild, Object value, RedisKeyBuild destRedisKeyBuild);
 
     /**
-     * 获取集合的大小
+     * Get the size of the collection
      *
      * @param redisKeyBuild
      * @return
@@ -757,7 +757,7 @@ public interface RedisCache {
     Long sizeForSet(RedisKeyBuild redisKeyBuild);
 
     /**
-     * 判断集合是否包含value
+     * Determine whether the collection contains value
      *
      * @param redisKeyBuild
      * @param value
@@ -766,7 +766,7 @@ public interface RedisCache {
     Boolean isMemberForSet(RedisKeyBuild redisKeyBuild, Object value);
 
     /**
-     * 获取两个集合的交集
+     * Get the intersection of two sets
      *
      * @param redisKeyBuild
      * @param otherRedisKeyBuild
@@ -776,7 +776,7 @@ public interface RedisCache {
     <T> Set<T> intersectForSet(RedisKeyBuild redisKeyBuild, RedisKeyBuild otherRedisKeyBuild, Class<T> clazz);
 
     /**
-     * 获取key集合与多个集合的交集
+     * Get the intersection of key set and multiple sets
      *
      * @param redisKeyBuild
      * @param otherRedisKeyBuilds
@@ -786,7 +786,7 @@ public interface RedisCache {
     <T> Set<T> intersectForSet(RedisKeyBuild redisKeyBuild, Collection<RedisKeyBuild> otherRedisKeyBuilds, Class<T> clazz);
 
     /**
-     * key集合与otherKey集合的交集存储到destKey集合中
+     * The intersection of key set and otherKey set is stored in destKey set
      *
      * @param redisKeyBuild
      * @param otherRedisKeyBuild
@@ -796,7 +796,7 @@ public interface RedisCache {
     Long intersectAndStoreForSet(RedisKeyBuild redisKeyBuild, RedisKeyBuild otherRedisKeyBuild, RedisKeyBuild destRedisKeyBuild);
 
     /**
-     * key集合与多个集合的交集存储到destKey集合中
+     * The intersection of the key set and multiple sets is stored in the destKey set.
      *
      * @param redisKeyBuild
      * @param otherRedisKeyBuilds
@@ -806,7 +806,7 @@ public interface RedisCache {
     Long intersectAndStoreForSet(RedisKeyBuild redisKeyBuild, Collection<RedisKeyBuild> otherRedisKeyBuilds, RedisKeyBuild destRedisKeyBuild);
 
     /**
-     * 获取两个集合的并集
+     * Get the union of two sets
      *
      * @param redisKeyBuild
      * @param otherRedisKeyBuild
@@ -816,7 +816,7 @@ public interface RedisCache {
     <T> Set<T> unionForSet(RedisKeyBuild redisKeyBuild, RedisKeyBuild otherRedisKeyBuild, Class<T> clazz);
 
     /**
-     * 获取key集合与多个集合的并集
+     * Get the union of key set and multiple sets
      *
      * @param redisKeyBuild
      * @param otherRedisKeyBuilds
@@ -826,7 +826,7 @@ public interface RedisCache {
     <T> Set<T> unionForSet(RedisKeyBuild redisKeyBuild, Collection<RedisKeyBuild> otherRedisKeyBuilds, Class<T> clazz);
 
     /**
-     * key集合与otherKey集合的并集存储到destKey中
+     * The union of key set and otherKey set is stored in destKey.
      *
      * @param redisKeyBuild
      * @param otherRedisKeyBuild
@@ -836,7 +836,7 @@ public interface RedisCache {
     Long unionAndStoreForSet(RedisKeyBuild redisKeyBuild, RedisKeyBuild otherRedisKeyBuild, RedisKeyBuild destRedisKeyBuild);
 
     /**
-     * key集合与多个集合的并集存储到destKey中
+     * The union of the key set and multiple sets is stored in destKey
      *
      * @param redisKeyBuild
      * @param otherRedisKeyBuilds
@@ -846,7 +846,7 @@ public interface RedisCache {
     Long unionAndStoreForSet(RedisKeyBuild redisKeyBuild, Collection<RedisKeyBuild> otherRedisKeyBuilds, RedisKeyBuild destRedisKeyBuild);
 
     /**
-     * 获取两个集合的差集
+     * Get the difference between two sets
      *
      * @param redisKeyBuild
      * @param otherRedisKeyBuild
@@ -856,7 +856,7 @@ public interface RedisCache {
     <T> Set<T> differenceForSet(RedisKeyBuild redisKeyBuild, RedisKeyBuild otherRedisKeyBuild, Class<T> clazz);
 
     /**
-     * 获取key集合与多个集合的差集
+     * Get the difference between the key set and multiple sets
      *
      * @param redisKeyBuild
      * @param otherRedisKeyBuilds
@@ -866,7 +866,7 @@ public interface RedisCache {
     <T> Set<T> differenceForSet(RedisKeyBuild redisKeyBuild, Collection<RedisKeyBuild> otherRedisKeyBuilds, Class<T> clazz);
 
     /**
-     * key集合与otherKey集合的差集存储到destKey中
+     * The difference between the key set and the otherKey set is stored in destKey.
      *
      * @param redisKeyBuild
      * @param otherRedisKeyBuild
@@ -876,7 +876,7 @@ public interface RedisCache {
     Long differenceForSet(RedisKeyBuild redisKeyBuild, RedisKeyBuild otherRedisKeyBuild, RedisKeyBuild destRedisKeyBuild);
 
     /**
-     * key集合与多个集合的差集存储到destKey中
+     * The difference between the key set and multiple sets is stored in destKey.
      *
      * @param redisKeyBuild
      * @param otherRedisKeyBuilds
@@ -886,7 +886,7 @@ public interface RedisCache {
     Long differenceForSet(RedisKeyBuild redisKeyBuild, Collection<RedisKeyBuild> otherRedisKeyBuilds, RedisKeyBuild destRedisKeyBuild);
 
     /**
-     * 获取集合所有元素
+     * Get all elements of the collection
      *
      * @param redisKeyBuild
      * @param clazz
@@ -895,7 +895,7 @@ public interface RedisCache {
     <T> Set<T> membersForSet(RedisKeyBuild redisKeyBuild, Class<T> clazz);
 
     /**
-     * 随机获取集合中的一个元素
+     * Get a random element from the collection
      *
      * @param redisKeyBuild
      * @param clazz
@@ -904,7 +904,7 @@ public interface RedisCache {
     <T> T randomMemberForSet(RedisKeyBuild redisKeyBuild, Class<T> clazz);
 
     /**
-     * 随机获取集合中count个元素
+     * Randomly obtain count elements from the collection
      *
      * @param redisKeyBuild
      * @param count
@@ -914,7 +914,7 @@ public interface RedisCache {
     <T> List<T> randomMembersForSet(RedisKeyBuild redisKeyBuild, long count, Class<T> clazz);
 
     /**
-     * 随机获取集合中count个元素并且去除重复的
+     * Randomly obtain count elements from the collection and remove duplicates
      *
      * @param redisKeyBuild
      * @param count
@@ -924,7 +924,7 @@ public interface RedisCache {
     <T> Set<T> distinctRandomMembersForSet(RedisKeyBuild redisKeyBuild, long count, Class<T> clazz);
 
     /**
-     * 游标遍历
+     * Cursor traversal
      * @param redisKeyBuild
      * @param options
      * @return
@@ -933,146 +933,146 @@ public interface RedisCache {
 
 
 
-    /**------------------SortedSet相关操作--------------------------------*/
+    /**------------------SortedSet related operations--------------------------------*/
 
     /**
-     * 存储有序列表
+     * Store ordered list
      *
      * @param redisKeyBuild key
      * @param value value
-     * @param score 评分值
+     * @param score score value
      * @return
      */
     void addForSortedSet(RedisKeyBuild redisKeyBuild, Object value, Double score);
 
     /**
-     * 存储有序列表并设置超时时间(秒)
+     * Store an ordered list and set the timeout (seconds)
      *
      * @param redisKeyBuild key
      * @param value value
-     * @param score 评分值
-     * @param ttl 超时时间
+     * @param score score value
+     * @param ttl timeout
      * @return
      */
     void addForSortedSet(RedisKeyBuild redisKeyBuild, Object value, Double score, long ttl);
 
     /**
-     * 存储有序列表并设置超时时间
+     * Store an ordered list and set a timeout
      *
      * @param redisKeyBuild key
      * @param value value
-     * @param score 评分值
-     * @param ttl 超时时间
-     * @param timeUnit 时间单位
+     * @param score score value
+     * @param ttl timeout
+     * @param timeUnit time unit
      * @return
      */
     void addForSortedSet(RedisKeyBuild redisKeyBuild, Object value, Double score, long ttl, TimeUnit timeUnit);
 
     /**
-     * 存储有序列表
+     * Store ordered list
      *
      * @param redisKeyBuild
-     * @param map map中的key如果是自定义对象类型需要重新equals和hashcode方法
+     * @param map If the key in the map is a custom object type, you need to re-equals and hashcode methods
      * @return
      */
     Long addForSortedSet(RedisKeyBuild redisKeyBuild, Map<?, Double> map);
 
     /**
-     * 存储有序列表并设置超时时间(秒)
+     * Store an ordered list and set the timeout (seconds)
      *
      * @param redisKeyBuild
-     * @param map map中的key如果是自定义对象类型需要重新equals和hashcode方法
+     * @param map If the key in the map is a custom object type, you need to re-equals and hashcode methods
      * @param ttl
      * @return
      */
     Long addForSortedSet(RedisKeyBuild redisKeyBuild, Map<?, Double> map, long ttl);
 
     /**
-     * 存储有序列表并设置超时时间 自定义单位
+     * Store ordered lists and set timeouts in custom units
      *
      * @param redisKeyBuild      key
-     * @param map      map中的key如果是自定义对象类型需要重新equals和hashcode方法
-     * @param ttl      过期时间
-     * @param timeUnit 过期时间单位
-     * @return 影响的条目
+     * @param map If the key in the map is a custom object type, you need to re-equals and hashcode methods
+     * @param ttl expiration time
+     * @param timeUnit Expiration time unit
+     * @return the affected items
      */
     Long addForSortedSet(RedisKeyBuild redisKeyBuild, Map<?, Double> map, long ttl, TimeUnit timeUnit);
 
     /**
-     * 获取有序列表中范围条目,并转为指定类型
+     * Get the range entries in the ordered list and convert them to the specified type
      *
      * @param redisKeyBuild   key
-     * @param start 开始下标 从0开始
-     * @param end   结束下标 包含此条
-     * @param clazz 序列化类型
-     * @param <T>   泛型参数
-     * @return 结果set集合
+     * @param start start index starts from 0
+     * @param end end subscript contains this item
+     * @param clazz serialization type
+     * @param <T> generic parameter
+     * @return result set collection
      */
     <T> Set<T> getRangeForSortedSet(RedisKeyBuild redisKeyBuild, long start, long end, Class<T> clazz);
 
     /**
-     * 反转获取有序列表中范围条目,并转为指定类型
+     * Reverse to obtain the range entries in the ordered list and convert them to the specified type
      *
      * @param redisKeyBuild   key
-     * @param start 开始下标 从0开始
-     * @param end   结束下标 包含此条
-     * @param clazz 序列化类型
-     * @param <T>   泛型参数
-     * @return 结果set集合
+     * @param start start index starts from 0
+     * @param end end subscript contains this item
+     * @param clazz serialization type
+     * @param <T> generic parameter
+     * @return result set collection
      */
     <T> Set<T> getReverseRangeForSortedSet(RedisKeyBuild redisKeyBuild, long start, long end, Class<T> clazz);
 
     /**
-     * 删除zSet条目
+     * Delete zSet entry
      *
      * @param redisKeyBuild   key
-     * @param value 数据
-     * @return 影响条目
+     * @param value data
+     * @return affects the entry
      */
     Long delForSortedSet(RedisKeyBuild redisKeyBuild, Object value);
 
     /**
-     * 批量删除zSet条目
+     * Delete zSet entries in batches
      *
      * @param redisKeyBuild             key
-     * @param valueCollection 数据
-     * @return 影响条目
+     * @param valueCollection data
+     * @return affects the entry
      */
     Long delForSortedSet(RedisKeyBuild redisKeyBuild, Collection<?> valueCollection);
 
     /**
-     * 删除范围元素
+     * Remove range elements
      *
      * @param redisKeyBuild   key
-     * @param start 开始range
-     * @param end   结束range
-     * @return 影响条目
+     * @param start start range
+     * @param end end range
+     * @return affects the entry
      */
     Long delRangeForSortedSet(RedisKeyBuild redisKeyBuild, long start, long end);
 
 
     /**
-     * 增加元素的score值，并返回增加后的值
+     * Increase the element's score value and return the increased value
      *
      * @param redisKeyBuild key
-     * @param value 对象
-     * @param delta 值
-     * @return 结果
+     * @param value object
+     * @param delta value
+     * @return result
      */
     Double incrementScoreForSortedSet(RedisKeyBuild redisKeyBuild, Object value, double delta);
 
 
 
     /**
-     * 计算zSet总条数
+     * Calculate the total number of zSet items
      *
      * @param redisKeyBuild key
-     * @return 总条数  不存在则空
+     * @return The total number of items. If it does not exist, it will be empty.
      */
     Long sizeForSortedSet(RedisKeyBuild redisKeyBuild);
 
     /**
-     * 返回元素在集合的排名,有序集合是按照元素的score值由小到大排列
+     * Returns the ranking of the elements in the set. The ordered set is arranged from small to large according to the score value of the elements.
      *
      * @param redisKeyBuild   key
      * @param value value
@@ -1081,7 +1081,7 @@ public interface RedisCache {
     Long rankForSortedSet(RedisKeyBuild redisKeyBuild, Object value);
 
     /**
-     * 返回元素在集合的排名,按元素的score值由大到小排列
+     * Returns the ranking of the elements in the collection, arranged from large to small according to the score value of the elements.
      *
      * @param redisKeyBuild
      * @param value
@@ -1091,7 +1091,7 @@ public interface RedisCache {
 
 
     /**
-     * 获取集合元素, 并且把score值也获取
+     * Get the collection elements and get the score value as well
      *
      * @param redisKeyBuild
      * @param start
@@ -1103,26 +1103,26 @@ public interface RedisCache {
 
 
     /**
-     * 根据Score值查询集合元素
+     * Query collection elements based on Score value
      *
      * @param redisKeyBuild
      * @param min
-     *            最小值
+     *            minimum value
      * @param max
-     *            最大值
+     *            maximum value
      * @param clazz
      * @return
      */
     <T> Set<T> rangeByScoreForSortedSet(RedisKeyBuild redisKeyBuild, double min, double max, Class<T> clazz);
 
     /**
-     * 根据Score值查询集合元素(含有score值), 从小到大排序
+     * Query collection elements (containing score value) based on Score value, sort from small to large
      *
      * @param redisKeyBuild
      * @param min
-     *            最小值
+     *            minimum value
      * @param max
-     *            最大值
+     *            maximum value
      * @param clazz
      * @return
      */
@@ -1130,13 +1130,13 @@ public interface RedisCache {
 
 
     /**
-     * 根据Score值查询集合元素, 从小到大排序
+     * Query collection elements based on Score value, sort from small to large
      *
      * @param redisKeyBuild
      * @param min
-     *            最小值
+     *            minimum value
      * @param max
-     *            最大值
+     *            maximum value
      * @param start
      * @param end
      * @param clazz
@@ -1146,7 +1146,7 @@ public interface RedisCache {
                                                                             long start, long end, Class<T> clazz);
 
     /**
-     * 获取集合的元素, 从大到小排序, 并返回score值
+     * Get the elements of the collection, sort them from large to small, and return the score value
      *
      * @param redisKeyBuild
      * @param start
@@ -1157,7 +1157,7 @@ public interface RedisCache {
     <T> Set<ZSetOperations.TypedTuple<T>> reverseRangeWithScoreForSortedSet(RedisKeyBuild redisKeyBuild, long start, long end, Class<T> clazz);
 
     /**
-     * 根据Score值查询集合元素, 从大到小排序
+     * Query collection elements based on Score value, sort from large to small
      *
      * @param redisKeyBuild
      * @param min
@@ -1168,7 +1168,7 @@ public interface RedisCache {
     <T> Set<T> reverseRangeByScoreForSortedSet(RedisKeyBuild redisKeyBuild, double min, double max, Class<T> clazz);
 
     /**
-     * 根据Score值查询集合元素, 从大到小排序, 并返回score值
+     * Query the collection elements according to the Score value, sort them from large to small, and return the score value
      *
      * @param redisKeyBuild
      * @param min
@@ -1179,7 +1179,7 @@ public interface RedisCache {
     <T> Set<ZSetOperations.TypedTuple<T>> reverseRangeByScoreWithScoreForSortedSet(RedisKeyBuild redisKeyBuild, double min, double max, Class<T> clazz);
 
     /**
-     * 根据Score值查询集合元素, 从大到小排序
+     * Query collection elements based on Score value, sort from large to small
      *
      * @param redisKeyBuild
      * @param min
@@ -1192,7 +1192,7 @@ public interface RedisCache {
     <T> Set<T> reverseRangeByScoreForSortedSet(RedisKeyBuild redisKeyBuild, double min, double max, long start, long end, Class<T> clazz);
 
     /**
-     * 根据score值获取集合元素数量
+     * Get the number of collection elements based on the score value
      *
      * @param redisKeyBuild
      * @param min
@@ -1202,7 +1202,7 @@ public interface RedisCache {
     Long countForSortedSet(RedisKeyBuild redisKeyBuild, double min, double max);
 
     /**
-     * 获取集合大小
+     * Get collection size
      *
      * @param redisKeyBuild
      * @return
@@ -1210,7 +1210,7 @@ public interface RedisCache {
     Long zCardForSortedSet(RedisKeyBuild redisKeyBuild);
 
     /**
-     * 获取集合中value元素的score值
+     * Get the score value of the value element in the collection
      *
      * @param redisKeyBuild
      * @param value
@@ -1219,7 +1219,7 @@ public interface RedisCache {
     Double scoreByValueForSortedSet(RedisKeyBuild redisKeyBuild, Object value);
 
     /**
-     * 移除指定索引位置的成员
+     * Remove the member at the specified index position
      *
      * @param redisKeyBuild
      * @param start
@@ -1229,7 +1229,7 @@ public interface RedisCache {
     Long removeRangeForSortedSet(RedisKeyBuild redisKeyBuild, long start, long end);
 
     /**
-     * 根据指定的score值的范围来移除成员
+     * Remove members based on a specified range of score values
      *
      * @param redisKeyBuild
      * @param min
@@ -1239,7 +1239,7 @@ public interface RedisCache {
     Long removeRangeByScoreForSortedSet(RedisKeyBuild redisKeyBuild, double min, double max);
 
     /**
-     * 获取key和otherKey的并集并存储在destKey中
+     * Get the union of key and otherKey and store it in destKey
      *
      * @param redisKeyBuild
      * @param otherRedisKeyBuild
@@ -1249,7 +1249,7 @@ public interface RedisCache {
     Long unionAndStoreForSortedSet(RedisKeyBuild redisKeyBuild, RedisKeyBuild otherRedisKeyBuild, RedisKeyBuild destRedisKeyBuild);
 
     /**
-     * 获取key和otherKeys的并集并存储在destKey中
+     * Get the union of key and otherKeys and store it in destKey
      * @param redisKeyBuild
      * @param otherRedisKeyBuilds
      * @param destRedisKeyBuild
@@ -1258,7 +1258,7 @@ public interface RedisCache {
     Long unionAndStoreForSortedSet(RedisKeyBuild redisKeyBuild, Collection<RedisKeyBuild> otherRedisKeyBuilds, RedisKeyBuild destRedisKeyBuild);
 
     /**
-     * 获取key和otherKey的交集并存储在destKey中
+     * Get the intersection of key and otherKey and store it in destKey
      *
      * @param redisKeyBuild
      * @param otherRedisKeyBuild
@@ -1268,7 +1268,7 @@ public interface RedisCache {
     Long intersectAndStoreForSortedSet(RedisKeyBuild redisKeyBuild, RedisKeyBuild otherRedisKeyBuild, RedisKeyBuild destRedisKeyBuild);
 
     /**
-     * 获取key和otherKeys的交集并存储在destKey中
+     * Get the intersection of key and otherKeys and store it in destKey
      *
      * @param redisKeyBuild
      * @param otherRedisKeyBuilds
@@ -1278,7 +1278,7 @@ public interface RedisCache {
     Long intersectAndStoreForSortedSet(RedisKeyBuild redisKeyBuild, Collection<RedisKeyBuild> otherRedisKeyBuilds, RedisKeyBuild destRedisKeyBuild);
 
     /**
-     * 游标遍历
+     * Cursor traversal
      * @param redisKeyBuild
      * @param options
      * @return
@@ -1286,14 +1286,14 @@ public interface RedisCache {
     Cursor<ZSetOperations.TypedTuple<String>> scanForSortedSet(RedisKeyBuild redisKeyBuild, ScanOptions options);
 
     /**
-     * 不对外使用
+     * Not for external use
      * @param redisKeyBuild
      * @param genericReturnType
      * @return
      */
     <T> T getByType(RedisKeyBuild redisKeyBuild, Type genericReturnType);
     /**
-     * 获取实例
+     * Get instance
      *
      * @return
      */

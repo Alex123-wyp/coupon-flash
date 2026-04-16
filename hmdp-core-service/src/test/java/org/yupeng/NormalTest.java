@@ -27,10 +27,10 @@ public class NormalTest {
         int count2 = 0;
         while (true) {
             if(i >>> 1 << 1 == i){
-                // 未签到，结束
+                // Not signed in, end
                 break;
             }else{
-                // 说明签到了
+                // It means you have signed in
                 count2++;
             }
 

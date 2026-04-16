@@ -14,7 +14,7 @@ import {
 const router = useRouter()
 const userStore = useUserStore()
 
-// 数据定义
+// Data definitions
 const user = ref({})
 const info = ref({})
 const blogs = ref([])
@@ -26,21 +26,21 @@ const params = reactive({
 })
 const isReachBottom = ref(false)
 
-// 生命周期钩子
+// Lifecycle hooks
 onMounted(() => {
   queryUser()
 })
 
-// 方法定义
+// Method definitions
 const queryUser = () => {
-  // 获取用户信息
+  // Get user information
   getUser()
     .then(({ data }) => {
-      // 保存用户
+      // save user
       user.value = data
-      // 查询用户详情
+      // Query user details
       queryUserInfo()
-      // 查询用户笔记
+      // Query user notes
       queryBlogs()
     })
     .catch(() => {
@@ -61,16 +61,16 @@ const queryUserInfo = () => {
       if (!data) {
         return
       }
-      // 保存用户详情
+      // Save user details
       info.value = data
-      // 保存到本地
+      // Save locally
       userStore.setUserInfo(data)
       // sessionStorage.setItem('userInfo', JSON.stringify(data))
     })
     .catch(() => {
       ElMessage.error('获取用户详情失败')
     })
-  // 从本地获取用户详情
+  // Get user details locally
   // const userInfo = sessionStorage.getItem('userInfo')
   // if (userInfo) {
   //   info.value = JSON.parse(userInfo)
@@ -84,7 +84,7 @@ const queryBlogsOfFollow = (clear) => {
   }
   const { offset: os } = params
 
-  // 查询关注的用户的博客
+  // Query the blogs of followed users
   indexQueryHotBlogsScroll(os)
     .then(({ data }) => {
       if (!data) {
@@ -109,7 +109,7 @@ const toEdit = () => {
 }
 
 const logout = () => {
-  // 退出登录
+  // Log out
   userStore.resetUserInfo()
   router.push('/login')
 }
@@ -148,14 +148,14 @@ const onScroll = (e) => {
   let offsetHeight = e.target.offsetHeight
   let scrollHeight = e.target.scrollHeight
   if (scrollTop === 0) {
-    // 到顶部了，查询一次
+    // Reached the top, query once
     queryBlogsOfFollow(true)
   } else if (
     scrollTop + offsetHeight + 1 > scrollHeight &&
     !isReachBottom.value
   ) {
     isReachBottom.value = true
-    // 再次查询下一页数据
+    // Query the next page of data again
     queryBlogsOfFollow()
   } else {
     isReachBottom.value = false
@@ -266,7 +266,7 @@ const onScroll = (e) => {
     </div>
 
     <div class="foot-bar">
-      <!-- 底部导航栏 -->
+      <!-- Bottom navigation bar -->
     </div>
   </div>
 </template>

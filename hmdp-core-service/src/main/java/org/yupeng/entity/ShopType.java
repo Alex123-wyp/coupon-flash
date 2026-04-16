@@ -11,8 +11,8 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
- * @program: 黑马点评-plus升级版实战项目。添加 yupeng 微信，添加时备注 点评 来获取项目的完整资料
- * @description: 商铺类型
+ * @program: High-Concurrency Voucher Seckill Platform (HMDP Plus). Email: wyupeng072@gmail.com
+ * @description: Shop type
  * @author: yupeng
  **/
 @Data
@@ -24,34 +24,34 @@ public class ShopType implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * 主键
+     * primary key
      */
     @TableId(value = "id")
     private Long id;
 
     /**
-     * 类型名称
+     * Type name
      */
     private String name;
 
     /**
-     * 图标
+     * icon
      */
     private String icon;
 
     /**
-     * 顺序
+     * order
      */
     private Integer sort;
 
     /**
-     * 创建时间
+     * create time
      */
     @JsonIgnore
     private LocalDateTime createTime;
 
     /**
-     * 更新时间
+     * update time
      */
     @JsonIgnore
     private LocalDateTime updateTime;

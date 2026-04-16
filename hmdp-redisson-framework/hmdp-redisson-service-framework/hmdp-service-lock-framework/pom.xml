@@ -13,7 +13,7 @@
     <artifactId>hmdp-service-lock-framework</artifactId>
 
     <name>hmdp-service-lock-framework</name>
-    <description>分布式锁工具</description>
+    <description>Distributed lock tools</description>
 
     <dependencies>
         <dependency>

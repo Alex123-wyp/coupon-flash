@@ -31,14 +31,14 @@ import java.util.TimeZone;
 
 
 /**
- * @program: 黑马点评-plus升级版实战项目。添加 yupeng 微信，添加时备注 点评 来获取项目的完整资料
- * @description: 定制对象字段
+ * @program: High-Concurrency Voucher Seckill Platform (HMDP Plus). Email: wyupeng072@gmail.com
+ * @description: Custom object field serializer
  * @author: yupeng
  **/
 public class JacksonCustom implements Jackson2ObjectMapperBuilderCustomizer, Ordered {
 
     /**
-     * 默认日期时间格式 
+     * Default date time format 
      * */
     private final String dateTimeFormat = "yyyy-MM-dd HH:mm:ss";
     

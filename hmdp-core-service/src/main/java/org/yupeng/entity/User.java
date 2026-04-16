@@ -10,8 +10,8 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
- * @program: 黑马点评-plus升级版实战项目。添加 yupeng 微信，添加时备注 点评 来获取项目的完整资料
- * @description: 用户
+ * @program: High-Concurrency Voucher Seckill Platform (HMDP Plus). Email: wyupeng072@gmail.com
+ * @description: User
  * @author: yupeng
  **/
 @Data
@@ -23,38 +23,38 @@ public class User implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * 主键
+     * primary key
      */
     @TableId(value = "id")
     private Long id;
 
     /**
-     * 手机号码
+     * phone number
      */
     private String phone;
 
     /**
-     * 密码，加密存储
+     * Password, encrypted storage
      */
     private String password;
 
     /**
-     * 昵称，默认是随机字符
+     * Nickname, default is random characters
      */
     private String nickName;
 
     /**
-     * 用户头像
+     * User avatar
      */
     private String icon = "";
 
     /**
-     * 创建时间
+     * create time
      */
     private LocalDateTime createTime;
 
     /**
-     * 更新时间
+     * update time
      */
     private LocalDateTime updateTime;
 

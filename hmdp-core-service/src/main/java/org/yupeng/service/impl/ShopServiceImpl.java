@@ -43,8 +43,8 @@ import static org.yupeng.utils.RedisConstants.LOCK_SHOP_KEY;
 import static org.yupeng.utils.RedisConstants.SHOP_GEO_KEY;
 
 /**
- * @program: 黑马点评-plus升级版实战项目。添加 yupeng 微信，添加时备注 点评 来获取项目的完整资料
- * @description: 商铺 接口实现
+ * @program: High-Concurrency Voucher Seckill Platform (HMDP Plus). Email: wyupeng072@gmail.com
+ * @description: Shop interface implementation
  * @author: yupeng
  **/
 @Slf4j
@@ -73,12 +73,12 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements IS
     
     @Override
     public Result<Long> saveShop(final Shop shop) {
-        // 写入数据库
+        // Write to database
         shop.setId(snowflakeIdGenerator.nextId());
         save(shop);
-        // 写入布隆过滤器（商铺业务）
+        // Write Bloom filter (store business)
         bloomFilterHandlerFactory.get(BLOOM_FILTER_HANDLER_SHOP).add(String.valueOf(shop.getId()));
-        // 返回店铺id
+        // Return store id
         return Result.ok(shop.getId());
     }
     
@@ -86,19 +86,19 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements IS
     public Result queryById(Long id) {
         //Shop shop = queryByIdV1(id);
 
-        // 互斥锁解决缓存击穿
+        // Mutex lock solves cache breakdown
         //shop = queryByIdV2(id);
 
-        // 逻辑过期解决缓存击穿
+        // Logical expiration solves cache breakdown
         //shop = queryByIdV3(id);
         
-        // 🚀完美的方案！使用双重检测锁和空值配置，解决缓存击穿和缓存穿透
+        // 🚀The perfect solution! Use double detection locks and null value configuration to solve cache penetration and cache penetration
         Shop shop = queryByIdV4(id);
         
         if (shop == null) {
             return Result.fail("店铺不存在！");
         }
-        // 7.返回
+        // 7.Return
         return Result.ok(shop);
     }
     
@@ -167,33 +167,33 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements IS
         if (id == null) {
             return Result.fail("店铺id不能为空");
         }
-        // 1.更新数据库
+        // 1. Update the database
         updateById(shop);
-        // 2.删除缓存
+        // 2. Delete cache
         stringRedisTemplate.delete(CACHE_SHOP_KEY + id);
         return Result.ok();
     }
 
     @Override
     public Result queryShopByType(Integer typeId, Integer current, Double x, Double y) {
-        // 1.判断是否需要根据坐标查询
-        //TODO 先改成 x 和 y 都是空
+        // 1. Determine whether it is necessary to query based on coordinates
+        //TODO is first changed so that both x and y are empty.
         x = null;
         y = null;
         if (x == null || y == null) {
-            // 不需要坐标查询，按数据库查询
+            // No need for coordinate query, query according to database
             Page<Shop> page = query()
                     .eq("type_id", typeId)
                     .page(new Page<>(current, SystemConstants.DEFAULT_PAGE_SIZE));
-            // 返回数据
+            // Return data
             return Result.ok(page.getRecords());
         }
 
-        // 2.计算分页参数
+        // 2. Calculate paging parameters
         int from = (current - 1) * SystemConstants.DEFAULT_PAGE_SIZE;
         int end = current * SystemConstants.DEFAULT_PAGE_SIZE;
 
-        // 3.查询redis、按照距离排序、分页。结果：shopId、distance
+        // 3. Query redis, sort by distance, and paging. Result: shopId,distance
         String key = SHOP_GEO_KEY + typeId;
         GeoResults<RedisGeoCommands.GeoLocation<String>> results = stringRedisTemplate.opsForGeo() // GEOSEARCH key BYLONLAT x y BYRADIUS 10 WITHDISTANCE
                 .search(
@@ -202,33 +202,33 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements IS
                         new Distance(5000),
                         RedisGeoCommands.GeoSearchCommandArgs.newGeoSearchArgs().includeDistance().limit(end)
                 );
-        // 4.解析出id
+        // 4. Parse out the id
         if (results == null) {
             return Result.ok(Collections.emptyList());
         }
         List<GeoResult<RedisGeoCommands.GeoLocation<String>>> list = results.getContent();
         if (list.size() <= from) {
-            // 没有下一页了，结束
+            // There is no next page, the end
             return Result.ok(Collections.emptyList());
         }
-        // 4.1.截取 from ~ end的部分
+        // 4.1. Intercept the part from ~ end
         List<Long> ids = new ArrayList<>(list.size());
         Map<String, Distance> distanceMap = new HashMap<>(list.size());
         list.stream().skip(from).forEach(result -> {
-            // 4.2.获取店铺id
+            // 4.2. Get store id
             String shopIdStr = result.getContent().getName();
             ids.add(Long.valueOf(shopIdStr));
-            // 4.3.获取距离
+            // 4.3. Get distance
             Distance distance = result.getDistance();
             distanceMap.put(shopIdStr, distance);
         });
-        // 5.根据id查询Shop
+        // 5. Query Shop based on ID
         String idStr = StrUtil.join(",", ids);
         List<Shop> shops = query().in("id", ids).last("ORDER BY FIELD(id," + idStr + ")").list();
         for (Shop shop : shops) {
             shop.setDistance(distanceMap.get(shop.getId().toString()).getValue());
         }
-        // 6.返回
+        // 6.Return
         return Result.ok(shops);
     }
 }

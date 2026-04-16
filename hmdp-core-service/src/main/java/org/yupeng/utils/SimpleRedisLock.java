@@ -9,8 +9,8 @@ import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
 /**
- * @program: 黑马点评-plus升级版实战项目。添加 yupeng 微信，添加时备注 点评 来获取项目的完整资料
- * @description: 锁实现-黑马点评普通版本使用
+ * @program: High-Concurrency Voucher Seckill Platform (HMDP Plus). Email: wyupeng072@gmail.com
+ * @description: Lock Implementation-Dark Horse Comments Normal Version Use
  * @author: yupeng
  **/
 public class SimpleRedisLock implements ILock {
@@ -34,9 +34,9 @@ public class SimpleRedisLock implements ILock {
 
     @Override
     public boolean tryLock(long timeoutSec) {
-        // 获取线程标示
+        // Get thread identifier
         String threadId = ID_PREFIX + Thread.currentThread().getId();
-        // 获取锁
+        // Get lock
         Boolean success = stringRedisTemplate.opsForValue()
                 .setIfAbsent(KEY_PREFIX + name, threadId, timeoutSec, TimeUnit.SECONDS);
         return Boolean.TRUE.equals(success);
@@ -44,7 +44,7 @@ public class SimpleRedisLock implements ILock {
 
     @Override
     public void unlock() {
-        // 调用lua脚本
+        // Call lua script
         stringRedisTemplate.execute(
                 UNLOCK_SCRIPT,
                 Collections.singletonList(KEY_PREFIX + name),
@@ -52,13 +52,13 @@ public class SimpleRedisLock implements ILock {
     }
     /*@Override
     public void unlock() {
-        // 获取线程标示
+        // Get thread identifier
         String threadId = ID_PREFIX + Thread.currentThread().getId();
-        // 获取锁中的标示
+        // Get the token in the lock
         String id = stringRedisTemplate.opsForValue().get(KEY_PREFIX + name);
-        // 判断标示是否一致
+        // Determine whether the markings are consistent
         if(threadId.equals(id)) {
-            // 释放锁
+            // release lock
             stringRedisTemplate.delete(KEY_PREFIX + name);
         }
     }*/

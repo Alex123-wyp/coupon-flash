@@ -38,7 +38,7 @@ const login = async () => {
   }
 }
 
-// 添加表单校验规则
+// Add form validation rules
 const rules = {
   phone: [
     { required: true, message: '请输入手机号', trigger: 'blur' },
@@ -71,7 +71,7 @@ const rules = {
       <div class="header-title">密码登录&nbsp;&nbsp;&nbsp;</div>
     </div>
     <div class="content">
-      <!-- 替换为 el-form -->
+      <!-- Replace with el-form -->
       <el-form
         :model="form"
         :rules="rules"

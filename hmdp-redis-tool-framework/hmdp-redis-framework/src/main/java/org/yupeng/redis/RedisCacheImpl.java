@@ -24,8 +24,8 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
- * @program: 黑马点评-plus升级版实战项目。添加 yupeng 微信，添加时备注 点评 来获取项目的完整资料
- * @description: redis方法实现
+ * @program: High-Concurrency Voucher Seckill Platform (HMDP Plus). Email: wyupeng072@gmail.com
+ * @description: Redis implementation
  * @author: yupeng
  **/
 @AllArgsConstructor
@@ -37,7 +37,7 @@ public class RedisCacheImpl implements RedisCache {
     public <T> T get(RedisKeyBuild redisKeyBuild, Class<T> clazz) {
         CacheUtil.checkNotBlank(redisKeyBuild);
         String key = redisKeyBuild.getRelKey();
-        // 如果取String类型 则直接取出返回
+        // If the String type is taken, it is taken out and returned directly.
         String cachedValue = redisTemplate.opsForValue().get(key);
         if (String.class.isAssignableFrom(clazz)) {
             return (T) cachedValue;
@@ -271,7 +271,7 @@ public class RedisCacheImpl implements RedisCache {
     @Override
     public void putHash(RedisKeyBuild redisKeyBuild, String hashKey, Object value, long ttl, TimeUnit timeUnit) {
         putHash(redisKeyBuild, hashKey, value);
-        // 设置过期时间
+        // Set expiration time
         expire(redisKeyBuild, ttl, timeUnit);
     }
 
@@ -313,7 +313,7 @@ public class RedisCacheImpl implements RedisCache {
         CacheUtil.checkNotBlank(hashKey);
         String key = redisKeyBuild.getRelKey();
         Object o = redisTemplate.opsForHash().get(key, hashKey);
-        // 如果取String类型 则直接取出返回
+        // If the String type is taken, it is taken out and returned directly.
         if (String.class.isAssignableFrom(clazz)) {
             return (T) o;
         }

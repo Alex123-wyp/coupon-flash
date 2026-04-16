@@ -12,23 +12,23 @@ const route = useRoute()
 const userStore = useUserStore()
 const rate = ref(4.5)
 
-// 响应式数据
+// Reactive data
 const shop = ref({})
 const vouchers = ref([])
 const seckillInProgress = ref(false)
-// 已购状态映射：voucherId -> boolean
+// Purchased status map: voucherId -> boolean
 const purchasedMap = ref({})
-// 订阅状态映射：voucherId -> 0|1|2 （0 未订阅/已取消；1 已订阅；2 自动发券成功）
+// Subscription status map: voucherId -> 0|1|2 (0 unsubscribed/cancelled, 1 subscribed, 2 auto-issued successfully)
 const subscribeStatusMap = ref({})
 
 const isPurchased = (voucherId) => {
   return !!purchasedMap.value[String(voucherId)]
 }
 
-// 查询所有优惠券的已购状态（登录用户）
+// Query purchased status for all vouchers (logged-in user)
 const refreshPurchaseStatus = async () => {
   try {
-    // 未登录则不检查，避免触发 401 重定向
+    // Skip checks when not logged in to avoid triggering a 401 redirect
     if (!userStore.token) return
     const list = vouchers.value || []
     await Promise.all(
@@ -38,16 +38,16 @@ const refreshPurchaseStatus = async () => {
           const res = await getVoucherOrderIdByVoucherId(String(v.id))
           purchasedMap.value[String(v.id)] = !!res?.data
         } catch (e) {
-          // 忽略单项错误，保持既有状态
+          // Ignore individual item errors and preserve the current state
         }
       })
     )
   } catch (e) {
-    // 忽略总体错误
+    // Ignore aggregate errors
   }
 }
 
-// 批量查询订阅状态（登录用户）
+// Batch query subscription statuses (logged-in user)
 const refreshSubscribeStatusBatch = async () => {
   try {
     if (!userStore.token) return
@@ -61,14 +61,14 @@ const refreshSubscribeStatusBatch = async () => {
       const vid = String(item.voucherId)
       const st = Number(item.subscribeStatus)
       map[vid] = Number.isFinite(st) ? st : 0
-      // 若状态为自动发券成功，则本地也标记为已购（双保险）
+      // If auto-issue succeeds, also mark the voucher as purchased locally as a safeguard
       if (st === 2) {
         purchasedMap.value[vid] = true
       }
     }
     subscribeStatusMap.value = { ...subscribeStatusMap.value, ...map }
   } catch (e) {
-    // 静默失败
+    // Fail silently
   }
 }
 
@@ -90,7 +90,7 @@ const pollSeckillOrder = async (orderId, { delay = 800, timeoutMs = 11000 } = {}
         return data
       }
     } catch (e) {
-      // 短暂异常，继续重试
+      // Brief exception, continue to try again
     }
     const remaining = end - Date.now()
     await sleep(Math.min(delay, Math.max(0, remaining)))
@@ -99,7 +99,7 @@ const pollSeckillOrder = async (orderId, { delay = 800, timeoutMs = 11000 } = {}
   return null
 }
 
-// 获取店铺详情
+// Get shop details
 const queryShopById = async (shopId) => {
   try {
     const { data } = await getShopById(shopId)
@@ -112,14 +112,14 @@ const queryShopById = async (shopId) => {
   }
 }
 
-// 获取优惠券列表（保持后端字段类型为字符串）
+// Get the voucher list while preserving backend field types as strings
 const queryVoucher = async (shopId) => {
   try {
     const { data } = await getVoucherList(shopId)
     vouchers.value = data || []
-    // 加载后查询每张券的已购状态
+    // Query the purchased status of each voucher after loading
     await refreshPurchaseStatus()
-    // 批量查询订阅状态
+    // Batch query subscription statuses
     await refreshSubscribeStatusBatch()
   } catch (error) {
     console.error(error)
@@ -127,7 +127,7 @@ const queryVoucher = async (shopId) => {
   }
 }
 
-// 格式化时间
+// Format time
 const formatTime = (v) => {
   const b = new Date(v.beginTime)
   const e = new Date(v.endTime)
@@ -147,29 +147,29 @@ const formatTime = (v) => {
   )
 }
 
-// 格式化分钟
+// Format minutes
 const formatMinutes = (m) => {
   if (m < 10) m = '0' + m
   return m
 }
 
-// 格式化价格，兼容字符串或数字
+// Format the price and support both strings and numbers
 const formatPrice = (price) => {
   const n = Number(price)
   return Number.isFinite(n) ? n.toFixed(2) : '0.00'
 }
 
-// 判断是否未开始
+// Check whether it has not started
 const isNotBegin = (v) => {
   return new Date(v.beginTime).getTime() > new Date().getTime()
 }
 
-// 判断是否已结束
+// Check whether it has ended
 const isEnd = (v) => {
   return new Date(v.endTime).getTime() < new Date().getTime()
 }
 
-// 秒杀抢购（先获取令牌，再携带令牌下单）
+// Seckill purchase flow (get the token first, then place the order with the token)
 const seckill = async (v) => {
   if (!userStore.token) {
     ElMessage.error('请先登录')
@@ -194,7 +194,7 @@ const seckill = async (v) => {
     return
   }
 
-  // 已购则禁止重复抢购
+  // Prevent duplicate purchases after a successful purchase
   if (isPurchased(v.id)) {
     ElMessage.error('您已购买该券，不能重复购买')
     return
@@ -203,7 +203,7 @@ const seckill = async (v) => {
   let loading = null
   try {
     if (seckillInProgress.value) {
-      // 已在确认中，覆盖层仍在，直接返回以避免重复点击
+      // Confirmation is already in progress and the overlay is still shown, so return early to avoid duplicate clicks
       return
     }
     seckillInProgress.value = true
@@ -214,19 +214,19 @@ const seckill = async (v) => {
       background: 'rgba(0,0,0,0.35)',
       customClass: 'seckill-overlay'
     })
-    // 1）先获取访问令牌
+    // 1) Acquire the access token first
     const tokenRes = await issueSeckillAccessToken(v.id)
     if (!tokenRes?.success || !tokenRes?.data) {
       ElMessage.error(tokenRes?.errorMsg || '令牌获取失败，请稍后重试')
       return
     }
     const accessToken = String(tokenRes.data)
-    // 2）携带令牌发起下单
+    // 2) Submit the order with the token
     const res = await seckillVoucher(v.id, accessToken)
-    // 仅在秒杀接口返回成功时才进行轮询确认订单
+    // Poll for order confirmation only when the seckill API call succeeds
     if (res && res.success) {
       const order = await pollSeckillOrder(String(res.data), { delay: 800, timeoutMs: 11000 })
-      // 成功拿到订单后，再次查询该券的已购状态并置灰按钮
+      // After receiving the order successfully, re-query the purchase status and disable the button
       if (order) {
         try {
           const check = await getVoucherOrderIdByVoucherId(String(v.id))
@@ -234,7 +234,7 @@ const seckill = async (v) => {
             purchasedMap.value[String(v.id)] = true
           }
         } catch (e) {
-          // 忽略错误，不影响既有状态
+          // Ignore errors so the current state is not affected
         }
       }
     } else {
@@ -250,7 +250,7 @@ const seckill = async (v) => {
   }
 }
 
-// 取消已领取的优惠券
+// Cancel a claimed voucher
 const cancelVoucher = async (v) => {
   if (!userStore.token) {
     ElMessage.error('请先登录')
@@ -264,7 +264,7 @@ const cancelVoucher = async (v) => {
     const res = await cancelVoucherOrder(String(v.id))
     if (res?.success && String(res.data) === 'true') {
       ElMessage.success('已取消领取')
-      // 更新本地状态并刷新列表以同步库存
+      // Update the local state and refresh the list to sync stock
       purchasedMap.value[String(v.id)] = false
       await queryVoucher(route.params.id)
     } else {
@@ -276,7 +276,7 @@ const cancelVoucher = async (v) => {
   }
 }
 
-// 订阅到券提醒
+// Subscribe to restock reminders
 const subscribeToVoucher = async (v) => {
   if (!userStore.token) {
     ElMessage.error('请先登录')
@@ -297,7 +297,7 @@ const subscribeToVoucher = async (v) => {
   }
 }
 
-// 取消订阅到券提醒
+// Cancel restock reminder subscription
 const unsubscribeFromVoucher = async (v) => {
   if (!userStore.token) {
     ElMessage.error('请先登录')
@@ -318,17 +318,17 @@ const unsubscribeFromVoucher = async (v) => {
   }
 }
 
-// 返回上一页
+// Go back to the previous page
 const goBack = () => {
   router.back()
 }
 
-// 过滤后的优惠券列表
+// Filtered coupon list
 const filteredVouchers = computed(() => {
   return vouchers.value.filter((v) => !isEnd(v))
 })
 
-// 初始化
+// Initialize
 onMounted(() => {
   const shopId = route.params.id
   console.log('shopId', shopId)
@@ -339,7 +339,7 @@ onMounted(() => {
 
 <template>
   <div class="shop-detail-container">
-    <!-- 头部 -->
+    <!-- Header -->
     <div class="header">
       <div class="header-back-btn" @click="goBack">
         <el-icon><ArrowLeft /></el-icon>
@@ -348,7 +348,7 @@ onMounted(() => {
       <div class="header-share">...</div>
     </div>
 
-    <!-- 店铺信息 -->
+    <!-- Shop information -->
     <div class="shop-info-box">
       <div class="shop-title">{{ shop.name }}</div>
       <div class="shop-rate">
@@ -402,7 +402,7 @@ onMounted(() => {
 
     <div class="shop-divider"></div>
 
-    <!-- 营业时间 -->
+    <!-- Business hours -->
     <div class="shop-open-time">
       <span>
         <el-icon><Timer /></el-icon>
@@ -417,7 +417,7 @@ onMounted(() => {
 
     <div class="shop-divider"></div>
 
-    <!-- 优惠券 -->
+    <!-- Vouchers -->
     <div class="shop-voucher">
       <div>
         <span class="voucher-icon">券</span>
@@ -454,7 +454,7 @@ onMounted(() => {
               <span class="purchased-tag">已购</span>
               <span class="cancel-link" @click="cancelVoucher(v)">取消领取</span>
             </div>
-            <!-- 库存为 0 且未购买时，展示订阅到券提醒 -->
+            <!-- Show the restock subscription reminder when stock is 0 and the voucher has not been purchased -->
             <div v-else-if="Number(v.stock) < 1 && !isPurchased(v.id)" class="subscribe-box">
               <div v-if="isSubscribed(v.id)" class="subscribe-status">
                 <span class="subscribed-tag">已订阅到券提醒</span>
@@ -472,7 +472,7 @@ onMounted(() => {
 
     <div class="shop-divider"></div>
 
-    <!-- 评论 -->
+    <!-- Comments -->
     <div class="shop-comments">
       <div class="comments-head">
         <div>网友评价 <span>（119）</span></div>
@@ -730,7 +730,7 @@ onMounted(() => {
   gap: 5px;
 }
 
-/* 放大价格数字，折扣轻量展示 */
+/* Enlarge the price digits and present the discount more lightly */
 .voucher-price div {
   font-size: 22px;
   font-weight: 700;
@@ -837,7 +837,7 @@ onMounted(() => {
   border-color: #337ecc;
 }
 
-/* 订阅到券提醒样式 */
+/* Restock reminder subscription styles */
 .subscribe-box {
   margin-top: 6px;
 }
@@ -890,7 +890,7 @@ onMounted(() => {
   font-size: 12px;
 }
 
-/* 统一订阅相关按钮尺寸与样式，让两个按钮等宽等高 */
+/* Unify the size and styles of subscription buttons so both buttons share the same width and height */
 .subscribe-link,
 .cancel-subscribe,
 .subscribed-tag {
@@ -972,7 +972,7 @@ onMounted(() => {
   font-size: 12px;
 }
 
-/* 优化：秒杀确认时的加载遮罩与文字样式（全局生效） */
+/* Optimization: loading overlay and text styles during seckill confirmation (applies globally) */
 :global(.seckill-overlay) {
   background: rgba(0, 0, 0, 0.35);
   backdrop-filter: blur(2px);
@@ -993,12 +993,12 @@ onMounted(() => {
 :global(.seckill-overlay .el-loading-spinner .circular) {
   width: 42px;
   height: 42px;
-  stroke: #ff4d4f; /* 与主题色协调 */
+  stroke: #ff4d4f; /* Harmonized with the theme color */
 }
 
 :global(.seckill-overlay .el-loading-text) {
   margin-top: 2px;
-  font-size: 20px; /* 调大文字 */
+  font-size: 20px; /* Increase the text size */
   font-weight: 700;
   color: #333;
   letter-spacing: 0.3px;

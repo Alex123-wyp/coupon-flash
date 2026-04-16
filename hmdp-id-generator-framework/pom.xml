@@ -12,7 +12,7 @@
     <artifactId>hmdp-id-generator-framework</artifactId>
 
     <name>hmdp-id-generator</name>
-    <description>分布式id生成器</description>
+    <description>Distributed ID generator</description>
     
     <dependencies>
         <!-- Apache Commons -->
@@ -30,7 +30,7 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
             <exclusions>
-                <!--去除spring boot自带的 -->
+                <!-- remove the Spring Boot built-in configuration -->
                 <exclusion>
                     <groupId>org.springframework.boot</groupId>
                     <artifactId>spring-boot-starter-logging</artifactId>

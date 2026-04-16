@@ -24,8 +24,8 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Objects;
 
 /**
- * @program: 黑马点评-plus升级版实战项目。添加 yupeng 微信，添加时备注 点评 来获取项目的完整资料
- * @description: 用户api
+ * @program: High-Concurrency Voucher Seckill Platform (HMDP Plus). Email: wyupeng072@gmail.com
+ * @description: User API
  * @author: yupeng
  **/
 @Slf4j
@@ -40,59 +40,59 @@ public class UserController {
     private IUserInfoService userInfoService;
 
     /**
-     * 发送手机验证码
+     * Send mobile phone verification code
      */
     //In Spring MVC, if HttpSession has been declared in controller layer or service entry method parameter, everytime access, Spring will resolve it from
     //the current Http request automatically
     @PostMapping("code")
     public Result<String> sendCode(@RequestParam("phone") String phone, HttpSession session) {
-        // 发送短信验证码并保存验证码
+        // Send SMS verification code and save verification code
         return userService.sendCode(phone, session);
     }
 
     /**
-     * 登录功能
-     * @param loginForm 登录参数，包含手机号、验证码；或者手机号、密码
+     * Login function
+     * @param loginForm login parameters, including mobile phone number and verification code; or mobile phone number and password
      */
     @PostMapping("/login")
     public Result<String> login(@RequestBody LoginFormDTO loginForm, HttpSession session){
-        // 实现登录功能
+        // Implement login function
         return userService.login(loginForm, session);
     }
 
     /**
-     * 登出功能
-     * @return 无
+     * Logout function
+     * @return None
      */
     @PostMapping("/logout")
     public Result<Void> logout(){
-        // TODO 实现登出功能
+        // TODO implements the logout function
         return Result.fail("功能未完成");
     }
 
     @GetMapping("/me")
     public Result<UserDTO> me(){
-        // 获取当前登录的用户并返回
+        // Get the currently logged in user and return
         UserDTO user = UserHolder.getUser();
         return Result.ok(user);
     }
 
     @GetMapping("/info/{id}")
     public Result<UserInfo> info(@PathVariable("id") String userId){
-        // 查询详情
+        // Query details
         UserInfo info = userInfoService.getById(Long.parseLong(userId));
         if (info == null) {
-            // 没有详情，应该是第一次查看详情
+            // There are no details. It should be the first time to check the details.
             return Result.ok();
         }
         info.setCreateTime(null);
         info.setUpdateTime(null);
-        // 返回
+        // return
         return Result.ok(info);
     }
 
     /**
-     * 当前登录用户更新等级
+     * Current logged in user update level
      */
     @PostMapping("/level/update")
     public Result<Void> updateLevel(@RequestParam("newLevel") Integer newLevel) {
@@ -105,13 +105,13 @@ public class UserController {
 
     @GetMapping("/{id}")
     public Result<UserDTO> queryUserById(@PathVariable("id") Long userId){
-        // 查询详情
+        // Query details
         User user = userService.getById(userId);
         if (user == null) {
             return Result.ok();
         }
         UserDTO userDTO = BeanUtil.copyProperties(user, UserDTO.class);
-        // 返回
+        // return
         return Result.ok(userDTO);
     }
 

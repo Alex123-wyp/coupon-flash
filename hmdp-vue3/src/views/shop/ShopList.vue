@@ -1,6 +1,6 @@
 <template>
   <div class="shop-list-container">
-    <!-- 头部 -->
+    <!-- Header -->
     <div class="header">
       <div class="header-back-btn" @click="goBack">
         <el-icon><ArrowLeft /></el-icon>
@@ -11,7 +11,7 @@
       </div>
     </div>
 
-    <!-- 排序栏 -->
+    <!-- Sorting bar -->
     <div class="sort-bar">
       <div class="sort-item">
         <el-dropdown trigger="click" @command="handleCommand">
@@ -39,7 +39,7 @@
       </div>
     </div>
 
-    <!-- 店铺列表 -->
+    <!-- Shop list -->
     <div class="shop-list" @scroll="onScroll">
       <div
         class="shop-box"
@@ -92,7 +92,7 @@ import { throttle } from '@/utils/scroll'
 const router = useRouter()
 const route = useRoute()
 
-// 响应式数据
+// Reactive data
 const types = ref([])
 const shops = ref([])
 const typeName = ref('')
@@ -105,7 +105,7 @@ const params = ref({
   y: 30.334229
 })
 
-// 获取店铺类型列表
+// Get the shop type list
 const queryTypes = async () => {
   try {
     const { data } = await getShopTypeList()
@@ -117,7 +117,7 @@ const queryTypes = async () => {
   }
 }
 
-// 获取店铺列表
+// Get the shop list
 const queryShops = async () => {
   try {
     const { data } = await getShopList(params.value)
@@ -130,7 +130,7 @@ const queryShops = async () => {
   }
 }
 
-// 处理类型选择
+// Handle type selection
 const handleCommand = (type) => {
   console.log('handleCommand', type)
   router.push({
@@ -142,23 +142,23 @@ const handleCommand = (type) => {
   })
 }
 
-// 排序和查询
+// Sort and query
 const sortAndQuery = (sortBy) => {
   params.value.sortBy = sortBy
   queryShops()
 }
 
-// 返回上一页
+// Go back to the previous page
 const goBack = () => {
   router.back()
 }
 
-// 跳转到店铺详情
+// Navigate to the shop detail page
 const toDetail = (id) => {
   router.push(`/shopDetail/${id}`)
 }
 
-// 滚动加载
+// Infinite scroll loading
 const onScroll = throttle((e) => {
   const { scrollTop, offsetHeight, scrollHeight } = e.target
   if (scrollTop + offsetHeight + 1 > scrollHeight && !isReachBottom.value) {
@@ -170,7 +170,7 @@ const onScroll = throttle((e) => {
   }
 }, 200)
 
-// 初始化
+// Initialize
 const initData = () => {
   params.value.typeId = Number(route.query.type) || 0
   typeName.value = route.query.name || ''
@@ -180,7 +180,7 @@ const initData = () => {
   queryShops()
 }
 
-// 监听路由参数变化
+// Watch route parameter changes
 watch(
   () => route.query,
   () => {

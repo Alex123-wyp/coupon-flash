@@ -15,8 +15,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * @program: 黑马点评-plus升级版实战项目。添加 yupeng 微信，添加时备注 点评 来获取项目的完整资料
- * @description: 自定义json序列化
+ * @program: High-Concurrency Voucher Seckill Platform (HMDP Plus). Email: wyupeng072@gmail.com
+ * @description: Custom JSON serializer
  * @author: yupeng
  **/
 public class DateJsonDeserializer extends JsonDeserializer<Date> {
@@ -40,7 +40,7 @@ public class DateJsonDeserializer extends JsonDeserializer<Date> {
 			return null;
 		}
 		
-//		校验字符串是否是数字 
+//		Check if a string is a number 
 		if(isNum(str)) {
 			convertDate = DateUtils.parse(Long.valueOf(str));
 		}else {
@@ -64,10 +64,10 @@ public class DateJsonDeserializer extends JsonDeserializer<Date> {
 	
 	
 	/**
-	 * 校验字符串是否是数字
+	 * Check if a string is a number
 	 *
-	 * @param number 字符串数字
-	 * @return 结果
+	 * @param number string number
+	 * @return result
 	 */
 	public static boolean isNum(String number) {
 		Matcher m = P.matcher(number);

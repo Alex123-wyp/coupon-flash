@@ -5,8 +5,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 /**
- * @program: 黑马点评-plus升级版实战项目。添加 yupeng 微信，添加时备注 点评 来获取项目的完整资料
- * @description: 登录验证过滤器
+ * @program: High-Concurrency Voucher Seckill Platform (HMDP Plus). Email: wyupeng072@gmail.com
+ * @description: Login validation interceptor
  * @author: yupeng
  **/
 
@@ -14,14 +14,14 @@ public class LoginInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        // 1.判断是否需要拦截（ThreadLocal中是否有用户）
+        // 1. Determine whether interception is needed (whether there is a user in ThreadLocal)
         if (UserHolder.getUser() == null) {
-            // 没有，需要拦截，设置状态码
+            // No, you need to intercept and set the status code
             response.setStatus(401);
-            // 拦截
+            // intercept
             return false;
         }
-        // 有用户，则放行
+        // If there are users, then let it go
         return true;
     }
 }

@@ -25,9 +25,7 @@
     <packaging>pom</packaging>
 
     <name>${project.artifactId}</name>
-    <description>
-        🔥 🔥 热门推荐 🔥 🔥将黑马点评进行完全地重构升级，围绕优惠券秒杀与热点查询，补齐高并发稳定性、动态令牌、限流、消息可靠性与数据一致性闭环，并添加订阅通知、候补排队等新亮点功能，解决烂大街和亮点不足问题！并打造成真正企业级别实战项目，全面工程化落地。
-    </description>
+    <description>High-Concurrency Voucher Seckill Platform (HMDP Plus). It fully refactors and upgrades the original HMDP project around voucher seckill and hot-shop queries, strengthening high-concurrency stability, dynamic tokens, rate limiting, reliable messaging, and end-to-end data consistency while adding subscription notifications and standby queueing to make the project more production-oriented and engineering-focused.</description>
 
     <modules>
         <module>hmdp-common</module>
@@ -120,7 +118,7 @@
                 <artifactId>maven-source-plugin</artifactId>
                 <version>${maven-source.version}</version>
                 <configuration>
-                    <!--install、deploy时会上传源码jar包到仓库，默认是true-->
+                    <!-- install and deploy upload the source JAR to the repository; the default is true -->
                     <attach>true</attach>
                 </configuration>
                 <executions>

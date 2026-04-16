@@ -12,8 +12,8 @@ import org.springframework.stereotype.Service;
 import java.util.Objects;
 
 /**
- * @program: 黑马点评-plus升级版实战项目。添加 yupeng 微信，添加时备注 点评 来获取项目的完整资料
- * @description: 优惠券订单路由实现 接口
+ * @program: High-Concurrency Voucher Seckill Platform (HMDP Plus). Email: wyupeng072@gmail.com
+ * @description: Voucher order routing implementation interface
  * @author: yupeng
  **/
 @Slf4j

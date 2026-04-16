@@ -14,106 +14,106 @@ import java.util.SimpleTimeZone;
 import java.util.TimeZone;
 
 /**
- * @program: 黑马点评-plus升级版实战项目。添加 yupeng 微信，添加时备注 点评 来获取项目的完整资料
- * @description: 日期工具
+ * @program: High-Concurrency Voucher Seckill Platform (HMDP Plus). Email: wyupeng072@gmail.com
+ * @description: Date utilities
  * @author: yupeng
  **/
 public class DateUtils {
  
-    /** 一星期的天数 */
+    /** Number of days in a week */
     public static final int WEEK_DAYS = 7;
-    /** 一年的月份数 */
+    /** Number of months in a year */
     public static final int YEAR_MONTHS = 12;
-    /** 一天的小时数 */
+    /** Number of hours in a day */
     public static final int DAY_HOURS = 24;
-    /** 一小时分钟数 */
+    /** Minutes in an hour */
     public static final int HOUR_MINUTES = 60;
-    /** 一天分钟数 (24 * 60) */
+    /** Minutes in a day (24 * 60) */
     public static final int DAY_MINUTES = 1440;
-    /** 一分钟的秒数 */
+    /** Number of seconds in a minute */
     public static final int MINUTE_SECONDS = 60;
-    /** 一个小时的秒数 (60 * 60) */
+    /** Number of seconds in an hour (60 * 60) */
     public static final int HOUR_SECONDS = 3600;
-    /** 一天的秒数 (24 * 60 * 60) */
+    /** Seconds in a day (24 * 60 * 60) */
     public static final int DAY_SECONDS = 86400;
-    /** 一秒的毫秒数 */
+    /** Number of milliseconds in one second */
     public static final long SECOND_MILLISECONDS = 1000L;
-    /** 一分钟的毫秒数（60 * 1000） */
+    /** Number of milliseconds in one minute (60 * 1000) */
     public static final long MINUTE_MILLISECONDS = 60000L;
-    /** 一小时的毫秒数（60 * 60 * 1000） */
+    /** Number of milliseconds in one hour (60 * 60 * 1000) */
     public static final long HOUR_MILLISECONDS = 3600000L;
-    /** 一天的毫秒数（24 * 60* 60* 1000） */
+    /** Number of milliseconds in a day (24 * 60 * 60 * 1000) */
     public static final long DAY_MILLISECONDS = 86400000L;
-    /** 星期一 */
+    /** Monday */
     public static final int WEEK_1_MONDAY = 1;
-    /** 星期二 */
+    /** Tuesday */
     public static final int WEEK_2_TUESDAY = 2;
-    /** 星期三 */
+    /** Wednesday */
     public static final int WEEK_3_WEDNESDAY = 3;
-    /** 星期四 */
+    /** Thursday */
     public static final int WEEK_4_THURSDAY = 4;
-    /** 星期五 */
+    /** Friday */
     public static final int WEEK_5_FRIDAY = 5;
-    /** 星期六 */
+    /** Saturday */
     public static final int WEEK_6_SATURDAY = 6;
-    /** 星期天 */
+    /** Sunday */
     public static final int WEEK_7_SUNDAY = 7;
-    /** 一月 */
+    /** January */
     public static final int MONTH_1_JANUARY = 1;
-    /** 二月 */
+    /** February */
     public static final int MONTH_2_FEBRUARY = 2;
-    /** 三月 */
+    /** March */
     public static final int MONTH_3_MARCH = 3;
-    /** 四月 */
+    /** April */
     public static final int MONTH_4_APRIL= 4;
-    /** 五月 */
+    /** May */
     public static final int MONTH_5_MAY = 5;
-    /** 六月 */
+    /** June */
     public static final int MONTH_6_JUNE = 6;
-    /** 七月 */
+    /** July */
     public static final int MONTH_7_JULY = 7;
-    /** 八月 */
+    /** August */
     public static final int MONTH_8_AUGUST = 8;
-    /** 九月 */
+    /** September */
     public static final int MONTH_9_SEPTEMBER = 9;
-    /** 十月 */
+    /** October */
     public static final int MONTH_10_OCTOBER = 10;
-    /** 十一月 */
+    /** November */
     public static final int MONTH_11_NOVEMBER = 11;
-    /** 十二月 */
+    /** December */
     public static final int MONTH_12_DECEMBER= 12;
-    /** 显示到日期 */
+    /** Show to date */
     public static final String FORMAT_DATE = "yyyy-MM-dd";
-    /** 显示到小时 */
+    /** Display to hour */
     public static final String FORMAT_HOUR = "yyyy-MM-dd HH";
-    /** 显示到分 */
+    /** Display to minute */
     public static final String FORMAT_MINUTE = "yyyy-MM-dd HH:mm";
-    /** 显示到秒 */
+    /** Display to seconds */
     public static final String FORMAT_SECOND = "yyyy-MM-dd HH:mm:ss";
-    /** 显示到毫秒 */
+    /** Display to milliseconds */
     public static final String FORMAT_MILLISECOND = "yyyy-MM-dd HH:mm:ss:SSS";
-    /** 显示到日期（数字格式） */
+    /** Display to date (numeric format) */
     public static final String FORMAT_NO_DATE = "yyyyMMdd";
-    /** 显示到小时（数字格式） */
+    /** Display to hour (numeric format) */
     public static final String FORMAT_NO_HOUR = "yyyyMMddHH";
-    /** 显示到分（数字格式） */
+    /** Display to minutes (numeric format) */
     public static final String FORMAT_NO_MINUTE = "yyyyMMddHHmm";
-    /** 显示到秒（数字格式） */
+    /** Display to seconds (numeric format) */
     public static final String FORMAT_NO_SECOND = "yyyyMMddHHmmss";
-    /** 显示到毫秒（数字格式） */
+    /** Display to milliseconds (numeric format) */
     public static final String FORMAT_NO_MILLISECOND = "yyyyMMddHHmmssSSS";
     
     public static final String FORMAT_UTC = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
     
     /**
-     * 获取北京当前时间
+     * Get the current time in Beijing
      * */
     public static Date now(){
         return parseDateTime(getFormatedDateString(8,FORMAT_SECOND));
     }
     
     /**
-     * 获取北京当前时间
+     * Get the current time in Beijing
      * */
     public static Date now(String format){
         return parseDateTime(getFormatedDateString(8,format),format);
@@ -128,21 +128,21 @@ public class DateUtils {
     }
  
     /**
-     * 获取指定时间格式化器
+     * Get the specified time Formatter
      *
-     * @param formatStyle 时间格式
-     * @return 时间格式化器
+     * @param formatStyle time format
+     * @return time formatter
      */
     private static SimpleDateFormat getSimpleDateFormat(String formatStyle) {
         return new SimpleDateFormat(formatStyle);
     }
  
     /**
-     * 将 Date 格式时间转化为指定格式时间
+     * Convert Date format time to specified format time
      *
-     * @param date        Date 格式时间
-     * @param formatStyle 转化指定格式（如: yyyy-MM-dd HH:mm:ss）
-     * @return 转化格式时间
+     * @param date Date format time
+     * @param formatStyle converts the specified format (such as: yyyy-MM-dd HH:mm:ss)
+     * @return conversion format time
      */
     public static String format(Date date, String formatStyle) {
         if (Objects.isNull(date)) {
@@ -152,40 +152,40 @@ public class DateUtils {
     }
  
     /**
-     * 将 Date 格式时间转化为 yyyy-MM-dd 格式时间
+     * Convert Date format time to yyyy-MM-dd format time
      *
-     * @param date Date 格式时间
-     * @return yyyy-MM-dd 格式时间（如：2022-06-17）
+     * @param date Date format time
+     * @return yyyy-MM-dd format time (such as: 2022-06-17)
      */
     public static String formatDate(Date date) {
         return format(date, FORMAT_DATE);
     }
  
     /**
-     * 将 Date 格式时间转化为 yyyy-MM-dd HH:mm:ss 格式时间
+     * Convert Date format time to yyyy-MM-dd HH:mm:ss format time
      *
-     * @param date Date 格式时间
-     * @return yyyy-MM-dd HH:mm:ss 格式时间（如：2022-06-17 16:06:17）
+     * @param date Date format time
+     * @return yyyy-MM-dd HH:mm:ss format time (such as: 2022-06-17 16:06:17)
      */
     public static String formatDateTime(Date date) {
         return format(date, FORMAT_SECOND);
     }
  
     /**
-     * 将 Date 格式时间转化为 yyyy-MM-dd HH:mm:ss:SSS 格式时间
+     * Convert Date format time to yyyy-MM-dd HH:mm:ss:SSS format time
      *
-     * @param date Date 格式时间
-     * @return yyyy-MM-dd HH:mm:ss:SSS 格式时间（如：2022-06-17 16:06:17:325）
+     * @param date Date format time
+     * @return yyyy-MM-dd HH:mm:ss:SSS format time (such as: 2022-06-17 16:06:17:325)
      */
     public static String formatDateTimeStamp(Date date) {
         return format(date, FORMAT_MILLISECOND);
     }
     
     /**
-     * 将 Date 格式时间转化为 yyyy-MM-dd HH:mm:ss 格式时间
+     * Convert Date format time to yyyy-MM-dd HH:mm:ss format time
      *
-     * @param date Date 格式时间
-     * @return yyyy-MM-dd HH:mm:ss 格式时间（如：2022-06-17 16:06:17）
+     * @param date Date format time
+     * @return yyyy-MM-dd HH:mm:ss format time (such as: 2022-06-17 16:06:17)
      */
     public static String formatUtcTime(Date date) {
         SimpleDateFormat sdf = new SimpleDateFormat(FORMAT_UTC);
@@ -194,48 +194,48 @@ public class DateUtils {
     }
     
     /**
-     * 将 yyyy-MM-dd 格式时间转化为 Date 格式时间
+     * Convert yyyy-MM-dd format time to Date format time
      * 
-     * @param dateString yyyy-MM-dd 格式时间（如：2022-06-17）
-     * @return Date 格式时间
+     * @param dateString yyyy-MM-dd format time (such as: 2022-06-17)
+     * @return Date format time
      */
     public static Date parseDate(String dateString) {
         return parse(dateString, FORMAT_DATE);
     }
  
     /**
-     * 将 yyyy-MM-dd HH:mm:ss 格式时间转化为 Date 格式时间
+     * Convert yyyy-MM-dd HH:mm:ss format time to Date format time
      * 
-     * @param dateTimeStr yyyy-MM-dd HH:mm:ss 格式时间（如：2022-06-17 16:06:17）
-     * @return Date 格式时间
+     * @param dateTimeStr yyyy-MM-dd HH:mm:ss format time (such as: 2022-06-17 16:06:17)
+     * @return Date format time
      */
     public static Date parseDateTime(String dateTimeStr) {
         return parse(dateTimeStr, FORMAT_SECOND);
     }
     
     /**
-     * 按照format 格式时间转化为 Date 格式时间
+     * Convert time in format format to time in Date format
      *
-     * @param dateTimeStr yyyy-MM-dd HH:mm:ss 格式时间（如：2022-06-17 16:06:17）
-     * @param format 格式
-     * @return Date 格式时间
+     * @param dateTimeStr yyyy-MM-dd HH:mm:ss format time (such as: 2022-06-17 16:06:17)
+     * @param format format
+     * @return Date format time
      */
     public static Date parseDateTime(String dateTimeStr,String format) {
         return parse(dateTimeStr, format);
     }
  
     /**
-     * 将 yyyy-MM-dd HH:mm:ss:SSS 格式时间转化为 Date 格式时间
+     * Convert yyyy-MM-dd HH:mm:ss:SSS format time to Date format time
      * 
-     * @param dateTimeStampStr yyyy-MM-dd HH:mm:ss:SSS 格式时间（如：2022-06-17 16:06:17）
-     * @return Date 格式时间
+     * @param dateTimeStampStr yyyy-MM-dd HH:mm:ss:SSS format time (such as: 2022-06-17 16:06:17)
+     * @return Date format time
      */
     public static Date parseDateTimeStamp(String dateTimeStampStr) {
         return parse(dateTimeStampStr, FORMAT_MILLISECOND);
     }
     
     /**
-     * 将时间戳转化为日期
+     * Convert timestamp to date
      *
      * @param timestamp
      * @return
@@ -245,11 +245,11 @@ public class DateUtils {
     }
  
     /**
-     * 将字符串格式时间转化为 Date 格式时间
+     * Convert string format time to Date format time
      * 
-     * @param dateString 字符串时间（如：2022-06-17 16:06:17）
-     * @return formatStyle 格式内容
-     * @return Date 格式时间
+     * @param dateString string time (such as: 2022-06-17 16:06:17)
+     * @return formatStyle format content
+     * @return Date format time
      */
     public static Date parse(String dateString, String formatStyle) {
         String s = getString(dateString);
@@ -265,20 +265,20 @@ public class DateUtils {
     }
  
     /**
-     * 获取字符串有效内容
+     * Get string payload
      * 
-     * @param s 字符串
-     * @return 有效内容
+     * @param s string
+     * @return valid content
      */
     private static String getString(String s) {
         return Objects.isNull(s) ? "" : s.trim();
     }
  
     /**
-     * 获取一天的开始时间（即：0 点 0 分 0 秒 0 毫秒）
+     * Get the start time of the day (i.e.: 0:00:00:00:00 milliseconds)
      * 
-     * @param date 指定时间
-     * @return 当天的开始时间
+     * @param date specified time
+     * @return the start time of the day
      */
     public static Date getDateStart(Date date) {
         if (Objects.isNull(date)) {
@@ -294,10 +294,10 @@ public class DateUtils {
     }
  
     /**
-     * 获取一天的截止时间（即：23 点 59 分 59 秒 999 毫秒）
+     * Get the cutoff time of the day (ie: 23:59:59 seconds 999 milliseconds)
      * 
-     * @param date 指定时间
-     * @return 当天的开始时间
+     * @param date specified time
+     * @return the start time of the day
      */
     public static Date getDateEnd(Date date) {
         if (Objects.isNull(date)) {
@@ -313,10 +313,10 @@ public class DateUtils {
     }
  
     /**
-     * 获取日期数字
+     * Get date number
      * 
-     * @param date 日期
-     * @return 日期数字
+     * @param date date
+     * @return date number
      */
     public static int getDateNo(Date date) {
         if (Objects.isNull(date)) {
@@ -326,10 +326,10 @@ public class DateUtils {
     }
  
     /**
-     * 获取日期时间数字（到秒）
+     * Get datetime number (to seconds)
      * 
-     * @param date 日期
-     * @return 日期数字
+     * @param date date
+     * @return date number
      */
     public static long getDateTimeNo(Date date) {
         if (Objects.isNull(date)) {
@@ -339,10 +339,10 @@ public class DateUtils {
     }
  
     /**
-     * 获取日期时间数字（到毫秒）
+     * Get datetime number (to milliseconds)
      * 
-     * @param date 日期
-     * @return 日期数字
+     * @param date date
+     * @return date number
      */
     public static long getDateTimeStampNo(Date date) {
         if (Objects.isNull(date)) {
@@ -352,10 +352,10 @@ public class DateUtils {
     }
  
     /**
-     * 获取星期几
+     * Get day of week
      * 
-     * @param date 时间
-     * @return 0（时间为空）， 1（周一）， 2（周二），3（周三），4（周四），5（周五），6（周六），7（周日）
+     * @param date time
+     * @return 0 (time is empty), 1 (Monday), 2 (Tuesday), 3 (Wednesday), 4 (Thursday), 5 (Friday), 6 (Saturday), 7 (Sunday)
      */
     public static int getWeek(Date date) {
         if (Objects.isNull(date)) {
@@ -367,10 +367,10 @@ public class DateUtils {
     }
     
     /**
-     * 获取星期几
+     * Get day of week
      *
-     * @param date 时间
-     * @return 0（时间为空）， 1（周一）， 2（周二），3（周三），4（周四），5（周五），6（周六），7（周日）
+     * @param date time
+     * @return 0 (time is empty), 1 (Monday), 2 (Tuesday), 3 (Wednesday), 4 (Thursday), 5 (Friday), 6 (Saturday), 7 (Sunday)
      */
     public static String getWeekStr(Date date) {
         if (Objects.isNull(date)) {
@@ -382,10 +382,10 @@ public class DateUtils {
     }
  
     /**
-     * 获取星期几
+     * Get day of week
      * 
-     * @param calendar 时间
-     * @return 0（时间为空）， 1（周一）， 2（周二），3（周三），4（周四），5（周五），6（周六），7（周日）
+     * @param calendar time
+     * @return 0 (time is empty), 1 (Monday), 2 (Tuesday), 3 (Wednesday), 4 (Thursday), 5 (Friday), 6 (Saturday), 7 (Sunday)
      */
     private static int getWeek(Calendar calendar) {
         switch (calendar.get(Calendar.DAY_OF_WEEK)) {
@@ -409,10 +409,10 @@ public class DateUtils {
     }
     
     /**
-     * 获取星期几
+     * Get day of week
      *
-     * @param calendar 时间
-     * @return 星期
+     * @param calendar time
+     * @return week
      */
     private static String getWeekStr(Calendar calendar) {
         switch (calendar.get(Calendar.DAY_OF_WEEK)) {
@@ -436,14 +436,14 @@ public class DateUtils {
     }
  
     /**
-     * 获取该日期是今年的第几周（以本年的周一为第1周，详见下面说明）<br>
+     * Get the week number of this year for which the date is (Monday of this year is the first week, see the instructions below for details)<br>
      * 
-     * 【说明】<br>
-     * 比如 2022-01-01（周六）和 2022-01-02（周日）虽然在 2022 年里，但他们两天则属于 2021 年最后一周，<br>
-     * 那么这两天不会算在 2022 年第 1 周里，此时会返回 0 ；而 2022 年第 1 周将从 2022-01-03（周一） 开始计算。<br>
+     * 【Description】<br>
+     * For example, although 2022-01-01 (Saturday) and 2022-01-02 (Sunday) are in 2022, they belong to the last week of 2021.<br>
+     * Then these two days will not be counted in the first week of 2022, and 0 will be returned at this time; and the first week of 2022 will be calculated from 2022-01-03 (Monday). <br>
      * 
-     * @param date 时间
-     * @return -1（时间为空）， 0（为上个年的最后一周），其他数字（今年的第几周）
+     * @param date time
+     * @return -1 (the time is empty), 0 (the last week of the previous year), other numbers (the week of this year)
      */
     public static int getWeekOfYear(Date date) {
         if (Objects.isNull(date)) {
@@ -462,10 +462,10 @@ public class DateUtils {
     }
  
     /**
-     * 获取今年的第几周（以本年的1月1日为第1周第1天）<br>
+     * Get the week number of this year (January 1 of this year is the first day of week 1)<br>
      * 
-     * @param date 时间
-     * @return -1（时间为空），其他数字（今年的第几周）
+     * @param date time
+     * @return -1 (time is empty), other number (week of the year)
      */
     public static int getWeekOfYearIgnoreLastYear(Date date) {
         int seven = 7;
@@ -476,18 +476,18 @@ public class DateUtils {
         calendar.setTime(date);
         int days = calendar.get(Calendar.DAY_OF_YEAR);
         int weeks = days / seven;
-        // 如果是 7 的倍数，则表示恰好是多少周
+        // If it is a multiple of 7, it indicates exactly how many weeks
         if (days % seven == 0) {
             return weeks;
         }
-        // 如果有余数，则需要再加 1
+        // If there is a remainder, add 1
         return weeks + 1;
     }
  
     /**
-     * 获取时间节点对象
+     * Get time node object
      * 
-     * @param date 时间对象
+     * @param date time object
      * @return DateNode
      */
     public static DateNode getDateNode(Date date) {
@@ -515,12 +515,12 @@ public class DateUtils {
     }
  
     /**
-     * 日期变更
+     * date change
      * 
-     * @param date   指定日期
-     * @param field  变更属性（如变更年份，则该值为 Calendar.DAY_OF_YEAR）
-     * @param amount 变更大小（大于 0 时增加，小于 0 时减少）
-     * @return 变更后的日期时间
+     * @param date specified date
+     * @param field change attribute (if the year is changed, the value is Calendar.DAY_OF_YEAR)
+     * @param amount changes the size (increase when greater than 0, decrease when less than 0)
+     * @return the changed date and time
      */
     public static Date add(Date date, int field, int amount) {
         if (Objects.isNull(date)) {
@@ -533,98 +533,98 @@ public class DateUtils {
     }
  
     /**
-     * 指定日期加减年份
+     * Add or subtract years to a specified date
      * 
-     * @param date 指定日期
-     * @param year 变更年份（大于 0 时增加，小于 0 时减少）
-     * @return 变更年份后的日期
+     * @param date specified date
+     * @param year Change year (increase when greater than 0, decrease when less than 0)
+     * @return the date after changing the year
      */
     public static Date addYear(Date date, int year) {
         return add(date, Calendar.YEAR, year);
     }
  
     /**
-     * 指定日期加减月份
+     * Add or subtract months to a specified date
      * 
-     * @param date  指定日期
-     * @param month 变更月份（大于 0 时增加，小于 0 时减少）
-     * @return 变更月份后的日期
+     * @param date specified date
+     * @param month Change month (increase when greater than 0, decrease when less than 0)
+     * @return the date after changing the month
      */
     public static Date addMonth(Date date, int month) {
         return add(date, Calendar.MONTH, month);
     }
  
     /**
-     * 指定日期加减天数
+     * Add or subtract days from specified date
      * 
-     * @param date 指定日期
-     * @param day  变更天数（大于 0 时增加，小于 0 时减少）
-     * @return 变更天数后的日期
+     * @param date specified date
+     * @param day The number of days to change (increase when greater than 0, decrease when less than 0)
+     * @return the date after the changed number of days
      */
     public static Date addDay(Date date, int day) {
         return add(date, Calendar.DAY_OF_YEAR, day);
     }
  
     /**
-     * 指定日期加减星期
+     * Add or subtract the day of the week to a specified date
      * 
-     * @param date 指定日期
-     * @param week 变更星期数（大于 0 时增加，小于 0 时减少）
-     * @return 变更星期数后的日期
+     * @param date specified date
+     * @param week changes the number of weeks (increase when greater than 0, decrease when less than 0)
+     * @return the date after changing the number of weeks
      */
     public static Date addWeek(Date date, int week) {
         return add(date, Calendar.WEEK_OF_YEAR, week);
     }
  
     /**
-     * 指定日期加减小时
+     * Add or subtract time to specified date
      * 
-     * @param date 指定日期时间
-     * @param hour 变更小时数（大于 0 时增加，小于 0 时减少）
-     * @return 变更小时数后的日期时间
+     * @param date specifies date and time
+     * @param hour Change the hour (increase when greater than 0, decrease when less than 0)
+     * @return date and time after changing hours
      */
     public static Date addHour(Date date, int hour) {
         return add(date, Calendar.HOUR_OF_DAY, hour);
     }
  
     /**
-     * 指定日期加减分钟
+     * Add or subtract minutes to a specified date
      * 
-     * @param date   指定日期时间
-     * @param minute 变更分钟数（大于 0 时增加，小于 0 时减少）
-     * @return 变更分钟数后的日期时间
+     * @param date specifies date and time
+     * @param minute Change minute (increase when greater than 0, decrease when less than 0)
+     * @return Date and time after changing minutes
      */
     public static Date addMinute(Date date, int minute) {
         return add(date, Calendar.MINUTE, minute);
     }
  
     /**
-     * 指定日期加减秒
+     * Add or subtract seconds to a specified date
      * 
-     * @param date   指定日期时间
-     * @param second 变更秒数（大于 0 时增加，小于 0 时减少）
-     * @return 变更秒数后的日期时间
+     * @param date specifies date and time
+     * @param second Change seconds (increase when greater than 0, decrease when less than 0)
+     * @return date and time after changing seconds
      */
     public static Date addSecond(Date date, int second) {
         return add(date, Calendar.SECOND, second);
     }
  
     /**
-     * 指定日期加减秒
+     * Add or subtract seconds to a specified date
      * 
-     * @param date   指定日期时间
-     * @param millisecond 变更毫秒数（大于 0 时增加，小于 0 时减少）
-     * @return 变更毫秒数后的日期时间
+     * @param date specifies date and time
+     * @param millisecond Change the number of milliseconds (increase when greater than 0, decrease when less than 0)
+     * @return date and time after changing milliseconds
      */
     public static Date addMillisecond(Date date, int millisecond) {
         return add(date, Calendar.MILLISECOND, millisecond);
     }
  
     /**
-     * 获取该日期所在周指定星期的日期
+     * Get the date of the specified week of the week in which the date is located
      * 
-     * @param date 日期所在时间
-     * @return index 指定星期（1 - 7 分别对应星期一到星期天）
+     * @param date date time
+     * @return index specifies the day of the week (1 - 7 corresponds to Monday to Sunday respectively)
      */
     public static Date getWeekDate(Date date, int index) {
         if (index < WEEK_1_MONDAY || index > WEEK_7_SUNDAY) {
@@ -635,47 +635,47 @@ public class DateUtils {
     }
  
     /**
-     * 获取该日期所在周开始日期
+     * Get the start date of the week where the date is located
      * 
-     * @param date 日期所在时间
-     * @return 所在周开始日期
+     * @param date date time
+     * @return the start date of the week
      */
     public static Date getWeekDateStart(Date date) {
         return getDateStart(getWeekDate(date, WEEK_1_MONDAY));
     }
  
     /**
-     * 获取该日期所在周开始日期
+     * Get the start date of the week where the date is located
      * 
-     * @param date 日期所在时间
-     * @return 所在周开始日期
+     * @param date date time
+     * @return the start date of the week
      */
     public static Date getWeekDateEnd(Date date) {
         return getWeekDateEnd(getWeekDate(date, WEEK_7_SUNDAY));
     }
  
     /**
-     * 获取该日期所在周的所有日期（周一到周日）
+     * Get all days of the week in which the date falls (Monday to Sunday)
      * 
-     * @param date 日期
-     * @return 该日照所在周的所有日期
+     * @param date date
+     * @return All dates of the week in which the sunshine occurs
      */
     public static List<Date> getWeekDateList(Date date) {
         if (Objects.isNull(date)) {
             return Collections.emptyList();
         }
-        // 获取本周开始时间
+        // Get the start time of this week
         Date weekFromDate = getWeekDateStart(date);
-        // 获取本周截止时间
+        // Get deadline for this week
         Date weekeEndDate = getWeekDateEnd(date);
         return getBetweenDateList(weekFromDate, weekeEndDate, true);
     }
  
     /**
-     * 获取该日期所在周的所有日期（周一到周日）
+     * Get all days of the week in which the date falls (Monday to Sunday)
      * 
      * @param dateString
-     * @return 该日照所在周的所有日期
+     * @return All dates of the week in which the sunshine occurs
      */
     public static List<String> getWeekDateList(String dateString) {
         Date date = parseDate(dateString);
@@ -686,10 +686,10 @@ public class DateUtils {
     }
  
     /**
-     * 获取该日期所在月的所有日期
+     * Get all dates in the month where the date falls
      * 
      * @param date
-     * @return 该日照所月的所有日期
+     * @return All dates in the month of the Rizhao Institute
      */
     public static List<Date> getMonthDateList(Date date) {
         if (Objects.isNull(date)) {
@@ -701,10 +701,10 @@ public class DateUtils {
     }
  
     /**
-     * 获取该日期所在月的所有日期
+     * Get all dates in the month where the date falls
      * 
      * @param dateString
-     * @return 该日照所月的所有日期
+     * @return All dates in the month of the Rizhao Institute
      */
     public static List<String> getMonthDateList(String dateString) {
         Date date = parseDate(dateString);
@@ -715,10 +715,10 @@ public class DateUtils {
     }
     
     /**
-     * 获取本日期所在月第一天
+     * Get the first day of the month where this date is located
      * 
-     * @param date 日期
-     * @return 本日期所在月第一天
+     * @param date date
+     * @return The first day of the month where this date is located
      */
     public static Date getMonthDateStart(Date date) {
         if (Objects.isNull(date)) {
@@ -731,10 +731,10 @@ public class DateUtils {
     }
  
     /**
-     * 获取本日期所在月最后一天
+     * Get the last day of the month where this date is located
      * 
-     * @param date 日期
-     * @return 本日期所在月最后一天
+     * @param date date
+     * @return The last day of the month where this date is located
      */
     public static Date getMonthDateEnd(Date date) {
         if (Objects.isNull(date)) {
@@ -746,44 +746,44 @@ public class DateUtils {
     }
     
     /**
-     * 获取两个日期相差的秒数
+     * Get the number of seconds difference between two dates
      *
-     * @param date1 日期1
-     * @param date2 日期2
-     * @return 相差秒数（若返回 -1，则至少有一个日期存在为空，此时不能进行比较）
+     * @param date1 date1
+     * @param date2 date2
+     * @return The difference in seconds (if -1 is returned, at least one date is empty and comparison cannot be made at this time)
      */
     public static long countBetweenSecond(Date date1, Date date2) {
         if (Objects.isNull(date1) || Objects.isNull(date2)) {
             return -1;
         }
-        // 直接计算毫秒差并转换为秒  
+        // Calculate millisecond difference directly and convert to seconds  
         long diffInMilliseconds = Math.abs(date2.getTime() - date1.getTime());
         return diffInMilliseconds / 1000;
     }
     
  
     /**
-     * 获取两个日期之间的所有日期
+     * Get all dates between two dates
      * 
-     * @param date1 日期1
-     * @param date2 日期2
-     * @return 两个日期之间的所有日期的开始时间
+     * @param date1 date1
+     * @param date2 date2
+     * @return the start time of all dates between two dates
      */
     public static List<Date> getBetweenDateList(Date date1, Date date2, boolean isContainParams) {
         if (Objects.isNull(date1) || Objects.isNull(date2)) {
             return Collections.emptyList();
         }
-        // 确定前后日期
+        // Determine the date before and after
         Date fromDate = date1;
         Date toDate = date2;
         if (date2.before(date1)) {
             fromDate = date2;
             toDate = date1;
         }
-        // 获取两个日期每天的开始时间
+        // Get the start time of each day for two dates
         Date from = getDateStart(fromDate);
         Date to = getDateStart(toDate);
-        // 获取日期，开始循环
+        // Get the date and start looping
         List<Date> dates = new ArrayList<Date>();
         if (isContainParams) {
             dates.add(from);
@@ -804,23 +804,23 @@ public class DateUtils {
     }
  
     /**
-     * 获取两个日期之间的所有日期
+     * Get all dates between two dates
      * 
-     * @param dateString1 日期1（如：2022-06-20）
-     * @param dateString2 日期2（如：2022-07-15）
-     * @return 两个日期之间的所有日期（不包含参数日期）
+     * @param dateString1 date 1 (such as: 2022-06-20)
+     * @param dateString2 date 2 (such as: 2022-07-15)
+     * @return all dates between two dates (excluding parameter dates)
      */
     public static List<String> getBetweenDateList(String dateString1, String dateString2) {
         return getBetweenDateList(dateString1, dateString2, false);
     }
  
     /**
-     * 获取两个日期之间的所有日期
+     * Get all dates between two dates
      * 
-     * @param dateString1     日期1（如：2022-06-20）
-     * @param dateString2     日期2（如：2022-07-15）
-     * @param isContainParams 是否包含参数的两个日期
-     * @return 两个日期之间的所有日期的开始时间
+     * @param dateString1 date 1 (such as: 2022-06-20)
+     * @param dateString2 date 2 (such as: 2022-07-15)
+     * @param isContainParams Whether the two dates of the parameters are included
+     * @return the start time of all dates between two dates
      */
     public static List<String> getBetweenDateList(String dateString1, String dateString2, boolean isContainParams) {
         Date date1 = parseDate(dateString1);
@@ -830,10 +830,10 @@ public class DateUtils {
     }
  
     /**
-     * List<Date> 转 List<String>
+     * List<Date> to List<String>
      * 
-     * @param dates 日期集合
-     * @return 日期字符串集合
+     * @param dates date collection
+     * @return date string collection
      */
     public static List<String> getDateStrList(List<Date> dates) {
         if (dates.isEmpty()) {
@@ -848,7 +848,7 @@ public class DateUtils {
     
     /**
      * 
-     * timeZoneOffset表示时区，如中国一般使用东八区，因此timeZoneOffset就是8
+     * timeZoneOffset represents the time zone. For example, China generally uses the East Eighth District, so timeZoneOffset is 8
      *
      * @param timeZoneOffset
      * @return
@@ -875,55 +875,55 @@ public class DateUtils {
     }
     @Data
     static class DateNode {
-        /** 年 */
+        /** Year */
         private int year;
-        /** 月 */
+        /** moon */
         private int month;
-        /** 日 */
+        /** day */
         private int day;
-        /** 时 */
+        /** hour */
         private int hour;
-        /** 分 */
+        /** point */
         private int minute;
-        /** 秒 */
+        /** Second */
         private int second;
-        /** 毫秒 */
+        /** milliseconds */
         private int millisecond;
-        /** 星期几（ 1 - 7 对应周一到周日） */
+        /** Day of the week (1 - 7 corresponds to Monday to Sunday) */
         private int week;
-        /** 当年第几天 */
+        /**The day of the year */
         private int dayOfYear;
-        /** 当年第几周（本年周 1 为第 1 周，0 则表示属于去年最后一周） */
+        /** The week of the current year (week 1 of this year is week 1, 0 means it is the last week of last year) */
         private int weekOfYear;
-        /** 当年第几周（本年周 1 为第 1 周，0 则表示属于去年最后一周） */
+        /** The week of the current year (week 1 of this year is week 1, 0 means it is the last week of last year) */
         private int weekOfYearIgnoreLastYear;
-        /** 时间戳（秒级） */
+        /** Timestamp (second level) */
         private long secondStamp;
-        /** 时间戳（毫秒级） */
+        /** Timestamp (millisecond level) */
         private long millisecondStamp;
-        /** 显示时间 */
+        /** Show time */
         private String time;
  
     }
     
     /**
-     * 将符合相应格式的字符串转化为日期 <格式自定义>
+     * Convert a string that conforms to the corresponding format into a date <format customization>
      *
-     * @param dateStr 日期字符串
-     * @param pattern 日期格式
-     * @return Date 返回类型 日期字串为空或者不符合日期格式时返回null
+     * @param dateStr date string
+     * @param pattern date format
+     * @return Date Return type Returns null when the date string is empty or does not conform to the date format
      */
     public static Date getDate(String dateStr, String pattern) {
         return getDate(dateStr, pattern, null);
     }
     
     /**
-     * 将符合相应格式的字符串转化为日期 <格式自定义>
+     * Convert a string that conforms to the corresponding format into a date <format customization>
      *
-     * @param dateStr     日期字符串
-     * @param pattern     日期格式
-     * @param defaultDate 默认日期
-     * @return Date 返回类型 日期字串为空或者不符合日期格式时返回null
+     * @param dateStr date string
+     * @param pattern date format
+     * @param defaultDate default date
+     * @return Date Return type Returns null when the date string is empty or does not conform to the date format
      */
     public static Date getDate(String dateStr, String pattern, Date defaultDate) {
         if (dateStr != null && pattern != null) {

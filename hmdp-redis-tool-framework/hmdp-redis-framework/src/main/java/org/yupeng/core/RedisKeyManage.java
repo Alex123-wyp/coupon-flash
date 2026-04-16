@@ -4,14 +4,14 @@ package org.yupeng.core;
 import lombok.Getter;
 
 /**
- * @program: 黑马点评-plus升级版实战项目。添加 yupeng 微信，添加时备注 点评 来获取项目的完整资料
- * @description: redis key管理
+ * @program: High-Concurrency Voucher Seckill Platform (HMDP Plus). Email: wyupeng072@gmail.com
+ * @description: Redis key management
  * @author: yupeng
  **/
 @Getter
 public enum RedisKeyManage {
     /**
-     * key信息，关于key中为什么使用{}大括号，在星球中有详细的讲解：<a href="https://articles.zsxq.com/id_7k4qtb2mofst.html">...</a>
+     * Key information, as to why {} braces are used in keys, there is a detailed explanation in Planet: <a href="https://articles.zsxq.com/id_7k4qtb2mofst.html">...</a>
      * */
     USER_INFO_KEY("user:info:%s","用户id","value为UserInfo类型","k"),
    
@@ -76,22 +76,22 @@ public enum RedisKeyManage {
     ;
 
     /**
-     * key值
+     * key value
      * */
     private final String key;
 
     /**
-     * key的说明
+     * Description of key
      * */
     private final String keyIntroduce;
 
     /**
-     * value的说明
+     * Description of value
      * */
     private final String valueIntroduce;
 
     /**
-     * 作者
+     * author
      * */
     private final String author;
 

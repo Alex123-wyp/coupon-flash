@@ -13,8 +13,8 @@ import java.io.IOException;
 import java.util.UUID;
 
 /**
- * @program: 黑马点评-plus升级版实战项目。添加 yupeng 微信，添加时备注 点评 来获取项目的完整资料
- * @description: 上传api
+ * @program: High-Concurrency Voucher Seckill Platform (HMDP Plus). Email: wyupeng072@gmail.com
+ * @description: Upload API
  * @author: yupeng
  **/
 @Slf4j
@@ -25,13 +25,13 @@ public class UploadController {
     @PostMapping("blog")
     public Result uploadImage(@RequestParam("file") MultipartFile image) {
         try {
-            // 获取原始文件名称
+            // Get original file name
             String originalFilename = image.getOriginalFilename();
-            // 生成新文件名
+            // Generate new file name
             String fileName = createNewFileName(originalFilename);
-            // 保存文件
+            // save file
             image.transferTo(new File(SystemConstants.IMAGE_UPLOAD_DIR, fileName));
-            // 返回结果
+            // Return results
             log.debug("文件上传成功，{}", fileName);
             return Result.ok(fileName);
         } catch (IOException e) {
@@ -50,19 +50,19 @@ public class UploadController {
     }
 
     private String createNewFileName(String originalFilename) {
-        // 获取后缀
+        // Get suffix
         String suffix = StrUtil.subAfter(originalFilename, ".", true);
-        // 生成目录
+        // Generate directory
         String name = UUID.randomUUID().toString();
         int hash = name.hashCode();
         int d1 = hash & 0xF;
         int d2 = (hash >> 4) & 0xF;
-        // 判断目录是否存在
+        // Determine whether the directory exists
         File dir = new File(SystemConstants.IMAGE_UPLOAD_DIR, StrUtil.format("/blogs/{}/{}", d1, d2));
         if (!dir.exists()) {
             dir.mkdirs();
         }
-        // 生成文件名
+        // Generate file name
         return StrUtil.format("/blogs/{}/{}/{}.{}", d1, d2, name, suffix);
     }
 }

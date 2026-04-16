@@ -1,15 +1,15 @@
 package org.yupeng.servicelock.info;
 
 /**
- * @program: 黑马点评-plus升级版实战项目。添加 yupeng 微信，添加时备注 点评 来获取项目的完整资料 
- * @description: 处理失败抽象
+ * @program: High-Concurrency Voucher Seckill Platform (HMDP Plus). Email: wyupeng072@gmail.com 
+ * @description: Failure handling abstraction
  * @author: yupeng
  **/
 public interface LockTimeOutHandler {
     
     /**
-     * 处理
-     * @param lockName 锁名
+     * deal with
+     * @param lockName lock name
      * */
     void handler(String lockName);
 }

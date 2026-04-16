@@ -21,8 +21,8 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 /**
- * @program: 黑马点评-plus升级版实战项目。添加 yupeng 微信，添加时备注 点评 来获取项目的完整资料
- * @description: 博客api
+ * @program: High-Concurrency Voucher Seckill Platform (HMDP Plus). Email: wyupeng072@gmail.com
+ * @description: Blog API
  * @author: yupeng
  **/
 @RestController
@@ -44,12 +44,12 @@ public class BlogController {
 
     @GetMapping("/of/me")
     public Result queryMyBlog(@RequestParam(value = "current", defaultValue = "1") Integer current) {
-        // 获取登录用户
+        // Get logged in user
         UserDTO user = UserHolder.getUser();
-        // 根据用户查询
+        // Based on user query
         Page<Blog> page = blogService.query()
                 .eq("user_id", user.getId()).page(new Page<>(current, SystemConstants.MAX_PAGE_SIZE));
-        // 获取当前页数据
+        // Get current page data
         List<Blog> records = page.getRecords();
         return Result.ok(records);
     }
@@ -73,10 +73,10 @@ public class BlogController {
     public Result queryBlogByUserId(
             @RequestParam(value = "current", defaultValue = "1") Integer current,
             @RequestParam("id") Long id) {
-        // 根据用户查询
+        // Based on user query
         Page<Blog> page = blogService.query()
                 .eq("user_id", id).page(new Page<>(current, SystemConstants.MAX_PAGE_SIZE));
-        // 获取当前页数据
+        // Get current page data
         List<Blog> records = page.getRecords();
         return Result.ok(records);
     }

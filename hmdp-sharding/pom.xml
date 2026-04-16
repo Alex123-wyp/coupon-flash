@@ -11,7 +11,7 @@
 
     <artifactId>hmdp-sharding</artifactId>
     <name>hmdp-sharding</name>
-    <description>分库分表组件</description>
+    <description>Sharding component</description>
     
 
     <dependencies>

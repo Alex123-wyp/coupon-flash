@@ -11,8 +11,8 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
- * @program: 黑马点评-plus升级版实战项目。添加 yupeng 微信，添加时备注 点评 来获取项目的完整资料
- * @description: 博客-实体
+ * @program: High-Concurrency Voucher Seckill Platform (HMDP Plus). Email: wyupeng072@gmail.com
+ * @description: Blog entity
  * @author: yupeng
  **/
 @Data
@@ -24,66 +24,66 @@ public class Blog implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * 主键
+     * primary key
      */
     @TableId(value = "id")
     private Long id;
     /**
-     * 商户id
+     * merchant ID
      */
     private Long shopId;
     /**
-     * 用户id
+     * user ID
      */
     private Long userId;
     /**
-     * 用户图标
+     * user icon
      */
     @TableField(exist = false)
     private String icon;
     /**
-     * 用户姓名
+     * Username
      */
     @TableField(exist = false)
     private String name;
     /**
-     * 是否点赞过了
+     * Have you liked it?
      */
     @TableField(exist = false)
     private Boolean isLike;
 
     /**
-     * 标题
+     * title
      */
     private String title;
 
     /**
-     * 探店的照片，最多9张，多张以","隔开
+     * There are a maximum of 9 photos for store visit, multiple photos separated by ","
      */
     private String images;
 
     /**
-     * 探店的文字描述
+     * Text description of Tandian
      */
     private String content;
 
     /**
-     * 点赞数量
+     * Number of likes
      */
     private Integer liked;
 
     /**
-     * 评论数量
+     * Number of comments
      */
     private Integer comments;
 
     /**
-     * 创建时间
+     * create time
      */
     private LocalDateTime createTime;
 
     /**
-     * 更新时间
+     * update time
      */
     private LocalDateTime updateTime;
 

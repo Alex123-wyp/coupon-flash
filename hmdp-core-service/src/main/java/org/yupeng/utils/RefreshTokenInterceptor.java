@@ -15,8 +15,8 @@ import static org.yupeng.utils.RedisConstants.LOGIN_USER_KEY;
 import static org.yupeng.utils.RedisConstants.LOGIN_USER_TTL;
 
 /**
- * @program: 黑马点评-plus升级版实战项目。添加 yupeng 微信，添加时备注 点评 来获取项目的完整资料
- * @description: token过滤器-黑马点评普通版本和plus版本使用
+ * @program: High-Concurrency Voucher Seckill Platform (HMDP Plus). Email: wyupeng072@gmail.com
+ * @description: Token interceptor for the regular and plus HMDP versions
  * @author: yupeng
  **/
 public class RefreshTokenInterceptor implements HandlerInterceptor {
@@ -29,36 +29,36 @@ public class RefreshTokenInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        // 1.获取请求头中的token
+        // 1. Get the token in the request header
         String token = request.getHeader("authorization");
         if (StrUtil.isBlank(token)) {
             return true;
         }
-        // 2.基于TOKEN获取redis中的用户
+        // 2. Get users in redis based on TOKEN
         String key  = LOGIN_USER_KEY + token;
         Map<Object, Object> userMap = stringRedisTemplate.opsForHash().entries(key);
 
-        // 3.判断用户是否存在
+        // 3. Determine whether the user exists
         if (userMap.isEmpty()) {
             return true;
         }
-        // 5.将查询到的hash数据转为UserDTO
+        // 5. Convert the queried hash data to UserDTO
         UserDTO userDTO = BeanUtil.fillBeanWithMap(userMap, new UserDTO(), false);
-        // 6.存在，保存用户信息到 ThreadLocal
+        // 6. Exists, save user information to ThreadLocal
         UserHolder.saveUser(userDTO);
-        // 7.刷新token有效期（按秒设置，避免 Redisson pExpire 递归问题）
+        // 7. Refresh the token validity period (set in seconds to avoid Redisson pExpire recursion problems)
         stringRedisTemplate.expire(
                 key,
                 TimeUnit.SECONDS.convert(LOGIN_USER_TTL, TimeUnit.MINUTES),
                 TimeUnit.SECONDS
         );
-        // 8.放行
+        // 8. Release
         return true;
     }
 
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
-        // 移除用户
+        // Remove user
         UserHolder.removeUser();
     }
 }

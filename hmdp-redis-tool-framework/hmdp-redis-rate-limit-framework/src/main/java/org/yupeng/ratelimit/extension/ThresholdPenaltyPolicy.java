@@ -11,8 +11,8 @@ import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 /**
- * @program: 黑马点评-plus升级版实战项目。添加 yupeng 微信，添加时备注 点评 来获取项目的完整资料
- * @description: 基于阈值的临时封禁
+ * @program: High-Concurrency Voucher Seckill Platform (HMDP Plus). Email: wyupeng072@gmail.com
+ * @description: Threshold-based temporary blocking
  * @author: yupeng
  **/
 @Slf4j

@@ -23,8 +23,8 @@ import static org.yupeng.constant.Constant.SECKILL_VOUCHER_CACHE_INVALIDATION_TO
 import static org.yupeng.constant.Constant.SPRING_INJECT_PREFIX_DISTINCTION_NAME;
 
 /**
- * @program: 黑马点评-plus升级版实战项目。添加 yupeng 微信，添加时备注 点评 来获取项目的完整资料
- * @description: 秒杀券缓存失效广播的 DLQ 消费者
+ * @program: High-Concurrency Voucher Seckill Platform (HMDP Plus). Email: wyupeng072@gmail.com
+ * @description: Flash Coupon Cache Invalidation Broadcast DLQ Consumer
  * @author: yupeng
  **/
 @Slf4j

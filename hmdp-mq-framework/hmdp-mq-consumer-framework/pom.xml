@@ -13,7 +13,7 @@
     <artifactId>hmdp-mq-consumer-framework</artifactId>
 
     <name>hmdp-mq-consumer-framework</name>
-    <description>mq消费者封装</description>
+    <description>MQ consumer wrappers</description>
 
     <dependencies>
         <dependency>

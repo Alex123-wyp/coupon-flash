@@ -8,14 +8,14 @@ import lombok.Getter;
 import java.util.Objects;
 
 /**
- * @program: 黑马点评-plus升级版实战项目。添加 yupeng 微信，添加时备注 点评 来获取项目的完整资料
- * @description: redis key包装
+ * @program: High-Concurrency Voucher Seckill Platform (HMDP Plus). Email: wyupeng072@gmail.com
+ * @description: Redis key wrapper
  * @author: yupeng
  **/
 @Getter
 public final class RedisKeyBuild {
     /**
-     * 实际使用的key
+     * actual key used
      * */
     private final String relKey;
 
@@ -24,9 +24,9 @@ public final class RedisKeyBuild {
     }
 
     /**
-     * 构建真实的key
-     * @param redisKeyManage key的枚举
-     * @param args 占位符的值
+     * Build real key
+     * @param redisKeyManage key enumeration
+     * @param args value of placeholder
      * */
     public static RedisKeyBuild createRedisKey(RedisKeyManage redisKeyManage, Object... args){
         String redisRelKey = String.format(redisKeyManage.getKey(),args);

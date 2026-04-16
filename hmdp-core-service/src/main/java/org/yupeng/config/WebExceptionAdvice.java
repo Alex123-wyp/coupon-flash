@@ -15,8 +15,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * @program: 黑马点评-plus升级版实战项目。添加 yupeng 微信，添加时备注 点评 来获取项目的完整资料
- * @description: 异常处理器
+ * @program: High-Concurrency Voucher Seckill Platform (HMDP Plus). Email: wyupeng072@gmail.com
+ * @description: Exception handler
  * @author: yupeng
  **/
 @Slf4j
@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 public class WebExceptionAdvice {
     
     /**
-     * 业务异常
+     * Business abnormality
      * */
     @ExceptionHandler(value = HmdpFrameException.class)
     public Result<String> toolkitExceptionHandler(HttpServletRequest request, HmdpFrameException hmdpFrameException) {
@@ -32,7 +32,7 @@ public class WebExceptionAdvice {
         return Result.fail( hmdpFrameException.getMessage());
     }
     /**
-     * 参数验证异常
+     * Parameter validation exception
      */
     @SneakyThrows
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
@@ -52,7 +52,7 @@ public class WebExceptionAdvice {
     }
     
     /**
-     * 拦截未捕获异常
+     * Intercepting uncaught exceptions
      */
     @ExceptionHandler(value = Throwable.class)
     public Result<String> defaultErrorHandler(HttpServletRequest request, Throwable throwable) {

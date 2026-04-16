@@ -18,8 +18,8 @@ import static org.yupeng.utils.RedisConstants.CACHE_NULL_TTL;
 import static org.yupeng.utils.RedisConstants.LOCK_SHOP_KEY;
 
 /**
- * @program: 黑马点评-plus升级版实战项目。添加 yupeng 微信，添加时备注 点评 来获取项目的完整资料
- * @description: 缓存工具-黑马点评普通版本使用
+ * @program: High-Concurrency Voucher Seckill Platform (HMDP Plus). Email: wyupeng072@gmail.com
+ * @description: Cache tool-Using the normal version of Dark Horse Dianping
  * @author: yupeng
  **/
 @Slf4j
@@ -39,40 +39,40 @@ public class CacheClient {
     }
 
     public void setWithLogicalExpire(String key, Object value, Long time, TimeUnit unit) {
-        // 设置逻辑过期
+        // Set logical expiration
         RedisData redisData = new RedisData();
         redisData.setData(value);
         redisData.setExpireTime(LocalDateTime.now().plusSeconds(unit.toSeconds(time)));
-        // 写入Redis
+        // Write to Redis
         stringRedisTemplate.opsForValue().set(key, JSONUtil.toJsonStr(redisData));
     }
 
     public <R,ID> R queryWithPassThrough(
             String keyPrefix, ID id, Class<R> type, Function<ID, R> dbFallback, Long time, TimeUnit unit){
         String key = keyPrefix + id;
-        // 1.从redis查询商铺缓存
+        // 1. Query the store cache from redis
         String json = stringRedisTemplate.opsForValue().get(key);
-        // 2.判断是否存在
+        // 2. Determine whether it exists
         if (StrUtil.isNotBlank(json)) {
-            // 3.存在，直接返回
+            // 3. Exists, returns directly
             return JSONUtil.toBean(json, type);
         }
-        // 判断命中的是否是空值
+        // Determine whether the hit is a null value
         if (json != null) {
-            // 返回一个错误信息
+            // Return an error message
             return null;
         }
 
-        // 4.不存在，根据id查询数据库
+        // 4. Does not exist, query the database based on id
         R r = dbFallback.apply(id);
-        // 5.不存在，返回错误
+        // 5. Does not exist, returns an error
         if (r == null) {
-            // 将空值写入redis
+            // Write null values ​​to redis
             stringRedisTemplate.opsForValue().set(key, "", CACHE_NULL_TTL, TimeUnit.MINUTES);
-            // 返回错误信息
+            // Return error message
             return null;
         }
-        // 6.存在，写入redis
+        // 6. Exists and writes to redis
         this.set(key, r, time, unit);
         return r;
     }
@@ -80,94 +80,94 @@ public class CacheClient {
     public <R, ID> R queryWithLogicalExpire(
             String keyPrefix, ID id, Class<R> type, Function<ID, R> dbFallback, Long time, TimeUnit unit) {
         String key = keyPrefix + id;
-        // 1.从redis查询商铺缓存
+        // 1. Query the store cache from redis
         String json = stringRedisTemplate.opsForValue().get(key);
-        // 2.判断是否存在
+        // 2. Determine whether it exists
         if (StrUtil.isBlank(json)) {
-            // 3.存在，直接返回
+            // 3. Exists, returns directly
             return null;
         }
-        // 4.命中，需要先把json反序列化为对象
+        // 4. Hit, you need to deserialize json into an object first
         RedisData redisData = JSONUtil.toBean(json, RedisData.class);
         R r = JSONUtil.toBean((JSONObject) redisData.getData(), type);
         LocalDateTime expireTime = redisData.getExpireTime();
-        // 5.判断是否过期
+        // 5. Determine whether it has expired
         if(expireTime.isAfter(LocalDateTime.now())) {
-            // 5.1.未过期，直接返回店铺信息
+            // 5.1. Not expired, return to shop information directly
             return r;
         }
-        // 5.2.已过期，需要缓存重建
-        // 6.缓存重建
-        // 6.1.获取互斥锁
+        // 5.2. Expired and needs to be cached again.
+        // 6. Cache reconstruction
+        // 6.1. Obtain mutex lock
         String lockKey = LOCK_SHOP_KEY + id;
         boolean isLock = tryLock(lockKey);
-        // 6.2.判断是否获取锁成功
+        // 6.2. Determine whether the lock is acquired successfully
         if (isLock){
-            // 6.3.成功，开启独立线程，实现缓存重建
+            // 6.3. Successful, start independent thread to realize cache reconstruction
             CACHE_REBUILD_EXECUTOR.submit(() -> {
                 try {
-                    // 查询数据库
+                    // Query database
                     R newR = dbFallback.apply(id);
-                    // 重建缓存
+                    // Rebuild cache
                     this.setWithLogicalExpire(key, newR, time, unit);
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }finally {
-                    // 释放锁
+                    // release lock
                     unlock(lockKey);
                 }
             });
         }
-        // 6.4.返回过期的商铺信息
+        // 6.4. Return expired store information
         return r;
     }
 
     public <R, ID> R queryWithMutex(
             String keyPrefix, ID id, Class<R> type, Function<ID, R> dbFallback, Long time, TimeUnit unit) {
         String key = keyPrefix + id;
-        // 1.从redis查询商铺缓存
+        // 1. Query the store cache from redis
         String shopJson = stringRedisTemplate.opsForValue().get(key);
-        // 2.判断是否存在
+        // 2. Determine whether it exists
         if (StrUtil.isNotBlank(shopJson)) {
-            // 3.存在，直接返回
+            // 3. Exists, returns directly
             return JSONUtil.toBean(shopJson, type);
         }
-        // 判断命中的是否是空值
+        // Determine whether the hit is a null value
         if (shopJson != null) { 
-            // 返回一个错误信息
+            // Return an error message
             return null;
         }
 
-        // 4.实现缓存重建
-        // 4.1.获取互斥锁
+        // 4. Implement cache reconstruction
+        // 4.1. Obtain mutex lock
         String lockKey = LOCK_SHOP_KEY + id;
         R r = null;
         try {
             boolean isLock = tryLock(lockKey);
-            // 4.2.判断是否获取成功
+            // 4.2. Determine whether the acquisition is successful
             if (!isLock) {
-                // 4.3.获取锁失败，休眠并重试
+                // 4.3. Failed to acquire lock, sleep and try again
                 Thread.sleep(50);
                 return queryWithMutex(keyPrefix, id, type, dbFallback, time, unit);
             }
-            // 4.4.获取锁成功，根据id查询数据库
+            // 4.4. Obtain the lock successfully and query the database based on the id.
             r = dbFallback.apply(id);
-            // 5.不存在，返回错误
+            // 5. Does not exist, returns an error
             if (r == null) {
-                // 将空值写入redis
+                // Write null values ​​to redis
                 stringRedisTemplate.opsForValue().set(key, "", CACHE_NULL_TTL, TimeUnit.MINUTES);
-                // 返回错误信息
+                // Return error message
                 return null;
             }
-            // 6.存在，写入redis
+            // 6. Exists and writes to redis
             this.set(key, r, time, unit);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }finally {
-            // 7.释放锁
+            // 7. Release the lock
             unlock(lockKey);
         }
-        // 8.返回
+        // 8.Return
         return r;
     }
 

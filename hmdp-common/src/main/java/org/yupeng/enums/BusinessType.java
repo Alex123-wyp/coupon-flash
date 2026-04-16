@@ -3,13 +3,13 @@ package org.yupeng.enums;
 import lombok.Getter;
 
 /**
- * @program: 黑马点评-plus升级版实战项目。添加 yupeng 微信，添加时备注 点评 来获取项目的完整资料
- * @description: 业务类型
+ * @program: High-Concurrency Voucher Seckill Platform (HMDP Plus). Email: wyupeng072@gmail.com
+ * @description: Business type
  * @author: yupeng
  **/
 public enum BusinessType {
     /**
-     * 业务类型
+     * Business type
      * */
     SUCCESS(1, "创建订单成功"),
     TIMEOUT(2, "创建订单超时"),

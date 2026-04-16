@@ -10,8 +10,8 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
- * @program: 黑马点评-plus升级版实战项目。添加 yupeng 微信，添加时备注 点评 来获取项目的完整资料
- * @description: 关注-实体
+ * @program: High-Concurrency Voucher Seckill Platform (HMDP Plus). Email: wyupeng072@gmail.com
+ * @description: Follow entity
  * @author: yupeng
  **/
 @Data
@@ -23,23 +23,23 @@ public class Follow implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * 主键
+     * primary key
      */
     @TableId(value = "id")
     private Long id;
 
     /**
-     * 用户id
+     * user ID
      */
     private Long userId;
 
     /**
-     * 关联的用户id
+     * associated user ID
      */
     private Long followUserId;
 
     /**
-     * 创建时间
+     * create time
      */
     private LocalDateTime createTime;
 

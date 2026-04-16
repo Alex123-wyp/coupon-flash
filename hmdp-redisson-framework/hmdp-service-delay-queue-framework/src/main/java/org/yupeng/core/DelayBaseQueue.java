@@ -5,8 +5,8 @@ import org.redisson.api.RBlockingQueue;
 import org.redisson.api.RedissonClient;
 
 /**
- * @program: 黑马点评-plus升级版实战项目。添加 yupeng 微信，添加时备注 点评 来获取项目的完整资料 
- * @description: 延迟队列 阻塞队列
+ * @program: High-Concurrency Voucher Seckill Platform (HMDP Plus). Email: wyupeng072@gmail.com 
+ * @description: Delay queue blocking queue
  * @author: yupeng
  **/
 @Slf4j

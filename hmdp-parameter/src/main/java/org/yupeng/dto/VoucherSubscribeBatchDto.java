@@ -9,8 +9,8 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
- * @program: 黑马点评-plus升级版实战项目。添加 yupeng 微信，添加时备注 点评 来获取项目的完整资料
- * @description: 优惠券订阅批量查询
+ * @program: High-Concurrency Voucher Seckill Platform (HMDP Plus). Email: wyupeng072@gmail.com
+ * @description: Voucher subscription batch query
  * @author: yupeng
  **/
 @Data
@@ -21,7 +21,7 @@ public class VoucherSubscribeBatchDto implements Serializable {
     private static final long serialVersionUID = 1L;
     
     /**
-     * 优惠券id集合
+     * voucher ID collection
      * */
     @NotNull
     private List<Long> voucherIdList;

@@ -11,7 +11,7 @@
     
     <artifactId>hmdp-service-delay-queue-framework</artifactId>
     <name>hmdp-service-delay-queue-framework</name>
-    <description>延迟队列</description>
+    <description>Delay queue</description>
 
     <dependencies>
         <dependency>

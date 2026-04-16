@@ -34,8 +34,8 @@ import java.util.concurrent.TimeUnit;
 import static org.yupeng.constant.Constant.DELAY_VOUCHER_REMINDER;
 
 /**
- * @program: 黑马点评-plus升级版实战项目。添加 yupeng 微信，添加时备注 点评 来获取项目的完整资料
- * @description: 延迟抢购优惠券提醒-消费
+ * @program: High-Concurrency Voucher Seckill Platform (HMDP Plus). Email: wyupeng072@gmail.com
+ * @description: Delayed seckill voucher reminder consumer
  * @author: yupeng
  **/
 
@@ -66,32 +66,32 @@ public class ConsumerDelayedVoucherReminder implements ConsumerTask {
     private long dedupWindowSeconds;
 
     /**
-     * 当优惠券未设置allowedLevels/minLevel时的默认最小会员等级
+     * The default minimum membership level when the coupon does not set allowedLevels/minLevel
      * */
     @Value("${seckill.reminder.notify.default.minLevel:1}")
     private int defaultMinLevel;
     /**
-     * 每次提醒的最大用户数量，防止一次性通知过多
+     * Maximum number of users notified per reminder to avoid notifying too many users at once
      * */
     @Value("${seckill.reminder.notify.max.users:1000}")
     private int maxNotifyUsers;
     /**
-     * 是否附加通知“最近购买活跃用户”
+     * Whether to additionally notify recently active purchasing users
      * */
     @Value("${seckill.reminder.notify.top.buyers.enabled:true}")
     private boolean topBuyersEnabled;
     /**
-     * 统计最近多少天的购买行为
+     * Number of recent days of purchase activity to count
      * */
     @Value("${seckill.reminder.notify.top.buyers.days:30}")
     private int topBuyersDays;
     /**
-     * Top购买用户数量
+     * Top purchaser count
      * */
     @Value("${seckill.reminder.notify.top.buyers.count:200}")
     private int topBuyersCount;
     /**
-     * 最大会员等级
+     * Maximum membership level
      */
     @Value("${seckill.reminder.notify.user.level.max:10}")
     private int maxUserLevel;

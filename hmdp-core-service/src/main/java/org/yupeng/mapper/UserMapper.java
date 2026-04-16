@@ -4,8 +4,8 @@ import org.yupeng.entity.User;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**
- * @program: 黑马点评-plus升级版实战项目。添加 yupeng 微信，添加时备注 点评 来获取项目的完整资料
- * @description: 用户 Mapper
+ * @program: High-Concurrency Voucher Seckill Platform (HMDP Plus). Email: wyupeng072@gmail.com
+ * @description: User Mapper
  * @author: yupeng
  **/
 public interface UserMapper extends BaseMapper<User> {

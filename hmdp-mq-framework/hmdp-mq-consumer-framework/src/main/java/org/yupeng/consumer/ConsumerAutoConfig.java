@@ -1,8 +1,8 @@
 package org.yupeng.consumer;
 
 /**
- * @program: 黑马点评-plus升级版实战项目。添加 yupeng 微信，添加时备注 点评 来获取项目的完整资料
- * @description: Kafka Consumer自动配置类，当前为空配置类，保留以支持后续扩展（如统一监听容器、拦截器、错误处理器等）。
+ * @program: High-Concurrency Voucher Seckill Platform (HMDP Plus). Email: wyupeng072@gmail.com
+ * @description: Kafka consumer auto-configuration class. It is currently empty and reserved for future extensions such as shared listener containers, interceptors, and error handlers.
  * @author: yupeng
  **/
 public class ConsumerAutoConfig {

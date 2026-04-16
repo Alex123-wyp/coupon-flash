@@ -22,8 +22,8 @@ import java.util.Objects;
 import static org.yupeng.constant.DistributedLockConstants.UPDATE_USER_INFO_LOCK;
 
 /**
- * @program: 黑马点评-plus升级版实战项目。添加 yupeng 微信，添加时备注 点评 来获取项目的完整资料
- * @description: 用户信息 接口实现
+ * @program: High-Concurrency Voucher Seckill Platform (HMDP Plus). Email: wyupeng072@gmail.com
+ * @description: User information interface implementation
  * @author: yupeng
  **/
 @Slf4j
@@ -65,7 +65,7 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         if (Objects.equals(oldLevel, newLevel)) {
             return Result.ok();
         }
-        // 更新数据库等级
+        // Update database level
         boolean updated = this.lambdaUpdate()
                 .set(UserInfo::getLevel, newLevel)
                 .eq(UserInfo::getUserId, userId)
@@ -73,9 +73,9 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         if (!updated) {
             return Result.fail("更新等级失败");
         }
-        // 删除用户信息缓存
+        // Delete user information cache
         redisCache.del(RedisKeyBuild.createRedisKey(RedisKeyManage.USER_INFO_KEY, userId));
-        // 维护Redis集合倒排索引（best-effort，不影响事务提交）
+        // Maintain Redis set inverted indexes (best-effort and does not affect transaction commits)
         try {
             if (Objects.nonNull(oldLevel) && oldLevel > 0) {
                 redisCache.removeForSet(
@@ -88,7 +88,7 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
                     userId
             );
         } catch (Exception e) {
-            // 记录日志但不回滚业务事务
+            // Log the event without rolling back the business transaction
             log.error("维护用户等级集合失败 userId={} oldLevel={} newLevel={}", userId, oldLevel, newLevel, e);
         }
         return Result.ok();

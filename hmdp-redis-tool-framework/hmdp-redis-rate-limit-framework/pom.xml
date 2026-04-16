@@ -13,7 +13,7 @@
     <artifactId>hmdp-redis-rate-limit-framework</artifactId>
 
     <name>hmdp-redis-rate-limit-framework</name>
-    <description>redis的限流</description>
+    <description>Redis rate limiting</description>
     
     <dependencies>
         <dependency>

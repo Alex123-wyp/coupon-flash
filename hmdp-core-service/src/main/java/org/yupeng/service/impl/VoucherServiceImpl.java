@@ -57,8 +57,8 @@ import static org.yupeng.service.impl.VoucherOrderServiceImpl.SECKILL_ORDER_EXEC
 import static org.yupeng.utils.RedisConstants.SECKILL_STOCK_KEY;
 
 /**
- * @program: 黑马点评-plus升级版实战项目。添加 yupeng 微信，添加时备注 点评 来获取项目的完整资料
- * @description: 优惠券 接口实现
+ * @program: High-Concurrency Voucher Seckill Platform (HMDP Plus). Email: wyupeng072@gmail.com
+ * @description: Voucher interface implementation
  * @author: yupeng
  **/
 @Slf4j
@@ -117,9 +117,9 @@ public class VoucherServiceImpl extends ServiceImpl<VoucherMapper, Voucher> impl
 
     @Override
     public Result<List<Voucher>> queryVoucherOfShop(Long shopId) {
-        // 查询优惠券信息
+        // Query voucher information
         List<Voucher> vouchers = getBaseMapper().queryVoucherOfShop(shopId);
-        // 返回结果
+        // Return results
         return Result.ok(vouchers);
     }
 
@@ -190,6 +190,8 @@ public class VoucherServiceImpl extends ServiceImpl<VoucherMapper, Voucher> impl
         if (updatedSeckill) {
             seckillUpdate.set(SeckillVoucher::getUpdateTime, LocalDateTimeUtil.now()).update();
         }
+
+        //If there has some updates in terms of both normal voucher and secKill voucher
         if (updatedVoucher || updatedSeckill) {
             voucherUpdate.update();
             seckillUpdate.update();
@@ -268,7 +270,7 @@ public class VoucherServiceImpl extends ServiceImpl<VoucherMapper, Voucher> impl
                 newRedisStock
                 );
 
-        //如果是增加库存,尝试将资格自动分配给订阅队列中最早的未购用户
+        //If you are adding inventory, try to automatically assign qualifications to the oldest unpurchased user in the subscription queue.
         if (stockUpdateType == StockUpdateType.INCREASE) {
             SECKILL_ORDER_EXECUTOR.execute(() -> voucherOrderService
                     .autoIssueVoucherToEarliestSubscriber(seckillVoucher.getVoucherId(),null));
@@ -281,7 +283,7 @@ public class VoucherServiceImpl extends ServiceImpl<VoucherMapper, Voucher> impl
         Long userId = UserHolder.getUser().getId();
         String userIdStr = String.valueOf(userId);
         
-        //计算统一 TTL（过期秒数）
+        //Calculate unified TTL (seconds to expire)
         Long ttlSeconds = redisCache.getExpire(
                 RedisKeyBuild.createRedisKey(RedisKeyManage.SECKILL_VOUCHER_TAG_KEY, voucherId),
                 TimeUnit.SECONDS
@@ -302,7 +304,7 @@ public class VoucherServiceImpl extends ServiceImpl<VoucherMapper, Voucher> impl
                 ttlSeconds = 3600L;
             }
         }
-        //检查是否已购买，判断用户是否在 SECKILL_USER_TAG_KEY:{voucherId} 集合中（已购集合）
+        //Check whether the purchase has been made and determine whether the user is in the SECKILL_USER_TAG_KEY:{voucherId} collection (purchased collection)
         boolean purchased = Boolean.TRUE.equals(redisCache.isMemberForSet(
                 RedisKeyBuild.createRedisKey(RedisKeyManage.SECKILL_USER_TAG_KEY, voucherId),
                 userIdStr
@@ -316,21 +318,21 @@ public class VoucherServiceImpl extends ServiceImpl<VoucherMapper, Voucher> impl
             return;
         }
         
-        // 加入订阅集合（SET），幂等
+        // Add subscription set (SET), idempotent
         RedisKeyBuild setKey = RedisKeyBuild.createRedisKey(RedisKeyManage.SECKILL_SUBSCRIBE_USER_TAG_KEY, voucherId);
         Long added = redisCache.addForSet(setKey, userIdStr);
         redisCache.expire(setKey, ttlSeconds, TimeUnit.SECONDS);
         
-        // 加入订阅队列（ZSET），仅首次加入时写入顺序分数
+        // Join subscription queue (ZSET), only write sequential score on first join
         RedisKeyBuild zsetKey = RedisKeyBuild.createRedisKey(RedisKeyManage.SECKILL_SUBSCRIBE_ZSET_TAG_KEY, voucherId);
         if (Objects.nonNull(added) && added > 0) {
             redisCache.addForSortedSet(zsetKey, userIdStr, (double) System.currentTimeMillis(), ttlSeconds, TimeUnit.SECONDS);
         } else {
-            // 已存在则仅对齐TTL
+            // If already exists, only align TTL
             redisCache.expire(zsetKey, ttlSeconds, TimeUnit.SECONDS);
         }
         
-        // 更新订阅状态为 SUBSCRIBED（如已是 SUCCESS 则不降级）
+        // Update the subscription status to SUBSCRIBED (if it is already SUCCESS, it will not be downgraded)
         Integer prev = redisCache.getForHash(statusKey, userIdStr, Integer.class);
         if (!SubscribeStatus.SUCCESS.getCode().equals(prev)) {
             redisCache.putHash(statusKey, userIdStr, SubscribeStatus.SUBSCRIBED.getCode(), ttlSeconds, TimeUnit.SECONDS);
@@ -348,11 +350,11 @@ public class VoucherServiceImpl extends ServiceImpl<VoucherMapper, Voucher> impl
         RedisKeyBuild zsetKey = RedisKeyBuild.createRedisKey(RedisKeyManage.SECKILL_SUBSCRIBE_ZSET_TAG_KEY, voucherId);
         RedisKeyBuild statusKey = RedisKeyBuild.createRedisKey(RedisKeyManage.SECKILL_SUBSCRIBE_STATUS_TAG_KEY, voucherId);
         
-        // 从订阅集合与队列移除
+        // Remove from subscription collections and queues
         redisCache.removeForSet(setKey, userIdStr);
         redisCache.delForSortedSet(zsetKey, userIdStr);
         
-        // 已购则维持 SUCCESS，否则置为 UNSUBSCRIBED
+        // If purchased, maintain SUCCESS, otherwise set to UNSUBSCRIBED
         boolean purchased = Boolean.TRUE.equals(redisCache.isMemberForSet(
                 RedisKeyBuild.createRedisKey(RedisKeyManage.SECKILL_USER_TAG_KEY, voucherId),
                 userIdStr
@@ -414,7 +416,7 @@ public class VoucherServiceImpl extends ServiceImpl<VoucherMapper, Voucher> impl
         String userIdStr = String.valueOf(userId);
         List<GetSubscribeStatusVo> res = new ArrayList<>();
         for (Long voucherId : voucherSubscribeBatchDto.getVoucherIdList()) {
-            // 优先使用HASH缓存
+            // Prioritize HASH caching
             RedisKeyBuild statusKey = RedisKeyBuild.createRedisKey(RedisKeyManage.SECKILL_SUBSCRIBE_STATUS_TAG_KEY, voucherId);
             Integer st = redisCache.getForHash(statusKey, userIdStr, Integer.class);
             if (st != null) {

@@ -14,7 +14,7 @@ import {
 const router = useRouter()
 const userStore = useUserStore()
 
-// 数据定义
+// Data definitions
 const fileInput = ref(null)
 const fileList = ref([]) // 文件列表
 const params = reactive({
@@ -26,23 +26,23 @@ const shops = ref([]) // 商户信息
 const shopName = ref('') // 商户名称
 const selectedShop = ref({}) // 选中的商户
 
-// 生命周期钩子
+// Lifecycle hooks
 onMounted(() => {
   checkLogin()
   queryShops()
 })
 
-// 方法定义
+// Method definitions
 const checkLogin = () => {
-  // 获取token
+  // Get the token
   const token = userStore.getToken()
   if (!token) {
     router.push('/login')
     return
   }
 
-  // TODO: 查询用户信息
-  // 这里可以添加获取用户信息的API调用
+  // TODO: Query user information
+  // Here you can add API calls to obtain user information
 }
 
 const queryShops = () => {
@@ -62,22 +62,22 @@ const selectShop = (shop) => {
 
 // const submitBlog = () => {
 //   if (!params.title) {
-//     ElMessage.warning('请输入标题')
+//     ElMessage.warning('Please enter a title')
 //     return
 //   }
 
 //   if (!params.content) {
-//     ElMessage.warning('请输入内容')
+//     ElMessage.warning('Please enter content')
 //     return
 //   }
 
 //   if (fileList.value.length === 0) {
-//     ElMessage.warning('请上传至少一张图片')
+//     ElMessage.warning('Please upload at least one picture')
 //     return
 //   }
 
 //   if (!selectedShop.value.id) {
-//     ElMessage.warning('请选择关联商户')
+//     ElMessage.warning('Please select the associated merchant')
 //     return
 //   }
 
@@ -89,11 +89,11 @@ const selectShop = (shop) => {
 
 //   createBlog(data)
 //     .then(() => {
-//       ElMessage.success('发布成功')
+//       ElMessage.success('Published successfully')
 //       router.push('/infoHtml')
 //     })
 //     .catch((err) => {
-//       ElMessage.error(err.message || '发布失败')
+//       ElMessage.error(err.message || 'Publishing failed')
 //     })
 // }
 

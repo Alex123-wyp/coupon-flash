@@ -12,8 +12,8 @@ import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * @program: 黑马点评-plus升级版实战项目。添加 yupeng 微信，添加时备注 点评 来获取项目的完整资料 
- * @description: 雪花算法
+ * @program: High-Concurrency Voucher Seckill Platform (HMDP Plus). Email: wyupeng072@gmail.com 
+ * @description: Snowflake algorithm
  * @author: yupeng
  **/
 @Slf4j
@@ -106,7 +106,7 @@ public class SnowflakeIdGenerator {
     private long getBase(){
         int five = 5;
         long timestamp = timeGen();
-        //闰秒
+        //Leap second
         if (timestamp < lastTimestamp) {
             long offset = lastTimestamp - timestamp;
             if (offset <= five) {
@@ -125,15 +125,15 @@ public class SnowflakeIdGenerator {
         }
         
         if (lastTimestamp == timestamp) {
-            // 相同毫秒内，序列号自增
+            // Within the same millisecond, increment the sequence number
             final long sequenceMask = ~(-1L << sequenceBits);
             sequence = (sequence + 1) & sequenceMask;
             if (sequence == 0) {
-                // 同一毫秒的序列数已经达到最大
+                // The sequence number in the same millisecond has reached the maximum
                 timestamp = tilNextMillis(lastTimestamp);
             }
         } else {
-            // 不同毫秒内，序列号置为 1 - 2 随机数
+            // Within a different millisecond, reset the sequence number to a random value between 1 and 2
             sequence = ThreadLocalRandom.current().nextLong(1, 3);
         }
         

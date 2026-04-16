@@ -9,28 +9,28 @@ import { getUser, getUserInfo } from '@/api/user'
 const router = useRouter()
 const userStore = useUserStore()
 
-// 数据定义
+// Data definitions
 const user = ref({})
 const info = ref({})
 
-// 生命周期钩子
+// Lifecycle hooks
 onMounted(() => {
   checkLogin()
 })
 
-// 方法定义
+// Method definitions
 const checkLogin = () => {
-  // 获取用户信息
+  // Get user information
   getUser()
     .then(({ data }) => {
-      // 保存用户
+      // save user
       user.value = data
-      // 查询用户详情
+      // Query user details
       getUserInfo(data.id)
         .then(({ data: userInfo }) => {
           if (userInfo) {
             info.value = userInfo
-            // 保存到本地
+            // Save locally
             userStore.setUserInfo(userInfo)
           }
         })

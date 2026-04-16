@@ -1,6 +1,6 @@
 import request from '@/utils/request'
 
-// 上传图片
+// Upload an image
 export function uploadBlogImage(data) {
   return request({
     url: '/upload/blog',
@@ -9,7 +9,7 @@ export function uploadBlogImage(data) {
   })
 }
 
-// 发布博客
+// Publish a blog post
 export function publishBlog(data) {
   return request({
     url: '/blog',
@@ -18,7 +18,7 @@ export function publishBlog(data) {
   })
 }
 
-// 查询附近的店铺
+// Query nearby shops
 export function queryNearbyShops(params) {
   return request({
     url: '/shop/of/nearby',
@@ -26,11 +26,11 @@ export function queryNearbyShops(params) {
     params
   })
 }
-// 查询店铺: 根据名称 名称为空时 查询所有店铺
+// Query shops by name, or all shops when the name is empty
 export const queryShopsByName = (name) =>
   request.get('/shop/of/name', null, { params: { name } })
-// 创建博客
+// Create a blog post
 export const createBlog = (data) => request.post('/blog', data)
-// 删除博客图片
+// Delete a blog image
 export const deleteBlogImage = (name) =>
   request.delete('/upload/blog/delete', null, { params: { name } })

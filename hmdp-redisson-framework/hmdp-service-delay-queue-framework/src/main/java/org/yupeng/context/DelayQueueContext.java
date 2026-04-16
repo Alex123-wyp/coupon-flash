@@ -5,15 +5,15 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 /**
- * @program: 黑马点评-plus升级版实战项目。添加 yupeng 微信，添加时备注 点评 来获取项目的完整资料 
- * @description: 延迟队列 发送者上下文
+ * @program: High-Concurrency Voucher Seckill Platform (HMDP Plus). Email: wyupeng072@gmail.com 
+ * @description: Delay queue sender context
  * @author: yupeng
  **/
 public class DelayQueueContext {
     
     private final DelayQueueBasePart delayQueueBasePart;
     /**
-     * key为topic主题，value为发送消息的处理器
+     * The key is the topic, and the value is the processor that sends the message.
      * */
     private final Map<String, DelayQueueProduceCombine> delayQueueProduceCombineMap = new ConcurrentHashMap<>();
     

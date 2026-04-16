@@ -12,7 +12,7 @@
     <artifactId>hmdp-core-service</artifactId>
 
     <name>hmdp-core-service</name>
-    <description>黑马点评核心服务</description>
+    <description>HMDP core service</description>
     <dependencies>
         <dependency>
             <groupId>org.yupeng</groupId>
@@ -27,7 +27,7 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
             <exclusions>
-                <!--去除spring boot自带的 -->
+                <!-- remove the Spring Boot built-in configuration -->
                 <exclusion>
                     <groupId>org.springframework.boot</groupId>
                     <artifactId>spring-boot-starter-logging</artifactId>

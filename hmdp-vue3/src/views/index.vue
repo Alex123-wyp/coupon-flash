@@ -14,7 +14,7 @@ const types = ref([])
 const blogs = ref([])
 const current = ref(1)
 
-// 获取首页商品列表数据
+// Get product list data on home page
 const queryTypes = async () => {
   try {
     console.log('获取首页商品列表数据')
@@ -27,7 +27,7 @@ const queryTypes = async () => {
   }
 }
 queryTypes()
-// 获取首页博客数据
+// Get homepage blog data
 const queryHotBlogsScroll = async () => {
   try {
     console.log('获取首页博客数据')
@@ -46,7 +46,7 @@ const queryHotBlogsScroll = async () => {
   }
 }
 queryHotBlogsScroll()
-// 添加点赞
+// Add likes
 const addLike = async (blog) => {
   try {
     await indexAddLike(blog.id)
@@ -55,7 +55,7 @@ const addLike = async (blog) => {
     console.log(error)
   }
 }
-// 根据id查询博客
+// Query blog based on id
 const queryBlogById = async (blog) => {
   try {
     const { data } = await indexQueryBlogById(blog.id)
@@ -66,7 +66,7 @@ const queryBlogById = async (blog) => {
     blog.liked++
   }
 }
-// 滚动到底部加载更多数据
+// Scroll to bottom to load more data
 const onScroll = (e) => {
   let scrollTop = e.target.scrollTop
   let offsetHeight = e.target.offsetHeight
@@ -74,7 +74,7 @@ const onScroll = (e) => {
   if (scrollTop + offsetHeight > scrollHeight && !isReachBottom.value) {
     isReachBottom.value = true
 
-    // 再次查询下一页数据
+    // Query the next page of data again
     current.value++
     queryHotBlogsScroll()
   } else {
@@ -90,7 +90,7 @@ const toShopList = (id, name) => {
 const toBlogDetail = (b) => {
   router.push(`/blogDetail/${b.id}`)
 }
-// 跳转到个人主页
+// Jump to personal homepage
 const toInfo = () => {
   router.push('/InfoHtml')
 }

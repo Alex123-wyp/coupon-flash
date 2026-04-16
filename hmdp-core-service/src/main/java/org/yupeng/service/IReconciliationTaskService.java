@@ -1,8 +1,8 @@
 package org.yupeng.service;
 
 /**
- * @program: 黑马点评-plus升级版实战项目。添加 yupeng 微信，添加时备注 点评 来获取项目的完整资料
- * @description: 对账执行 接口
+ * @program: High-Concurrency Voucher Seckill Platform (HMDP Plus). Email: wyupeng072@gmail.com
+ * @description: Reconciliation execution interface
  * @author: yupeng
  **/
 public interface IReconciliationTaskService {
@@ -10,7 +10,7 @@ public interface IReconciliationTaskService {
     void reconciliationTaskExecute();
 
     /**
-     * 删除指定券的 Redis 库存键，触发按需重载。
+     * Delete the Redis inventory key of the specified coupon and trigger on-demand reloading.
      */
     void delRedisStock(Long voucherId);
 }

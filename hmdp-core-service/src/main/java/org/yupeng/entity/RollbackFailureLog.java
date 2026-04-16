@@ -10,8 +10,8 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
- * @program: 黑马点评-plus升级版实战项目。添加 yupeng 微信，添加时备注 点评 来获取项目的完整资料
- * @description: 回滚失败日志-实体
+ * @program: High-Concurrency Voucher Seckill Platform (HMDP Plus). Email: wyupeng072@gmail.com
+ * @description: Rollback failure log entity
  * @author: yupeng
  **/
 @Data
@@ -22,37 +22,37 @@ public class RollbackFailureLog implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    /** 主键 */
+    /** Primary key */
     @TableId(value = "id")
     private Long id;
 
-    /** 优惠券id */
+    /** voucher ID */
     private Long voucherId;
 
-    /** 用户id */
+    /** user ID */
     private Long userId;
 
-    /** 订单id */
+    /** order ID */
     private Long orderId;
 
-    /** 追踪唯一标识 */
+    /** Track unique identifiers */
     private Long traceId;
 
-    /** 失败原因或详情 */
+    /** Reason or details of failure */
     private String detail;
 
-    /** Lua返回码（BaseCode），用于判定失败类型 */
+    /** Lua return code (BaseCode), used to determine the failure type */
     private Integer resultCode;
 
-    /** 已尝试的重试次数 */
+    /**Number of retries attempted */
     private Integer retryAttempts;
 
-    /** 来源组件，例如：redis_voucher_data / producer */
+    /** Source component, for example: redis_voucher_data/producer */
     private String source;
 
-    /** 创建时间 */
+    /** create time */
     private LocalDateTime createTime;
 
-    /** 更新时间 */
+    /** update time */
     private LocalDateTime updateTime;
 }

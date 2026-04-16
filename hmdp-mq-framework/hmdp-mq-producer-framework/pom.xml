@@ -13,7 +13,7 @@
     <artifactId>hmdp-mq-producer-framework</artifactId>
 
     <name>hmdp-mq-producer-framework</name>
-    <description>mq发送者封装</description>
+    <description>MQ producer wrappers</description>
 
     <dependencies>
         <dependency>

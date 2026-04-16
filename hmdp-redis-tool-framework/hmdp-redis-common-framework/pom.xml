@@ -13,14 +13,14 @@
     <artifactId>hmdp-redis-common-framework</artifactId>
 
     <name>hmdp-redis-common-framework</name>
-    <description>redis-common封装</description>
+    <description>Redis common wrappers</description>
     
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
             <exclusions>
-                <!--去除spring boot自带的 -->
+                <!-- remove the Spring Boot built-in configuration -->
                 <exclusion>
                     <groupId>org.springframework.boot</groupId>
                     <artifactId>spring-boot-starter-logging</artifactId>

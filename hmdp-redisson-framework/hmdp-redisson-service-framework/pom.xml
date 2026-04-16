@@ -11,7 +11,7 @@
 
     <artifactId>hmdp-redisson-service-framework</artifactId>
     <name>hmdp-redisson-service-framework</name>
-    <description>分布式服务工具</description>
+    <description>Distributed service tools</description>
     <packaging>pom</packaging>
 
     <modules>

@@ -10,8 +10,8 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
- * @program: 黑马点评-plus升级版实战项目。添加 yupeng 微信，添加时备注 点评 来获取项目的完整资料
- * @description: 博客评论-实体
+ * @program: High-Concurrency Voucher Seckill Platform (HMDP Plus). Email: wyupeng072@gmail.com
+ * @description: Blog comment entity
  * @author: yupeng
  **/
 @Data
@@ -23,53 +23,53 @@ public class BlogComments implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * 主键
+     * primary key
      */
     @TableId(value = "id")
     private Long id;
 
     /**
-     * 用户id
+     * user ID
      */
     private Long userId;
 
     /**
-     * 探店id
+     * Tandian ID
      */
     private Long blogId;
 
     /**
-     * 关联的1级评论id，如果是一级评论，则值为0
+     * The associated level 1 review id, if it is a level 1 review, the value is 0
      */
     private Long parentId;
 
     /**
-     * 回复的评论id
+     * Reply comment id
      */
     private Long answerId;
 
     /**
-     * 回复的内容
+     * Reply content
      */
     private String content;
 
     /**
-     * 点赞数
+     * Number of likes
      */
     private Integer liked;
 
     /**
-     * 状态，0：正常，1：被举报，2：禁止查看
+     * Status, 0: normal, 1: reported, 2: prohibited from viewing
      */
     private Boolean status;
 
     /**
-     * 创建时间
+     * create time
      */
     private LocalDateTime createTime;
 
     /**
-     * 更新时间
+     * update time
      */
     private LocalDateTime updateTime;
 

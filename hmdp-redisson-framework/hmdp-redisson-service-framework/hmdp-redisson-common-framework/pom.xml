@@ -13,7 +13,7 @@
     <artifactId>hmdp-redisson-common-framework</artifactId>
 
     <name>hmdp-redisson-common-framework</name>
-    <description>公共配置</description>
+    <description>Common configuration</description>
 
     <dependencies>
         <dependency>

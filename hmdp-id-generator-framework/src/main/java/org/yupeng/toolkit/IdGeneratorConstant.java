@@ -1,13 +1,13 @@
 package org.yupeng.toolkit;
 
 /**
- * @program: 黑马点评-plus升级版实战项目。添加 yupeng 微信，添加时备注 点评 来获取项目的完整资料 
- * @description: 雪花算法相关常量
+ * @program: High-Concurrency Voucher Seckill Platform (HMDP Plus). Email: wyupeng072@gmail.com 
+ * @description: Snowflake algorithm constants
  * @author: yupeng
  **/
 public class IdGeneratorConstant {
     /**
-     * 机器标识位数
+     * Machine ID bit length
      */
     public static final long WORKER_ID_BITS = 5L;
     public static final long DATA_CENTER_ID_BITS = 5L;

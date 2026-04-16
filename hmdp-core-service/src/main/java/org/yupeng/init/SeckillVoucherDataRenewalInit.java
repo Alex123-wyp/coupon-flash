@@ -13,8 +13,8 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 /**
- * @program: 黑马点评-plus升级版实战项目。添加 yupeng 微信，添加时备注 点评 来获取项目的完整资料
- * @description: 秒杀优惠券数据重置-开始和结束时间
+ * @program: High-Concurrency Voucher Seckill Platform (HMDP Plus). Email: wyupeng072@gmail.com
+ * @description: Seckill voucher data reset-start and end time
  * @author: yupeng
  **/
 @Slf4j
@@ -28,13 +28,13 @@ public class SeckillVoucherDataRenewalInit {
     @PostConstruct
     public void init(){
         updateBeginAndEndTime();
-        //将库存数量恢复
+        //Restore inventory quantity
         //renewalStock();
     }
     
     public void updateBeginAndEndTime(){
         log.info("==========更新优惠券的开始时间和结束时间==========");
-        //查询优惠券结束时间小于2天前的节目演出数据
+        //Query program performance data whose coupon end time is less than 2 days ago
         List<SeckillVoucher> seckillVoucherList =
                 seckillVoucherService.lambdaQuery()
                         .le(SeckillVoucher::getEndTime,
@@ -43,17 +43,17 @@ public class SeckillVoucherDataRenewalInit {
         for (SeckillVoucher seckillVoucher : seckillVoucherList) {
             LocalDateTime oldBeginTime = seckillVoucher.getBeginTime();
             LocalDateTime oldEndTime = seckillVoucher.getEndTime();
-            //将现有的开始时间加上15天作为新的开始时间
+            //Add 15 days to the existing start time as the new start time
             LocalDateTime newBeginTime = LocalDateTimeUtil.offset(oldBeginTime, 15, ChronoUnit.DAYS);
-            //将现有的结束时间加上15天作为新的结束时间
+            //Add 15 days to the existing end time as the new end time
             LocalDateTime newEndTime = LocalDateTimeUtil.offset(oldEndTime, 15, ChronoUnit.DAYS);
             LocalDateTime nowTime = LocalDateTimeUtil.now();
-            //如果新的结束时间还是小于当前时间，则继续再1天，直到新的结束时间大于当前时间为止
+            //If the new end time is still less than the current time, continue for another day until the new end time is greater than the current time.
             while (newEndTime.isBefore(nowTime)) {
                 newBeginTime = LocalDateTimeUtil.offset(newBeginTime,1,ChronoUnit.DAYS);
                 newEndTime = LocalDateTimeUtil.offset(newEndTime,1,ChronoUnit.DAYS);
             }
-            //执行更新
+            //perform update
             seckillVoucherService.lambdaUpdate()
                     .set(SeckillVoucher::getBeginTime, newBeginTime)
                     .set(SeckillVoucher::getEndTime, newEndTime)
@@ -66,11 +66,11 @@ public class SeckillVoucherDataRenewalInit {
     
     public void renewalStock(){
         log.info("==========将优惠券的库存数量恢复==========");
-        //将库存数量恢复
+        //Restore inventory quantity
         List<SeckillVoucher> seckillVoucherList = seckillVoucherService.list();
         for (SeckillVoucher seckillVoucher : seckillVoucherList) {
             if (!seckillVoucher.getInitStock().equals(seckillVoucher.getStock())) {
-                //执行更新
+                //perform update
                 seckillVoucherService.lambdaUpdate()
                         .set(SeckillVoucher::getStock,seckillVoucher.getInitStock())
                         .set(SeckillVoucher::getUpdateTime,LocalDateTimeUtil.now())

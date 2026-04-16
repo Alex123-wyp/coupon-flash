@@ -3,8 +3,8 @@ package org.yupeng.utils;
 import org.yupeng.dto.UserDTO;
 
 /**
- * @program: 黑马点评-plus升级版实战项目。添加 yupeng 微信，添加时备注 点评 来获取项目的完整资料
- * @description: 用户持有器-黑马点评普通版本和plus版本使用
+ * @program: High-Concurrency Voucher Seckill Platform (HMDP Plus). Email: wyupeng072@gmail.com
+ * @description: User holder - used by Dark Horse Dianping regular version and plus version
  * @author: yupeng
  **/
 public class UserHolder {

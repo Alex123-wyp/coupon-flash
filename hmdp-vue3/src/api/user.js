@@ -1,28 +1,28 @@
 import request from '@/utils/request'
 
-// 用户：获取验证码
+// User: get the verification code
 // export const userGetCode = (phone) =>
 //   request.post('/user/code', { params: { phone } })
 
 export const userGetCode = (phone) =>
   request.post('/user/code', null, { params: { phone } })
-// 用户：登录
+// User: log in
 export const userLogin = (data) => request.post('/user/login', data)
 
-// 首页：获取首页矩阵图数据
+// Home: get the homepage matrix data
 export const indexQueryTypes = () => request.get('/shop-type/list')
 
-// 首页：获取博客数据，滑动屏
+// Home: get blog data for swipe scrolling
 export const indexQueryHotBlogsScroll = (current) =>
   request.get('/blog/hot', null, { params: { current } })
 
-// 首页：点赞获取博客数据，点击查看更多
+// Home: like a post and then get blog data when clicking to view more
 export const indexAddLike = (id) => request.put('/blog/like/' + id)
-// 首页：获取博客数据
+// Home: get blog data
 export const indexQueryBlogById = (id) => request.get('/blog/' + id)
-// 用户：获取当前登录用户信息
+// User: get current logged-in user information
 export const getUser = (id) => request.get(id ? `/user/${id}` : '/user/me')
-// 用户：获取当前登录用户博客
+// User: get blogs for the current logged-in user
 export const getUserBlog = () => request.get('/blog/of/me')
-// 用户：获取用户详情
+// User: get user details
 export const getUserInfo = (id) => request.get(`/user/info/${id}`)

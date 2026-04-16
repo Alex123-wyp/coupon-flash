@@ -4,16 +4,16 @@ DROP TABLE IF EXISTS `tb_blog`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `tb_blog` (
-                           `id` bigint unsigned NOT NULL COMMENT '主键',
-                           `shop_id` bigint NOT NULL COMMENT '商户id',
-                           `user_id` bigint unsigned NOT NULL COMMENT '用户id',
-                           `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '标题',
-                           `images` varchar(2048) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '探店的照片，最多9张，多张以","隔开',
-                           `content` varchar(2048) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '探店的文字描述',
-                           `liked` int unsigned DEFAULT '0' COMMENT '点赞数量',
-                           `comments` int unsigned DEFAULT NULL COMMENT '评论数量',
-                           `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-                           `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+                           `id` bigint unsigned NOT NULL COMMENT 'primary key',
+                           `shop_id` bigint NOT NULL COMMENT 'merchant ID',
+                           `user_id` bigint unsigned NOT NULL COMMENT 'user ID',
+                           `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'title',
+                           `images` varchar(2048) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT 'shop-exploration photos, up to 9 images separated by commas',
+                           `content` varchar(2048) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'shop-exploration text description',
+                           `liked` int unsigned DEFAULT '0' COMMENT 'like count',
+                           `comments` int unsigned DEFAULT NULL COMMENT 'comment count',
+                           `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'create time',
+                           `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'update time',
                            PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=COMPACT;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -36,16 +36,16 @@ DROP TABLE IF EXISTS `tb_blog_comments`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `tb_blog_comments` (
-                                    `id` bigint unsigned NOT NULL COMMENT '主键',
-                                    `user_id` bigint unsigned NOT NULL COMMENT '用户id',
-                                    `blog_id` bigint unsigned NOT NULL COMMENT '探店id',
-                                    `parent_id` bigint unsigned NOT NULL COMMENT '关联的1级评论id，如果是一级评论，则值为0',
-                                    `answer_id` bigint unsigned NOT NULL COMMENT '回复的评论id',
-                                    `content` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '回复的内容',
-                                    `liked` int unsigned DEFAULT NULL COMMENT '点赞数',
-                                    `status` tinyint unsigned DEFAULT NULL COMMENT '状态，0：正常，1：被举报，2：禁止查看',
-                                    `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-                                    `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+                                    `id` bigint unsigned NOT NULL COMMENT 'primary key',
+                                    `user_id` bigint unsigned NOT NULL COMMENT 'user ID',
+                                    `blog_id` bigint unsigned NOT NULL COMMENT 'shop-exploration ID',
+                                    `parent_id` bigint unsigned NOT NULL COMMENT 'associated first-level comment ID; 0 if this is a top-level comment',
+                                    `answer_id` bigint unsigned NOT NULL COMMENT 'replied comment ID',
+                                    `content` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT 'reply content',
+                                    `liked` int unsigned DEFAULT NULL COMMENT 'like count',
+                                    `status` tinyint unsigned DEFAULT NULL COMMENT 'status: 0 normal, 1 reported, 2 hidden',
+                                    `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'create time',
+                                    `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'update time',
                                     PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=COMPACT;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -67,10 +67,10 @@ DROP TABLE IF EXISTS `tb_follow`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `tb_follow` (
-                             `id` bigint NOT NULL COMMENT '主键',
-                             `user_id` bigint unsigned NOT NULL COMMENT '用户id',
-                             `follow_user_id` bigint unsigned NOT NULL COMMENT '关联的用户id',
-                             `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+                             `id` bigint NOT NULL COMMENT 'primary key',
+                             `user_id` bigint unsigned NOT NULL COMMENT 'user ID',
+                             `follow_user_id` bigint unsigned NOT NULL COMMENT 'associated user ID',
+                             `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'create time',
                              PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=COMPACT;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -92,21 +92,21 @@ DROP TABLE IF EXISTS `tb_rollback_failure_log`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `tb_rollback_failure_log` (
-                                           `id` bigint NOT NULL COMMENT '主键',
-                                           `voucher_id` bigint unsigned NOT NULL COMMENT '优惠券id',
-                                           `user_id` bigint unsigned NOT NULL COMMENT '用户id',
-                                           `order_id` bigint DEFAULT NULL COMMENT '订单id',
-                                           `trace_id` bigint DEFAULT NULL COMMENT '追踪唯一标识',
-                                           `detail` varchar(1024) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '失败详情',
-                                           `result_code` int DEFAULT NULL COMMENT 'Lua返回码(BaseCode)',
-                                           `retry_attempts` int DEFAULT NULL COMMENT '已尝试的重试次数',
-                                           `source` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '来源组件',
-                                           `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-                                           `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+                                           `id` bigint NOT NULL COMMENT 'primary key',
+                                           `voucher_id` bigint unsigned NOT NULL COMMENT 'voucher ID',
+                                           `user_id` bigint unsigned NOT NULL COMMENT 'user ID',
+                                           `order_id` bigint DEFAULT NULL COMMENT 'order ID',
+                                           `trace_id` bigint DEFAULT NULL COMMENT 'trace identifier',
+                                           `detail` varchar(1024) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT 'failure details',
+                                           `result_code` int DEFAULT NULL COMMENT 'Lua return code (BaseCode)',
+                                           `retry_attempts` int DEFAULT NULL COMMENT 'retry attempts',
+                                           `source` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT 'source component',
+                                           `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'create time',
+                                           `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'update time',
                                            PRIMARY KEY (`id`) USING BTREE,
                                            KEY `idx_voucher_user` (`voucher_id`,`user_id`) USING BTREE,
                                            KEY `idx_trace_id` (`trace_id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=COMPACT COMMENT='Redis回滚失败日志表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=COMPACT COMMENT='Redis rollback failure log table';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -127,17 +127,17 @@ DROP TABLE IF EXISTS `tb_seckill_voucher_0`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `tb_seckill_voucher_0` (
                                         `id` bigint NOT NULL,
-                                        `voucher_id` bigint unsigned NOT NULL COMMENT '关联的优惠券的id',
-                                        `init_stock` int NOT NULL COMMENT '初始化的库存',
-                                        `stock` int NOT NULL COMMENT '库存',
-                                        `allowed_levels` varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '允许参与的会员等级，逗号分隔，如："1,2,3"',
-                                        `min_level` int DEFAULT NULL COMMENT '最低会员等级',
-                                        `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-                                        `begin_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '生效时间',
-                                        `end_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '失效时间',
-                                        `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+                                        `voucher_id` bigint unsigned NOT NULL COMMENT 'associated voucher ID',
+                                        `init_stock` int NOT NULL COMMENT 'Initialize stock',
+                                        `stock` int NOT NULL COMMENT 'stock',
+                                        `allowed_levels` varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT 'allowed membership levels, comma-separated, for example: "1,2,3"',
+                                        `min_level` int DEFAULT NULL COMMENT 'minimum membership level',
+                                        `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'create time',
+                                        `begin_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'effective time',
+                                        `end_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'expiration time',
+                                        `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'update time',
                                         PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=COMPACT COMMENT='秒杀优惠券表，与优惠券是一对一关系';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=COMPACT COMMENT='seckill voucher table with a one-to-one relationship to vouchers';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -159,17 +159,17 @@ DROP TABLE IF EXISTS `tb_seckill_voucher_1`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `tb_seckill_voucher_1` (
                                         `id` bigint NOT NULL,
-                                        `voucher_id` bigint unsigned NOT NULL COMMENT '关联的优惠券的id',
-                                        `init_stock` int NOT NULL COMMENT '初始化的库存',
-                                        `stock` int NOT NULL COMMENT '库存',
-                                        `allowed_levels` varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '允许参与的会员等级，逗号分隔，如："1,2,3"',
-                                        `min_level` int DEFAULT NULL COMMENT '最低会员等级',
-                                        `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-                                        `begin_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '生效时间',
-                                        `end_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '失效时间',
-                                        `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+                                        `voucher_id` bigint unsigned NOT NULL COMMENT 'associated voucher ID',
+                                        `init_stock` int NOT NULL COMMENT 'Initialize stock',
+                                        `stock` int NOT NULL COMMENT 'stock',
+                                        `allowed_levels` varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT 'allowed membership levels, comma-separated, for example: "1,2,3"',
+                                        `min_level` int DEFAULT NULL COMMENT 'minimum membership level',
+                                        `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'create time',
+                                        `begin_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'effective time',
+                                        `end_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'expiration time',
+                                        `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'update time',
                                         PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=COMPACT COMMENT='秒杀优惠券表，与优惠券是一对一关系';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=COMPACT COMMENT='seckill voucher table with a one-to-one relationship to vouchers';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -189,21 +189,21 @@ DROP TABLE IF EXISTS `tb_shop`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `tb_shop` (
-                           `id` bigint unsigned NOT NULL COMMENT '主键',
-                           `name` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '商铺名称',
-                           `type_id` bigint unsigned NOT NULL COMMENT '商铺类型的id',
-                           `images` varchar(1024) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '商铺图片，多个图片以'',''隔开',
-                           `area` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '商圈，例如陆家嘴',
-                           `address` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '地址',
-                           `x` double unsigned NOT NULL COMMENT '经度',
-                           `y` double unsigned NOT NULL COMMENT '维度',
-                           `avg_price` bigint unsigned DEFAULT NULL COMMENT '均价，取整数',
-                           `sold` int(10) unsigned zerofill NOT NULL COMMENT '销量',
-                           `comments` int(10) unsigned zerofill NOT NULL COMMENT '评论数量',
-                           `score` int(2) unsigned zerofill NOT NULL COMMENT '评分，1~5分，乘10保存，避免小数',
-                           `open_hours` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '营业时间，例如 10:00-22:00',
-                           `create_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-                           `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+                           `id` bigint unsigned NOT NULL COMMENT 'primary key',
+                           `name` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT 'shop name',
+                           `type_id` bigint unsigned NOT NULL COMMENT 'shop type ID',
+                           `images` varchar(1024) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT 'Shop pictures, multiple pictures with'',''隔开',
+                           `area` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT 'business district, for example Lujiazui',
+                           `address` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT 'address',
+                           `x` double unsigned NOT NULL COMMENT 'longitude',
+                           `y` double unsigned NOT NULL COMMENT 'latitude',
+                           `avg_price` bigint unsigned DEFAULT NULL COMMENT 'average price as an integer',
+                           `sold` int(10) unsigned zerofill NOT NULL COMMENT 'sales volume',
+                           `comments` int(10) unsigned zerofill NOT NULL COMMENT 'comment count',
+                           `score` int(2) unsigned zerofill NOT NULL COMMENT 'rating, stored as score x10 to avoid decimals',
+                           `open_hours` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT 'business hours, for example 10:00-22:00',
+                           `create_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'create time',
+                           `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'update time',
                            PRIMARY KEY (`id`) USING BTREE,
                            KEY `foreign_key_type` (`type_id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=COMPACT;
@@ -227,12 +227,12 @@ DROP TABLE IF EXISTS `tb_shop_type`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `tb_shop_type` (
-                                `id` bigint unsigned NOT NULL COMMENT '主键',
-                                `name` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '类型名称',
-                                `icon` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '图标',
-                                `sort` int unsigned DEFAULT NULL COMMENT '顺序',
-                                `create_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-                                `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+                                `id` bigint unsigned NOT NULL COMMENT 'primary key',
+                                `name` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT 'type name',
+                                `icon` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT 'icon',
+                                `sort` int unsigned DEFAULT NULL COMMENT 'sort order',
+                                `create_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'create time',
+                                `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'update time',
                                 PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=COMPACT;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -255,12 +255,12 @@ DROP TABLE IF EXISTS `tb_sign`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `tb_sign` (
-                           `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
-                           `user_id` bigint unsigned NOT NULL COMMENT '用户id',
-                           `year` year NOT NULL COMMENT '签到的年',
-                           `month` tinyint NOT NULL COMMENT '签到的月',
-                           `date` date NOT NULL COMMENT '签到的日期',
-                           `is_backup` tinyint unsigned DEFAULT NULL COMMENT '是否补签',
+                           `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT 'primary key',
+                           `user_id` bigint unsigned NOT NULL COMMENT 'user ID',
+                           `year` year NOT NULL COMMENT 'sign-in year',
+                           `month` tinyint NOT NULL COMMENT 'sign-in month',
+                           `date` date NOT NULL COMMENT 'sign-in date',
+                           `is_backup` tinyint unsigned DEFAULT NULL COMMENT 'whether it is a makeup sign-in',
                            PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=COMPACT;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -282,13 +282,13 @@ DROP TABLE IF EXISTS `tb_user_0`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `tb_user_0` (
-                             `id` bigint unsigned NOT NULL COMMENT '主键',
-                             `phone` varchar(11) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '手机号码',
-                             `password` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '密码，加密存储',
-                             `nick_name` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '昵称，默认是用户id',
-                             `icon` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '人物头像',
-                             `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-                             `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+                             `id` bigint unsigned NOT NULL COMMENT 'primary key',
+                             `phone` varchar(11) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT 'mobile number',
+                             `password` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT 'password, stored in encrypted form',
+                             `nick_name` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT 'Nickname, default is user ID',
+                             `icon` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT 'avatar',
+                             `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'create time',
+                             `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'update time',
                              PRIMARY KEY (`id`) USING BTREE,
                              UNIQUE KEY `uniqe_key_phone` (`phone`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=COMPACT;
@@ -312,13 +312,13 @@ DROP TABLE IF EXISTS `tb_user_1`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `tb_user_1` (
-                             `id` bigint unsigned NOT NULL COMMENT '主键',
-                             `phone` varchar(11) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '手机号码',
-                             `password` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '密码，加密存储',
-                             `nick_name` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '昵称，默认是用户id',
-                             `icon` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '人物头像',
-                             `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-                             `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+                             `id` bigint unsigned NOT NULL COMMENT 'primary key',
+                             `phone` varchar(11) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT 'mobile number',
+                             `password` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT 'password, stored in encrypted form',
+                             `nick_name` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT 'Nickname, default is user ID',
+                             `icon` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT 'avatar',
+                             `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'create time',
+                             `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'update time',
                              PRIMARY KEY (`id`) USING BTREE,
                              UNIQUE KEY `uniqe_key_phone` (`phone`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=COMPACT;
@@ -341,18 +341,18 @@ DROP TABLE IF EXISTS `tb_user_info_0`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `tb_user_info_0` (
-                                  `id` bigint unsigned NOT NULL COMMENT '主键',
-                                  `user_id` bigint unsigned NOT NULL COMMENT '主键，用户id',
-                                  `city` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '城市名称',
-                                  `introduce` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '个人介绍，不要超过128个字符',
-                                  `fans` int unsigned DEFAULT '0' COMMENT '粉丝数量',
-                                  `followee` int unsigned DEFAULT '0' COMMENT '关注的人的数量',
-                                  `gender` tinyint unsigned DEFAULT '0' COMMENT '性别，0：男，1：女',
-                                  `birthday` date DEFAULT NULL COMMENT '生日',
-                                  `credits` int unsigned DEFAULT '0' COMMENT '积分',
-                                  `level` tinyint unsigned DEFAULT '0' COMMENT '会员级别，0~9级,0代表未开通会员',
-                                  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-                                  `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+                                  `id` bigint unsigned NOT NULL COMMENT 'primary key',
+                                  `user_id` bigint unsigned NOT NULL COMMENT 'primary key，user ID',
+                                  `city` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT 'city name',
+                                  `introduce` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT 'profile introduction, up to 128 characters',
+                                  `fans` int unsigned DEFAULT '0' COMMENT 'fan count',
+                                  `followee` int unsigned DEFAULT '0' COMMENT 'following count',
+                                  `gender` tinyint unsigned DEFAULT '0' COMMENT 'Gender, 0: male, 1: female',
+                                  `birthday` date DEFAULT NULL COMMENT 'birthday',
+                                  `credits` int unsigned DEFAULT '0' COMMENT 'points',
+                                  `level` tinyint unsigned DEFAULT '0' COMMENT 'membership level, 0-9; 0 means not activated',
+                                  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'create time',
+                                  `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'update time',
                                   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=COMPACT;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -375,18 +375,18 @@ DROP TABLE IF EXISTS `tb_user_info_1`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `tb_user_info_1` (
-                                  `id` bigint unsigned NOT NULL COMMENT '主键',
-                                  `user_id` bigint unsigned NOT NULL COMMENT '主键，用户id',
-                                  `city` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '城市名称',
-                                  `introduce` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '个人介绍，不要超过128个字符',
-                                  `fans` int unsigned DEFAULT '0' COMMENT '粉丝数量',
-                                  `followee` int unsigned DEFAULT '0' COMMENT '关注的人的数量',
-                                  `gender` tinyint unsigned DEFAULT '0' COMMENT '性别，0：男，1：女',
-                                  `birthday` date DEFAULT NULL COMMENT '生日',
-                                  `credits` int unsigned DEFAULT '0' COMMENT '积分',
-                                  `level` tinyint unsigned DEFAULT '0' COMMENT '会员级别，0~9级,0代表未开通会员',
-                                  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-                                  `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+                                  `id` bigint unsigned NOT NULL COMMENT 'primary key',
+                                  `user_id` bigint unsigned NOT NULL COMMENT 'primary key，user ID',
+                                  `city` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT 'city name',
+                                  `introduce` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT 'profile introduction, up to 128 characters',
+                                  `fans` int unsigned DEFAULT '0' COMMENT 'fan count',
+                                  `followee` int unsigned DEFAULT '0' COMMENT 'following count',
+                                  `gender` tinyint unsigned DEFAULT '0' COMMENT 'Gender, 0: male, 1: female',
+                                  `birthday` date DEFAULT NULL COMMENT 'birthday',
+                                  `credits` int unsigned DEFAULT '0' COMMENT 'points',
+                                  `level` tinyint unsigned DEFAULT '0' COMMENT 'membership level, 0-9; 0 means not activated',
+                                  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'create time',
+                                  `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'update time',
                                   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=COMPACT;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -408,14 +408,14 @@ DROP TABLE IF EXISTS `tb_user_phone_0`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `tb_user_phone_0` (
-                                   `id` bigint NOT NULL COMMENT '主键id',
-                                   `user_id` bigint NOT NULL COMMENT '用户id',
-                                   `phone` varchar(512) NOT NULL COMMENT '手机号',
-                                   `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-                                   `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+                                   `id` bigint NOT NULL COMMENT 'primary key ID',
+                                   `user_id` bigint NOT NULL COMMENT 'user ID',
+                                   `phone` varchar(512) NOT NULL COMMENT 'mobile number',
+                                   `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'create time',
+                                   `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'update time',
                                    PRIMARY KEY (`id`),
                                    KEY `phone_idx` (`phone`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='用户手机表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='User mobile phone table';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -435,14 +435,14 @@ DROP TABLE IF EXISTS `tb_user_phone_1`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `tb_user_phone_1` (
-                                   `id` bigint NOT NULL COMMENT '主键id',
-                                   `user_id` bigint NOT NULL COMMENT '用户id',
-                                   `phone` varchar(512) NOT NULL COMMENT '手机号',
-                                   `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-                                   `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+                                   `id` bigint NOT NULL COMMENT 'primary key ID',
+                                   `user_id` bigint NOT NULL COMMENT 'user ID',
+                                   `phone` varchar(512) NOT NULL COMMENT 'mobile number',
+                                   `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'create time',
+                                   `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'update time',
                                    PRIMARY KEY (`id`),
                                    KEY `phone_idx` (`phone`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='用户手机表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='User mobile phone table';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -462,17 +462,17 @@ DROP TABLE IF EXISTS `tb_voucher_0`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `tb_voucher_0` (
-                                `id` bigint unsigned NOT NULL COMMENT '主键',
-                                `shop_id` bigint unsigned DEFAULT NULL COMMENT '商铺id',
-                                `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '代金券标题',
-                                `sub_title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '副标题',
-                                `rules` varchar(1024) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '使用规则',
-                                `pay_value` bigint unsigned NOT NULL COMMENT '支付金额，单位是分。例如200代表2元',
-                                `actual_value` bigint NOT NULL COMMENT '抵扣金额，单位是分。例如200代表2元',
-                                `type` tinyint unsigned NOT NULL DEFAULT '0' COMMENT '0,普通券；1,秒杀券',
-                                `status` tinyint unsigned NOT NULL DEFAULT '1' COMMENT '1,上架; 2,下架; 3,过期',
-                                `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-                                `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+                                `id` bigint unsigned NOT NULL COMMENT 'primary key',
+                                `shop_id` bigint unsigned DEFAULT NULL COMMENT 'shop ID',
+                                `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT 'Voucher title',
+                                `sub_title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT 'subtitle',
+                                `rules` varchar(1024) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT 'usage rules',
+                                `pay_value` bigint unsigned NOT NULL COMMENT 'payment amount in cents, for example 200 means 2 yuan',
+                                `actual_value` bigint NOT NULL COMMENT 'discount amount in cents, for example 200 means 2 yuan',
+                                `type` tinyint unsigned NOT NULL DEFAULT '0' COMMENT '0 normal voucher; 1 seckill voucher',
+                                `status` tinyint unsigned NOT NULL DEFAULT '1' COMMENT '1 listed; 2 unlisted; 3 expired',
+                                `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'create time',
+                                `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'update time',
                                 PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=COMPACT;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -495,17 +495,17 @@ DROP TABLE IF EXISTS `tb_voucher_1`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `tb_voucher_1` (
-                                `id` bigint unsigned NOT NULL COMMENT '主键',
-                                `shop_id` bigint unsigned DEFAULT NULL COMMENT '商铺id',
-                                `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '代金券标题',
-                                `sub_title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '副标题',
-                                `rules` varchar(1024) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '使用规则',
-                                `pay_value` bigint unsigned NOT NULL COMMENT '支付金额，单位是分。例如200代表2元',
-                                `actual_value` bigint NOT NULL COMMENT '抵扣金额，单位是分。例如200代表2元',
-                                `type` tinyint unsigned NOT NULL DEFAULT '0' COMMENT '0,普通券；1,秒杀券',
-                                `status` tinyint unsigned NOT NULL DEFAULT '1' COMMENT '1,上架; 2,下架; 3,过期',
-                                `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-                                `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+                                `id` bigint unsigned NOT NULL COMMENT 'primary key',
+                                `shop_id` bigint unsigned DEFAULT NULL COMMENT 'shop ID',
+                                `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT 'Voucher title',
+                                `sub_title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT 'subtitle',
+                                `rules` varchar(1024) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT 'usage rules',
+                                `pay_value` bigint unsigned NOT NULL COMMENT 'payment amount in cents, for example 200 means 2 yuan',
+                                `actual_value` bigint NOT NULL COMMENT 'discount amount in cents, for example 200 means 2 yuan',
+                                `type` tinyint unsigned NOT NULL DEFAULT '0' COMMENT '0 normal voucher; 1 seckill voucher',
+                                `status` tinyint unsigned NOT NULL DEFAULT '1' COMMENT '1 listed; 2 unlisted; 3 expired',
+                                `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'create time',
+                                `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'update time',
                                 PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=COMPACT;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -527,17 +527,17 @@ DROP TABLE IF EXISTS `tb_voucher_order_0`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `tb_voucher_order_0` (
-                                      `id` bigint NOT NULL COMMENT '主键',
-                                      `user_id` bigint unsigned NOT NULL COMMENT '下单的用户id',
-                                      `voucher_id` bigint unsigned NOT NULL COMMENT '购买的代金券id',
-                                      `pay_type` tinyint unsigned NOT NULL DEFAULT '1' COMMENT '支付方式 1：余额支付；2：支付宝；3：微信',
-                                      `status` tinyint unsigned NOT NULL DEFAULT '1' COMMENT '订单状态，1：正常；2：已取消；',
-                                      `reconciliation_status` tinyint NOT NULL DEFAULT '1' COMMENT '对账状态：1待处理；2异常；3不一致；4一致',
-                                      `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '下单时间',
-                                      `pay_time` timestamp NULL DEFAULT NULL COMMENT '支付时间',
-                                      `use_time` timestamp NULL DEFAULT NULL COMMENT '核销时间',
-                                      `refund_time` timestamp NULL DEFAULT NULL COMMENT '退款时间',
-                                      `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+                                      `id` bigint NOT NULL COMMENT 'primary key',
+                                      `user_id` bigint unsigned NOT NULL COMMENT 'User ID for placing the order',
+                                      `voucher_id` bigint unsigned NOT NULL COMMENT 'Purchased voucher ID',
+                                      `pay_type` tinyint unsigned NOT NULL DEFAULT '1' COMMENT 'payment method: 1 balance, 2 Alipay, 3 WeChat',
+                                      `status` tinyint unsigned NOT NULL DEFAULT '1' COMMENT 'Order status: 1 normal, 2 canceled',
+                                      `reconciliation_status` tinyint NOT NULL DEFAULT '1' COMMENT 'Reconciliation status: 1 pending; 2 abnormal; 3 inconsistent; 4 consistent',
+                                      `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'order time',
+                                      `pay_time` timestamp NULL DEFAULT NULL COMMENT 'payment time',
+                                      `use_time` timestamp NULL DEFAULT NULL COMMENT 'redemption time',
+                                      `refund_time` timestamp NULL DEFAULT NULL COMMENT 'refund time',
+                                      `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'update time',
                                       PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=COMPACT;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -559,17 +559,17 @@ DROP TABLE IF EXISTS `tb_voucher_order_1`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `tb_voucher_order_1` (
-                                      `id` bigint NOT NULL COMMENT '主键',
-                                      `user_id` bigint unsigned NOT NULL COMMENT '下单的用户id',
-                                      `voucher_id` bigint unsigned NOT NULL COMMENT '购买的代金券id',
-                                      `pay_type` tinyint unsigned NOT NULL DEFAULT '1' COMMENT '支付方式 1：余额支付；2：支付宝；3：微信',
-                                      `status` tinyint unsigned NOT NULL DEFAULT '1' COMMENT '订单状态，1：正常；2：已取消；',
-                                      `reconciliation_status` tinyint NOT NULL DEFAULT '1' COMMENT '对账状态：1待处理；2异常；3不一致；4一致',
-                                      `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '下单时间',
-                                      `pay_time` timestamp NULL DEFAULT NULL COMMENT '支付时间',
-                                      `use_time` timestamp NULL DEFAULT NULL COMMENT '核销时间',
-                                      `refund_time` timestamp NULL DEFAULT NULL COMMENT '退款时间',
-                                      `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+                                      `id` bigint NOT NULL COMMENT 'primary key',
+                                      `user_id` bigint unsigned NOT NULL COMMENT 'User ID for placing the order',
+                                      `voucher_id` bigint unsigned NOT NULL COMMENT 'Purchased voucher ID',
+                                      `pay_type` tinyint unsigned NOT NULL DEFAULT '1' COMMENT 'payment method: 1 balance, 2 Alipay, 3 WeChat',
+                                      `status` tinyint unsigned NOT NULL DEFAULT '1' COMMENT 'Order status: 1 normal, 2 canceled',
+                                      `reconciliation_status` tinyint NOT NULL DEFAULT '1' COMMENT 'Reconciliation status: 1 pending; 2 abnormal; 3 inconsistent; 4 consistent',
+                                      `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'order time',
+                                      `pay_time` timestamp NULL DEFAULT NULL COMMENT 'payment time',
+                                      `use_time` timestamp NULL DEFAULT NULL COMMENT 'redemption time',
+                                      `refund_time` timestamp NULL DEFAULT NULL COMMENT 'refund time',
+                                      `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'update time',
                                       PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=COMPACT;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -591,12 +591,12 @@ DROP TABLE IF EXISTS `tb_voucher_order_router_0`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `tb_voucher_order_router_0` (
-                                             `id` bigint NOT NULL COMMENT '主键',
-                                             `order_id` bigint NOT NULL COMMENT '订单id',
-                                             `user_id` bigint unsigned NOT NULL COMMENT '用户id',
-                                             `voucher_id` bigint unsigned NOT NULL COMMENT '代金券id',
-                                             `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-                                             `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+                                             `id` bigint NOT NULL COMMENT 'primary key',
+                                             `order_id` bigint NOT NULL COMMENT 'order ID',
+                                             `user_id` bigint unsigned NOT NULL COMMENT 'user ID',
+                                             `voucher_id` bigint unsigned NOT NULL COMMENT 'voucher ID',
+                                             `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'create time',
+                                             `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'update time',
                                              PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=COMPACT;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -618,12 +618,12 @@ DROP TABLE IF EXISTS `tb_voucher_order_router_1`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `tb_voucher_order_router_1` (
-                                             `id` bigint NOT NULL COMMENT '主键',
-                                             `order_id` bigint NOT NULL COMMENT '订单id',
-                                             `user_id` bigint unsigned NOT NULL COMMENT '用户id',
-                                             `voucher_id` bigint unsigned NOT NULL COMMENT '代金券id',
-                                             `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-                                             `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+                                             `id` bigint NOT NULL COMMENT 'primary key',
+                                             `order_id` bigint NOT NULL COMMENT 'order ID',
+                                             `user_id` bigint unsigned NOT NULL COMMENT 'user ID',
+                                             `voucher_id` bigint unsigned NOT NULL COMMENT 'voucher ID',
+                                             `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'create time',
+                                             `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'update time',
                                              PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=COMPACT;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -645,21 +645,21 @@ DROP TABLE IF EXISTS `tb_voucher_reconcile_log_0`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `tb_voucher_reconcile_log_0` (
-                                              `id` bigint NOT NULL COMMENT '主键',
-                                              `order_id` bigint NOT NULL COMMENT '订单id',
-                                              `user_id` bigint unsigned NOT NULL COMMENT '下单的用户id',
-                                              `voucher_id` bigint unsigned NOT NULL COMMENT '购买的代金券id',
-                                              `message_id` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT 'Kafka消息uuid',
-                                              `detail` varchar(1024) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '差异说明',
-                                              `before_qty` int DEFAULT NULL COMMENT '改变之前库存数量',
-                                              `change_qty` int DEFAULT NULL COMMENT '本次改变数量',
-                                              `after_qty` int DEFAULT NULL COMMENT '改变之后库存数量',
-                                              `trace_id` bigint DEFAULT NULL COMMENT '追踪唯一标识',
-                                              `log_type` int DEFAULT '-1' COMMENT '记录类型 -1:扣减 1:恢复',
-                                              `business_type` int DEFAULT '1' COMMENT '业务类型：1创建订单成功；2创建订单超时；3创建订单失败',
-                                              `reconciliation_status` int NOT NULL DEFAULT '1' COMMENT '对账状态：1待处理；2异常；3不一致；4一致',
-                                              `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-                                              `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+                                              `id` bigint NOT NULL COMMENT 'primary key',
+                                              `order_id` bigint NOT NULL COMMENT 'order ID',
+                                              `user_id` bigint unsigned NOT NULL COMMENT 'User ID for placing the order',
+                                              `voucher_id` bigint unsigned NOT NULL COMMENT 'Purchased voucher ID',
+                                              `message_id` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT 'Kafka message UUID',
+                                              `detail` varchar(1024) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT 'difference details',
+                                              `before_qty` int DEFAULT NULL COMMENT 'Stock quantity before changing',
+                                              `change_qty` int DEFAULT NULL COMMENT 'change quantity',
+                                              `after_qty` int DEFAULT NULL COMMENT 'Stock quantity after change',
+                                              `trace_id` bigint DEFAULT NULL COMMENT 'trace identifier',
+                                              `log_type` int DEFAULT '-1' COMMENT 'log type: -1 deduct, 1 restore',
+                                              `business_type` int DEFAULT '1' COMMENT 'business type: 1 order created successfully, 2 order creation timed out, 3 order creation failed',
+                                              `reconciliation_status` int NOT NULL DEFAULT '1' COMMENT 'Reconciliation status: 1 pending; 2 abnormal; 3 inconsistent; 4 consistent',
+                                              `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'create time',
+                                              `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'update time',
                                               PRIMARY KEY (`id`) USING BTREE,
                                               KEY `idx_order_id` (`order_id`) USING BTREE,
                                               KEY `idx_message_id` (`message_id`) USING BTREE,
@@ -684,21 +684,21 @@ DROP TABLE IF EXISTS `tb_voucher_reconcile_log_1`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `tb_voucher_reconcile_log_1` (
-                                              `id` bigint NOT NULL COMMENT '主键',
-                                              `order_id` bigint NOT NULL COMMENT '订单id',
-                                              `user_id` bigint unsigned NOT NULL COMMENT '下单的用户id',
-                                              `voucher_id` bigint unsigned NOT NULL COMMENT '购买的代金券id',
-                                              `message_id` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT 'Kafka消息uuid',
-                                              `detail` varchar(1024) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '差异说明',
-                                              `before_qty` int DEFAULT NULL COMMENT '改变之前库存数量',
-                                              `change_qty` int DEFAULT NULL COMMENT '本次改变数量',
-                                              `after_qty` int DEFAULT NULL COMMENT '改变之后库存数量',
-                                              `trace_id` bigint DEFAULT NULL COMMENT '追踪唯一标识',
-                                              `log_type` int DEFAULT '-1' COMMENT '记录类型 -1:扣减 1:恢复',
-                                              `business_type` int DEFAULT '1' COMMENT '业务类型：1创建订单成功；2创建订单超时；3创建订单失败',
-                                              `reconciliation_status` int NOT NULL DEFAULT '1' COMMENT '对账状态：1待处理；2异常；3不一致；4一致',
-                                              `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-                                              `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+                                              `id` bigint NOT NULL COMMENT 'primary key',
+                                              `order_id` bigint NOT NULL COMMENT 'order ID',
+                                              `user_id` bigint unsigned NOT NULL COMMENT 'User ID for placing the order',
+                                              `voucher_id` bigint unsigned NOT NULL COMMENT 'Purchased voucher ID',
+                                              `message_id` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT 'Kafka message UUID',
+                                              `detail` varchar(1024) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT 'difference details',
+                                              `before_qty` int DEFAULT NULL COMMENT 'Stock quantity before changing',
+                                              `change_qty` int DEFAULT NULL COMMENT 'change quantity',
+                                              `after_qty` int DEFAULT NULL COMMENT 'Stock quantity after change',
+                                              `trace_id` bigint DEFAULT NULL COMMENT 'trace identifier',
+                                              `log_type` int DEFAULT '-1' COMMENT 'log type: -1 deduct, 1 restore',
+                                              `business_type` int DEFAULT '1' COMMENT 'business type: 1 order created successfully, 2 order creation timed out, 3 order creation failed',
+                                              `reconciliation_status` int NOT NULL DEFAULT '1' COMMENT 'Reconciliation status: 1 pending; 2 abnormal; 3 inconsistent; 4 consistent',
+                                              `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'create time',
+                                              `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'update time',
                                               PRIMARY KEY (`id`) USING BTREE,
                                               KEY `idx_order_id` (`order_id`) USING BTREE,
                                               KEY `idx_message_id` (`message_id`) USING BTREE,

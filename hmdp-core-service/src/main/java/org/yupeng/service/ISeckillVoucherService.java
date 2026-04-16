@@ -5,8 +5,8 @@ import org.yupeng.entity.SeckillVoucher;
 import org.yupeng.model.SeckillVoucherFullModel;
 
 /**
- * @program: 黑马点评-plus升级版实战项目。添加 yupeng 微信，添加时备注 点评 来获取项目的完整资料
- * @description: 秒杀优惠券 接口
+ * @program: High-Concurrency Voucher Seckill Platform (HMDP Plus). Email: wyupeng072@gmail.com
+ * @description: Seckill voucher interface
  * @author: yupeng
  **/
 public interface ISeckillVoucherService extends IService<SeckillVoucher> {

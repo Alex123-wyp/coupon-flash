@@ -13,7 +13,7 @@
     <artifactId>hmdp-repeat-execute-limit-framework</artifactId>
 
     <name>hmdp-repeat-execute-limit-framework</name>
-    <description>防重复执行幂等性工具</description>
+    <description>Idempotency tools for duplicate-execution protection</description>
 
     <dependencies>
         <dependency>
