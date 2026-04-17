@@ -36,7 +36,6 @@ import static org.yupeng.constant.DistributedLockConstants.UPDATE_SECKILL_VOUCHE
 @Component
 public class SeckillVoucherInvalidationConsumer extends AbstractConsumerHandler<SeckillVoucherInvalidationMessage> {
 
-
     @Resource
     private SeckillVoucherLocalCache seckillVoucherLocalCache;
     
@@ -48,9 +47,18 @@ public class SeckillVoucherInvalidationConsumer extends AbstractConsumerHandler<
     private RedisCache redisCache;
 
     public SeckillVoucherInvalidationConsumer() {
+        //Call the constructor of parent class AbstractConsumerHandler, passes the SeckillVoucherInvalidationMessage.class into it
         super(SeckillVoucherInvalidationMessage.class);
     }
-    
+
+    /**
+     *
+     * @param value
+     * @param headers Collect all headers from the incoming Kafka message, and put them into Map
+     *                 header include things like: Kafka topic, partition, offset, timestamp, key metadata and custom header added by producer
+     * @param key     RECEIVED_KEY is Spring Kafka's constant for the received Kafka record key
+     * @param acknowledgment
+     */
     @KafkaListener(
             topics = {SPRING_INJECT_PREFIX_DISTINCTION_NAME + "-" + SECKILL_VOUCHER_CACHE_INVALIDATION_TOPIC},
             groupId = "${prefix.distinction.name:hmdp}-seckill_voucher_cache_invalidation-${random.uuid}"
@@ -67,13 +75,18 @@ public class SeckillVoucherInvalidationConsumer extends AbstractConsumerHandler<
     
     @Override
     protected void doConsume(MessageExtend<SeckillVoucherInvalidationMessage> message) {
+
         SeckillVoucherInvalidationMessage body = message.getMessageBody();
         if (Objects.isNull(body.getVoucherId())) {
             log.warn("收到缓存失效消息但载荷为空或voucherId缺失, uuid={}", message.getUuid());
             return;
         }
         Long voucherId = body.getVoucherId();
-        
+
+        /**
+         * AopContext.currentProxy() -> returns a proxy bean, and proxy invoke the delCache(voucher Id),
+         * this makes @ServiceLock AOP logic is applied
+         */
         ((SeckillVoucherInvalidationConsumer) AopContext.currentProxy()).delCache(voucherId);
     }
     
@@ -86,11 +99,11 @@ public class SeckillVoucherInvalidationConsumer extends AbstractConsumerHandler<
         redisCache.del(RedisKeyBuild.createRedisKey(RedisKeyManage.SECKILL_VOUCHER_TAG_KEY, voucherId));
         redisCache.del(RedisKeyBuild.createRedisKey(RedisKeyManage.SECKILL_STOCK_TAG_KEY, voucherId));
         redisCache.del(RedisKeyBuild.createRedisKey(RedisKeyManage.SECKILL_VOUCHER_NULL_TAG_KEY, voucherId));
-        
     }
     
     @Override
     protected void afterConsumeFailure(final MessageExtend<SeckillVoucherInvalidationMessage> message, final Throwable throwable) {
+        //Call the parent afterConsumeFailure() method in override class
         super.afterConsumeFailure(message, throwable);
         log.warn("删除Redis缓存失败 voucherId={}", message.getMessageBody().getVoucherId(), throwable);
         safeInc(errorTag(throwable));

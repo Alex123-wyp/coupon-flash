@@ -27,7 +27,8 @@ public abstract class AbstractConsumerHandler<T> {
         MessageExtend<T> message = convert(value, toStringHeaders(headers));
         consume(message);
     }
-    
+
+    //Deserialization
     public final void consumeRaw(String value, String key, Map<String, Object> headers) {
         MessageExtend<T> message = convert(value, toStringHeaders(headers));
         message.setKey(key);
@@ -35,6 +36,7 @@ public abstract class AbstractConsumerHandler<T> {
     }
     
     public final void consume(MessageExtend<T> message) {
+
         Boolean result = beforeConsume(message);
         try {
             if (result) {
@@ -44,6 +46,7 @@ public abstract class AbstractConsumerHandler<T> {
             afterConsumeFailure(message, t);
             throw t;
         }
+
         afterConsumeSuccess(message);
     }
    

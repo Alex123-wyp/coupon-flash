@@ -22,6 +22,8 @@ import java.util.UUID;
 @NoArgsConstructor(force = true)
 @AllArgsConstructor
 @RequiredArgsConstructor
+
+//Serializable tell Spring Framework this class is serializable
 public final class MessageExtend<T> implements Serializable {
 
     @Serial
@@ -29,15 +31,19 @@ public final class MessageExtend<T> implements Serializable {
     
     @NonNull
     private T messageBody;
-    
+
+    //Key is important, events with same key goes to same partition
     private String key;
-    
+
+    //Header always carry some auxiliary information that helps process and trace
     private Map<String, String> headers;
     
     private String uuid = UUID.randomUUID().toString();
     
     private Date producerTime = DateTime.now();
-    
+
+
+    //Wrap the payLoad
     public static <T> MessageExtend<T> of(T body){
         return new MessageExtend<>(body);
     }

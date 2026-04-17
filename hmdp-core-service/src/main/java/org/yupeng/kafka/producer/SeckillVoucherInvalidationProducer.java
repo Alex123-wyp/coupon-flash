@@ -57,6 +57,12 @@ public class SeckillVoucherInvalidationProducer extends AbstractProducerHandler<
     
     @Override
     protected void afterSendFailure(final String topic, final MessageExtend<SeckillVoucherInvalidationMessage> message, final Throwable throwable) {
+
+        /**
+         * Log the error and check if the message comes from the DLQ?
+         * If the message comes from DLQ, then upload to Prometheus and return
+         * If the message does not come from DLQ, upload to prometheus and continue the logic...
+         */
         final SeckillVoucherInvalidationMessage body = message.getMessageBody();
         final Long voucherId = body.getVoucherId();
         final String reason = body.getReason();
@@ -69,31 +75,41 @@ public class SeckillVoucherInvalidationProducer extends AbstractProducerHandler<
         }else {
             safeInc("seckill_invalidation_send_failures", "topic", topic);
         }
-        
-        
+
+        /**
+         * Every time retry send, the message header will have a custom key, which is RETRY_COUNT, so we need to check
+         * whether the RETRY_COUNT hit the max retry count
+         */
         Map<String, String> headers = message.getHeaders();
         headers = headers == null ? new HashMap<>(8) : new HashMap<>(headers);
+        //retryCount = 0  by default
         int retryCount = 0;
         try {
             if (headers.containsKey(RETRY_COUNT)) {
                 retryCount = Integer.parseInt(headers.get(RETRY_COUNT));
             }
         } catch (Exception ignore) {
+
         }
 
         if (retryCount < retryMaxAttempts) {
+
+            //Exponential Backoff - each retry wait longer than the previous one
             long backoff = Math.min(initialBackoffMillis * (1L << retryCount), maxBackoffMillis);
             headers.put(RETRY_COUNT, String.valueOf(retryCount + 1));
             headers.put("lastError", truncate(errMsg));
             message.setHeaders(headers);
             log.warn("Retry sending cache invalidation, topic={}, uuid={}, voucherId={}, retryCount={}, backoffMs={}",
                     topic, message.getUuid(), voucherId, retryCount + 1, backoff);
+            //Upload the message to Prometheus
             safeInc("seckill_invalidation_send_retries", "topic", topic);
+            //Sleep the thread
             sleepQuietly(backoff);
+            //Send message
             sendRecord(topic, message);
             return;
         }
-
+        //If the retryCount hit the retryMaxAttempts, then send the message to DLQ
         final String dlqReason = "send_invalid_cache_broadcast_failed: " + truncate(errMsg);
         try {
             sendToDlq(topic, body, dlqReason);

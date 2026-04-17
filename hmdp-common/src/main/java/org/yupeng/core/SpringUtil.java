@@ -7,7 +7,7 @@ import static org.yupeng.constant.Constant.DEFAULT_PREFIX_DISTINCTION_NAME;
 import static org.yupeng.constant.Constant.PREFIX_DISTINCTION_NAME;
 
 /**
- * @program: High-Concurrency Voucher Seckill Platform (HMDP Plus). Email: wyupeng072@gmail.com 
+ * @program: High-Concurrency Voucher Seckill Platform (HMDP Plus). Email: wyupeng072@gmail.com
  * @description: Spring utilities
  * @author: yupeng
  **/
@@ -25,4 +25,6 @@ public class SpringUtil implements ApplicationContextInitializer<ConfigurableApp
     public void initialize(final ConfigurableApplicationContext applicationContext) {
         configurableApplicationContext = applicationContext;
     }
+
+
 }

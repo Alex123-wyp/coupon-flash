@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.yupeng.cache.ShopLocalCache;
 import org.yupeng.core.RedisKeyManage;
 import org.yupeng.dto.Result;
 import org.yupeng.entity.Shop;
@@ -69,6 +70,9 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements IS
     
     @Resource
     private SnowflakeIdGenerator snowflakeIdGenerator;
+
+    @Resource
+    private ShopLocalCache shopLocalCache;
     
     
     @Override
@@ -118,9 +122,17 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements IS
     }
     
     public Shop queryByIdV4(Long id){
-        Shop shop =
-                redisCache.get(RedisKeyBuild.createRedisKey(RedisKeyManage.CACHE_SHOP_KEY, id), Shop.class);
+        Shop shop = null;
+        //Local cache check
+        RedisKeyBuild shopRedisKey = RedisKeyBuild.createRedisKey(RedisKeyManage.CACHE_SHOP_KEY, id);
+        Shop localCacheHit = shopLocalCache.get(shopRedisKey.getRelKey());
+        if(Objects.nonNull(localCacheHit)){
+            return localCacheHit;
+        }
+
+        shop = redisCache.get(shopRedisKey, Shop.class);
         if (Objects.nonNull(shop)) {
+            shopLocalCache.put(shopRedisKey.getRelKey(), shop);
             return shop;
         }
         log.info("查询商铺 从Redis缓存没有查询到 商铺id : {}",id);
@@ -139,8 +151,14 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements IS
             if (existResult){
                 throw new RuntimeException("查询商铺不存在");
             }
+            //double-checing local cache and redis logic
+            localCacheHit = shopLocalCache.get(shopRedisKey.getRelKey());
+            if(Objects.nonNull(localCacheHit)){
+                return localCacheHit;
+            }
             shop = redisCache.get(RedisKeyBuild.createRedisKey(RedisKeyManage.CACHE_SHOP_KEY, id), Shop.class);
             if (Objects.nonNull(shop)) {
+                shopLocalCache.put(RedisKeyBuild.createRedisKey(RedisKeyManage.CACHE_SHOP_KEY, id).getRelKey(), shop);
                 return shop;
             }
             shop = getById(id);
@@ -151,6 +169,7 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements IS
                         TimeUnit.MINUTES);
                 throw new RuntimeException("查询商铺不存在");
             }
+            shopLocalCache.put(RedisKeyBuild.createRedisKey(RedisKeyManage.CACHE_SHOP_KEY, id).getRelKey(), shop);
             redisCache.set(RedisKeyBuild.createRedisKey(RedisKeyManage.CACHE_SHOP_KEY, id),shop,
                     CACHE_SHOP_TTL,
                     TimeUnit.MINUTES);
