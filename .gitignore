@@ -38,4 +38,8 @@ build/
 ### VS Code ###
 .vscode/
 
+### Expirement Code ###
+src/main/resources/lua/rateLimitSliding2.lua
+src/main/java/org/yupeng/kafka/consumer/SeckillVoucherConsumer2.java
+
 CLAUDE.md
