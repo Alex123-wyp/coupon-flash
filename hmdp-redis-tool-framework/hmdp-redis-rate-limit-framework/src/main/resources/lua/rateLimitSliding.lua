@@ -1,10 +1,14 @@
+
+--Sliding Window Rate Limiter
 local ipKey = KEYS[1]
 local userKey = KEYS[2]
+--4 important arguments, 0 by default
 local ipWindowMillis = tonumber(ARGV[1] or '0')
 local ipMaxAttempts = tonumber(ARGV[2] or '0')
 local userWindowMillis = tonumber(ARGV[3] or '0')
 local userMaxAttempts = tonumber(ARGV[4] or '0')
 
+--Base code
 local CODE_SUCCESS = 0
 local CODE_IP_EXCEEDED = 10007
 local CODE_USER_EXCEEDED = 10008
@@ -12,6 +16,7 @@ local CODE_USER_EXCEEDED = 10008
 local now = redis.call('TIME')
 local nowMillis = now[1] * 1000 + math.floor(now[2] / 1000)
 
+--Generate unique member to avoid repeat in single millis second
 local function uniqueMember(baseKey, ts)
     local seqKey = baseKey .. ':seq'
     local seq = redis.call('INCR', seqKey)
@@ -24,21 +29,23 @@ end
 local function checkSlidingLimit(zsetKey, windowMillis, maxAttempts, exceededCode)
     if zsetKey ~= nil and zsetKey ~= '' and windowMillis > 0 and maxAttempts > 0 then
         local member = uniqueMember(zsetKey, nowMillis)
-        redis.call('ZADD', zsetKey, nowMillis, member)
+        redis.call('ZADD', zsetKey, nowMillis, member) --score = nowMillis, member = unique member
         local minScore = 0
         local maxOld = nowMillis - windowMillis
-        redis.call('ZREMRANGEBYSCORE', zsetKey, minScore, maxOld)
-        local cnt = redis.call('ZCARD', zsetKey)
+        redis.call('ZREMRANGEBYSCORE', zsetKey, minScore, maxOld) -- Remove all records whose score is between minScore and maxOld
+        local cnt = redis.call('ZCARD', zsetKey) --Count how many requests remaining in the window
         if cnt == 1 then
-            redis.call('PEXPIRE', zsetKey, windowMillis * 2)
+            redis.call('PEXPIRE', zsetKey, windowMillis * 2) --
         end
-        if cnt > maxAttempts then
+        if cnt > maxAttempts then -- Decided whether to block
             return exceededCode
         end
     end
-    return CODE_SUCCESS
+    return CODE_SUCCESS --Otherwise allow
 end
 
+--ipRet is CODE_SUCCESS by default
+--IP level
 local ipRet = CODE_SUCCESS
 if ipKey ~= nil and ipKey ~= '' and ipWindowMillis > 0 and ipMaxAttempts > 0 then
     ipRet = checkSlidingLimit(ipKey, ipWindowMillis, ipMaxAttempts, CODE_IP_EXCEEDED)
@@ -46,7 +53,7 @@ if ipKey ~= nil and ipKey ~= '' and ipWindowMillis > 0 and ipMaxAttempts > 0 the
         return ipRet
     end
 end
-
+--User level
 local userRet = checkSlidingLimit(userKey, userWindowMillis, userMaxAttempts, CODE_USER_EXCEEDED)
 if userRet ~= CODE_SUCCESS then
     return userRet

@@ -20,8 +20,15 @@ if seckillVoucherOrderOperate == 1 then
         redis.call('srem', seckillUserKey, userId)
     end
 end
+
+--redis 'TIME' return 2 values
+--timeArr[1] - seconds
+--timeArr[2] - microseconds
 local timeArr = redis.call('TIME')
 local nowMillis = tonumber(timeArr[1]) * 1000 + math.floor(tonumber(timeArr[2]) / 1000)
+
+--cjson.encode - convert a Lua table into a json String
+
 local logEntry = cjson.encode({
     logType = logType,
     ts = nowMillis,

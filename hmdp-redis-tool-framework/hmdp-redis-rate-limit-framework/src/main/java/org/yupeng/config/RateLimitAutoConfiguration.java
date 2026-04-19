@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Bean;
 
 /**
  * @program: High-Concurrency Voucher Seckill Platform (HMDP Plus). Email: wyupeng072@gmail.com 
- * @description: Bloom filter configuration
+ * @description: Register SeckillRateLimitConfigProperties as a bean
  * @author: yupeng
  **/
 @EnableConfigurationProperties(SeckillRateLimitConfigProperties.class)

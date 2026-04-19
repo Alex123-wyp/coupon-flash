@@ -86,6 +86,7 @@ public class RedisVoucherData {
             log.error("Redis回滚最终失败|voucherId={}|userId={}|orderId={}|traceId={} reason={}", voucherId, userId, orderId, traceId, reason);
             saveRollbackFailureLog(voucherId, userId, orderId, traceId, "redis rollback failed after retries: " + reason, finalCode);
             safeInc("seckill_rollback_retry_give_up", "component", "redis_voucher_data");
+
         }
     }
     
@@ -152,7 +153,10 @@ public class RedisVoucherData {
             rollbackFailureLogService.save(logEntity);
             safeInc("seckill_rollback_failure", "component", "redis_voucher_data");
             safeInc("seckill_rollback_failure", "reason", "retry_exhausted");
+
+            //Alert
             rollbackAlertService.sendRollbackAlert(logEntity);
+
         } catch (Exception e) {
             log.warn("保存回滚失败日志异常", e);
         }

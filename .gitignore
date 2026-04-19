@@ -3,6 +3,7 @@ target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
+src/main/resources/lua/rateLimitSliding2.lua
 logs/
 
 **/dependency-reduced-pom.xml
@@ -39,7 +40,5 @@ build/
 .vscode/
 
 ### Expirement Code ###
-src/main/resources/lua/rateLimitSliding2.lua
-src/main/java/org/yupeng/kafka/consumer/SeckillVoucherConsumer2.java
-
+hmdp-core-service/src/main/java/org/yupeng/kafka/consumer/SeckillVoucherConsumer2.java
 CLAUDE.md

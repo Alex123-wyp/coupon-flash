@@ -26,22 +26,34 @@ public class SeckillVoucherOperate {
     
     private DefaultRedisScript<String> redisScript;
     
+//    @PostConstruct
+//    public void init(){
+//        try {
+//            redisScript = new DefaultRedisScript<>();
+//            redisScript.setScriptSource(new ResourceScriptSource(new ClassPathResource("lua/seckillVoucher.lua")));
+//            redisScript.setResultType(String.class);
+//        } catch (Exception e) {
+//            log.error("redisScript init lua error",e);
+//        }
+//    }
     @PostConstruct
     public void init(){
-        try {
+        try{
             redisScript = new DefaultRedisScript<>();
             redisScript.setScriptSource(new ResourceScriptSource(new ClassPathResource("lua/seckillVoucher.lua")));
             redisScript.setResultType(String.class);
-        } catch (Exception e) {
-            log.error("redisScript init lua error",e);
+        }catch (Exception e){
+            log.error("redisScript init lua error", e);
         }
     }
 
+//    public SeckillVoucherDomain execute(List<String> keys, String[] args){
+//        Object object = redisCache.getInstance().execute(redisScript, keys, args);
+//        return JSON.parseObject((String)object, SeckillVoucherDomain.class);
+//    }
 
     public SeckillVoucherDomain execute(List<String> keys, String[] args){
-
         Object object = redisCache.getInstance().execute(redisScript, keys, args);
-
         return JSON.parseObject((String)object, SeckillVoucherDomain.class);
     }
 }

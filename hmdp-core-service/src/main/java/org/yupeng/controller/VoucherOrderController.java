@@ -44,6 +44,7 @@ public class VoucherOrderController {
     private IReconciliationTaskService reconciliationTaskService;
 
     @GetMapping("/seckill/token/{id}")
+    //User request for access token
     public Result<String> issueSeckillAccessToken(@PathVariable("id") Long voucherId) {
         Long userId = UserHolder.getUser().getId();
         rateLimitHandler.execute(voucherId, userId, RateLimitScene.ISSUE_TOKEN);
@@ -55,6 +56,7 @@ public class VoucherOrderController {
     public Result<Long> seckillVoucher(@PathVariable("id") Long voucherId,
                                        @RequestParam(name = "accessToken", required = false) String accessToken) {
         Long userId = UserHolder.getUser().getId();
+        //Rate Limit, to prevent malicious order spamming / prevent fraudulent order flooding
         rateLimitHandler.execute(voucherId, userId, RateLimitScene.SECKILL_ORDER);
         if (accessTokenService.isEnabled()) {
             if (accessToken == null || !accessTokenService.validateAndConsume(voucherId, userId, accessToken)) {

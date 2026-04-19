@@ -61,8 +61,14 @@ public enum BaseCode {
     }
     
     public static String getMsg(Integer code) {
-        for (BaseCode re : BaseCode.values()) {
-            if (re.code.intValue() == code.intValue()) {
+//        for (BaseCode re : BaseCode.values()) {
+//            if (re.code.intValue() == code.intValue()) {
+//                return re.msg;
+//            }
+//        }
+//        return "";
+        for(BaseCode re : BaseCode.values()){
+            if(re.code.intValue() == code.intValue()){
                 return re.msg;
             }
         }
@@ -70,9 +76,16 @@ public enum BaseCode {
     }
     
     public static BaseCode getRc(Integer code) {
-        for (BaseCode re : BaseCode.values()) {
-            if (re.code.intValue() == code.intValue()) {
-                return re;
+//        for (BaseCode re : BaseCode.values()) {
+//            if (re.code.intValue() == code.intValue()) {
+//                return re;
+//            }
+//        }
+//        return null;
+
+        for(BaseCode rc : BaseCode.values()){
+            if(rc.code.intValue() == code.intValue()){
+                return rc;
             }
         }
         return null;

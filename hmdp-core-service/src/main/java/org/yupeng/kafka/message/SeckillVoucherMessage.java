@@ -30,4 +30,5 @@ public class SeckillVoucherMessage {
     private Integer afterQty;
     
     private Boolean autoIssue;
+
 }

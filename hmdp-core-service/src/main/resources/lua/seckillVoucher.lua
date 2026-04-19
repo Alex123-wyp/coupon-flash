@@ -1,3 +1,4 @@
+-- local stockKey = KEYS[1]
 local stockKey = KEYS[1]
 local seckillUserKey = KEYS[2]
 local traceLogKey = KEYS[3]
@@ -32,10 +33,12 @@ end
 if (tonumber(stock) <= 0) then
     return string.format('{"%s": %d}', 'code', 10005)
 end
+--if (redis.call('sismember', seckillUserKey, userId) == 1) then
+  --  return string.format('{"%s": %d}', 'code', 10006)
+--end
 if (redis.call('sismember', seckillUserKey, userId) == 1) then
     return string.format('{"%s": %d}', 'code', 10006)
 end
-
 
 local beforeQty = tonumber(stock)
 local changeQty = 1

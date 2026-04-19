@@ -11,6 +11,8 @@ import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataMergedResult;
+import org.springframework.boot.autoconfigure.cache.CacheProperties;
 import org.yupeng.core.RedisKeyManage;
 import org.yupeng.core.SpringUtil;
 import org.yupeng.dto.CancelVoucherOrderDto;
@@ -68,12 +70,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -362,16 +359,14 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
     }
     
     public Result<Long> doSeckillVoucherV2(Long voucherId) {
-
-        //Call queryByVoucherId method to find seckillVoucherFullModel in redis first
+        //Call queryByVoucherId method to find seckillVoucherFullModel in local cache, and then redis
+//        SeckillVoucherFullModel seckillVoucherFullModel = seckillVoucherService.queryByVoucherId(voucherId);
         SeckillVoucherFullModel seckillVoucherFullModel = seckillVoucherService.queryByVoucherId(voucherId);
-
         //Call the method to load stock into redis
         seckillVoucherService.loadVoucherStock(voucherId);
-
         //Get user ID from threadLocal
+//        Long userId = UserHolder.getUser().getId();
         Long userId = UserHolder.getUser().getId();
-
         //Verify user level
         verifyUserLevel(seckillVoucherFullModel,userId);
 
@@ -386,11 +381,15 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
          * local seckillUserKey = KEYS[2]
          * local traceLogKey = KEYS[3]
          */
-        List<String> keys = ListUtil.of(
-                RedisKeyBuild.createRedisKey(RedisKeyManage.SECKILL_STOCK_TAG_KEY, voucherId).getRelKey(),
-                RedisKeyBuild.createRedisKey(RedisKeyManage.SECKILL_USER_TAG_KEY, voucherId).getRelKey(),
-                RedisKeyBuild.createRedisKey(RedisKeyManage.SECKILL_TRACE_LOG_TAG_KEY, voucherId).getRelKey()
-        );
+//        List<String> keys = ListUtil.of(
+//                RedisKeyBuild.createRedisKey(RedisKeyManage.SECKILL_STOCK_TAG_KEY, voucherId).getRelKey(),
+//                RedisKeyBuild.createRedisKey(RedisKeyManage.SECKILL_USER_TAG_KEY, voucherId).getRelKey(),
+//                RedisKeyBuild.createRedisKey(RedisKeyManage.SECKILL_TRACE_LOG_TAG_KEY, voucherId).getRelKey()
+//        );
+        List<String> keys = new ArrayList<>(3);
+        keys.add(RedisKeyBuild.createRedisKey(RedisKeyManage.SECKILL_STOCK_TAG_KEY, voucherId).getRelKey());
+        keys.add(RedisKeyBuild.createRedisKey(RedisKeyManage.SECKILL_USER_TAG_KEY, voucherId).getRelKey());
+        keys.add(RedisKeyBuild.createRedisKey(RedisKeyManage.SECKILL_TRACE_LOG_TAG_KEY, voucherId).getRelKey());
 
         //Builds 9 lua arguments in args array
         /**
@@ -406,21 +405,32 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
          * local logType = ARGV[8]
          * local ttlSeconds = tonumber(ARGV[9])
          */
+//        String[] args = new String[9];
+//        args[0] = voucherId.toString();
+//        args[1] = userId.toString();
+//        args[2] = String.valueOf(LocalDateTimeUtil.toEpochMilli(seckillVoucherFullModel.getBeginTime()));
+//        args[3] = String.valueOf(LocalDateTimeUtil.toEpochMilli(seckillVoucherFullModel.getEndTime()));
+//        args[4] = String.valueOf(seckillVoucherFullModel.getStatus());
+//        args[5] = String.valueOf(orderId);
+//        args[6] = String.valueOf(traceId);
+//        //Generate traceId - LogType.DEDUCT.getCode() -> -1
+//        args[7] = String.valueOf(LogType.DEDUCT.getCode());
+//        long secondsUntilEnd = Duration.between(LocalDateTimeUtil.now(), seckillVoucherFullModel.getEndTime()).getSeconds();
+//        //The trace log expired day: add one more day from remaining time
+//        long ttlSeconds = Math.max(1L, secondsUntilEnd + Duration.ofDays(1).getSeconds());
+//        args[8] = String.valueOf(ttlSeconds);
         String[] args = new String[9];
-        args[0] = voucherId.toString();
-        args[1] = userId.toString();
+        args[0] = String.valueOf(voucherId);
+        args[1] = String.valueOf(userId);
         args[2] = String.valueOf(LocalDateTimeUtil.toEpochMilli(seckillVoucherFullModel.getBeginTime()));
         args[3] = String.valueOf(LocalDateTimeUtil.toEpochMilli(seckillVoucherFullModel.getEndTime()));
         args[4] = String.valueOf(seckillVoucherFullModel.getStatus());
         args[5] = String.valueOf(orderId);
         args[6] = String.valueOf(traceId);
-        //Generate traceId - LogType.DEDUCT.getCode() -> -1
         args[7] = String.valueOf(LogType.DEDUCT.getCode());
         long secondsUntilEnd = Duration.between(LocalDateTimeUtil.now(), seckillVoucherFullModel.getEndTime()).getSeconds();
-        //The trace log expired day: add one more day from remaining time
         long ttlSeconds = Math.max(1L, secondsUntilEnd + Duration.ofDays(1).getSeconds());
         args[8] = String.valueOf(ttlSeconds);
-
         //pass the keys and args to lua script to execute, return SeckillVoucherDomain class.
         SeckillVoucherDomain seckillVoucherDomain = seckillVoucherOperate.execute(
                 keys,
@@ -428,10 +438,16 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
         );
 
         //If Lua script did not return success, then throws an HmdpFrameException
-        if (!seckillVoucherDomain.getCode().equals(BaseCode.SUCCESS.getCode())) {
-            throw new HmdpFrameException(Objects.requireNonNull(BaseCode.getRc(seckillVoucherDomain.getCode())));
+//        if (!seckillVoucherDomain.getCode().equals(BaseCode.SUCCESS.getCode())) {
+//            throw new HmdpFrameException(Objects.requireNonNull(BaseCode.getRc(seckillVoucherDomain.getCode())));
+//        }
+        BaseCode rc = BaseCode.getRc(seckillVoucherDomain.getCode());
+        if(rc == null){
+            throw new HmdpFrameException("Unknown seckill result code: " + seckillVoucherDomain.getCode());
         }
-
+        if(!rc.getCode().equals(BaseCode.SUCCESS.getCode()) ){
+            throw new HmdpFrameException(rc);
+        }
         //If Lua script returns success, then generate a SeckillVoucher message, and send it to kafka message queue
         SeckillVoucherMessage seckillVoucherMessage = new SeckillVoucherMessage(
                 userId,
@@ -446,11 +462,13 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
 
         //Send message to kafka to ask database to change the value
         seckillVoucherProducer.sendPayload(
-                SpringUtil.getPrefixDistinctionName() + "-" + SECKILL_VOUCHER_TOPIC, 
+                SpringUtil.getPrefixDistinctionName() + "-" + SECKILL_VOUCHER_TOPIC,
                 seckillVoucherMessage);
+
         return Result.ok(orderId);
     }
-    
+
+
     public void verifyUserLevel(SeckillVoucherFullModel seckillVoucherFullModel,Long userId){
 
         //Get allowedLevelsStr from seckillVoucherFullModel stored in redis
@@ -551,11 +569,15 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
     @Transactional(rollbackFor = Exception.class)
     // Active persistence path: Kafka consumer lands here after Redis/Lua reservation succeeds.
 
-
     public boolean createVoucherOrderV2(MessageExtend<SeckillVoucherMessage> message) {
 
         SeckillVoucherMessage messageBody = message.getMessageBody();
         Long userId = messageBody.getUserId();
+
+        /**
+         * VoucherOrder table sharding key is userId and voucherId, but sometimes we need to chek the order by orderId,
+         * to avoid checking all routes in this case, we need voucher_order_route table
+         */
         VoucherOrder normalVoucherOrder = lambdaQuery()
                 .eq(VoucherOrder::getVoucherId, messageBody.getVoucherId())
                 .eq(VoucherOrder::getUserId, userId)
@@ -573,12 +595,15 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
         if (!success) {
             throw new HmdpFrameException("优惠券库存不足！优惠券id:" + messageBody.getVoucherId());
         }
+        //Create Order voucher order table
         VoucherOrder voucherOrder = new VoucherOrder();
         voucherOrder.setId(messageBody.getOrderId());
         voucherOrder.setUserId(messageBody.getUserId());
         voucherOrder.setVoucherId(messageBody.getVoucherId());
         voucherOrder.setCreateTime(LocalDateTimeUtil.now());
         save(voucherOrder);
+
+        //Create voucher order router table
         VoucherOrderRouter voucherOrderRouter = new VoucherOrderRouter();
         voucherOrderRouter.setId(snowflakeIdGenerator.nextId());
         voucherOrderRouter.setOrderId(voucherOrder.getId());
