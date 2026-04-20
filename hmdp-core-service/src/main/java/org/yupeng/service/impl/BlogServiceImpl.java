@@ -72,7 +72,7 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog> implements IB
         // 1. Query blog
         Blog blog = getById(id);
         if (blog == null) {
-            return Result.fail("笔记不存在！");
+            return Result.fail("Blog does not exist!");
         }
         // 2. Query users related to blog
         queryBlogUser(blog);
@@ -152,7 +152,7 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog> implements IB
         // 2. Save store visit notes
         boolean isSuccess = save(blog);
         if(!isSuccess){
-            return Result.fail("新增笔记失败!");
+            return Result.fail("Failed to create blog!");
         }
         // 3. Query all fans of the note author select * from tb_follow where follow_user_id = ?
         List<Follow> follows = followService.query().eq("follow_user_id", user.getId()).list();

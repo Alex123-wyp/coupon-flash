@@ -40,7 +40,7 @@ public class DelCacheDataInit {
     
     @PostConstruct
     public void init(){
-        log.info("==========删除缓存中的数据==========");
+        log.info("==========Delete cached data==========");
         List<Shop> shopList = shopService.list();
         for (final Shop shop : shopList) {
             redisCache.del(RedisKeyBuild.createRedisKey(RedisKeyManage.CACHE_SHOP_KEY,shop.getId()));

@@ -27,7 +27,7 @@ public class PasswordEncoder {
             return false;
         }
         if(!encodedPassword.contains("@")){
-            throw new RuntimeException("密码格式不正确！");
+            throw new RuntimeException("Incorrect password format!");
         }
         String[] arr = encodedPassword.split("@");
         // get salt

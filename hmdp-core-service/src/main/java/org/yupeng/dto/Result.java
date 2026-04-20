@@ -33,7 +33,7 @@ public class Result<T> {
     public static <T> Result<T> fail(){
         Result<T> result = new Result<T>();
         result.setSuccess(false);
-        result.setErrorMsg("系统错误，请稍后重试!");
+        result.setErrorMsg("System error, please try again later!");
         return result;
     }
     public static <T> Result<T> fail(String errorMsg){

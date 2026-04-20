@@ -60,7 +60,7 @@ public class VoucherOrderController {
         rateLimitHandler.execute(voucherId, userId, RateLimitScene.SECKILL_ORDER);
         if (accessTokenService.isEnabled()) {
             if (accessToken == null || !accessTokenService.validateAndConsume(voucherId, userId, accessToken)) {
-                return Result.fail("令牌校验失败或令牌已失效");
+                return Result.fail("Token validation failed or the token has expired");
             }
         }
         return voucherOrderService.seckillVoucher(voucherId);

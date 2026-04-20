@@ -67,7 +67,7 @@ public class UserController {
     @PostMapping("/logout")
     public Result<Void> logout(){
         // TODO implements the logout function
-        return Result.fail("功能未完成");
+        return Result.fail("Feature not implemented");
     }
 
     @GetMapping("/me")
@@ -98,7 +98,7 @@ public class UserController {
     public Result<Void> updateLevel(@RequestParam("newLevel") Integer newLevel) {
         UserDTO current = UserHolder.getUser();
         if (Objects.isNull(current)) {
-            return Result.fail("未登录");
+            return Result.fail("Not logged in");
         }
         return userInfoService.updateUserLevel(current.getId(), newLevel);
     }

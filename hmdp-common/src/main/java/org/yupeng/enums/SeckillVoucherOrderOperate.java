@@ -11,8 +11,8 @@ public enum SeckillVoucherOrderOperate {
     /**
      * Whether to delete flash sale coupon order records
      * */
-    NO(0, "不删除"),
-    YES(1, "删除"),
+    NO(0, "Keep"),
+    YES(1, "Delete"),
     ;
     
     @Getter

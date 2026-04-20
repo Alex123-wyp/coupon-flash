@@ -11,9 +11,9 @@ public enum LogType {
     /**
      * record type
      * */
-    DEDUCT(-1, "扣减"),
+    DEDUCT(-1, "Deduct"),
     
-    RESTORE(1, "恢复"),
+    RESTORE(1, "Restore"),
     ;
     
     @Getter

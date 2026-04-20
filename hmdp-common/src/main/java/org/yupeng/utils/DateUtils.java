@@ -374,7 +374,7 @@ public class DateUtils {
      */
     public static String getWeekStr(Date date) {
         if (Objects.isNull(date)) {
-            return "未知";
+            return "Unknown";
         }
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
@@ -417,21 +417,21 @@ public class DateUtils {
     private static String getWeekStr(Calendar calendar) {
         switch (calendar.get(Calendar.DAY_OF_WEEK)) {
             case Calendar.MONDAY:
-                return "周一";
+                return "Monday";
             case Calendar.TUESDAY:
-                return "周二";
+                return "Tuesday";
             case Calendar.WEDNESDAY:
-                return "周三";
+                return "Wednesday";
             case Calendar.THURSDAY:
-                return "周四";
+                return "Thursday";
             case Calendar.FRIDAY:
-                return "周五";
+                return "Friday";
             case Calendar.SATURDAY:
-                return "周六";
+                return "Saturday";
             case Calendar.SUNDAY:
-                return "周日";
+                return "Sunday";
             default:
-                return "未知";
+                return "Unknown";
         }
     }
  
@@ -931,7 +931,7 @@ public class DateUtils {
                 SimpleDateFormat sdf = new SimpleDateFormat(pattern);
                 return sdf.parse(dateStr);
             } catch (ParseException e) {
-                throw new IllegalArgumentException("字符串转化为日期失败！", e);
+                throw new IllegalArgumentException("Failed to convert string to date", e);
             }
         }
         return defaultDate;

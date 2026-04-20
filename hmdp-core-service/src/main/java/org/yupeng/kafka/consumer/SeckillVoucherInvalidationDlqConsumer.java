@@ -60,7 +60,7 @@ public class SeckillVoucherInvalidationDlqConsumer extends AbstractConsumerHandl
     protected void doConsume(MessageExtend<SeckillVoucherInvalidationMessage> message) {
         SeckillVoucherInvalidationMessage body = message.getMessageBody();
         if (Objects.isNull(body.getVoucherId())) {
-            log.warn("DLQ消息载荷为空或voucherId缺失, uuid={}", message.getUuid());
+            log.warn("DLQ message payload is empty or voucherId is missing, uuid={}", message.getUuid());
             safeInc("seckill_invalidation_dlq_replay_skipped", "reason", "invalid_payload");
             return;
         }

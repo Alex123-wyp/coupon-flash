@@ -173,7 +173,7 @@ public class ReconciliationTaskServiceImpl implements IReconciliationTaskService
                 if (traceTs != null && now - traceTs < (MESSAGE_DELAY_TIME + 2000)) {
                     continue;
                 }
-                log.error("发现Redis扣减流水存在，但DB订单不存在的情况，voucherId={}, orderId={}", voucherId, orderId);
+                log.error("Detected Redis deduction trace but no DB order exists, voucherId={}, orderId={}", voucherId, orderId);
                 if (!delRedisStockHasHappened) {
                     ((IReconciliationTaskService) AopContext.currentProxy()).delRedisStock(voucherId);
                     delRedisStockHasHappened = true;

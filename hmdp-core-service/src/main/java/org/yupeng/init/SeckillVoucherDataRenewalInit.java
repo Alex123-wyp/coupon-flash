@@ -33,7 +33,7 @@ public class SeckillVoucherDataRenewalInit {
     }
     
     public void updateBeginAndEndTime(){
-        log.info("==========更新优惠券的开始时间和结束时间==========");
+        log.info("==========Update voucher start and end times==========");
         //Query program performance data whose coupon end time is less than 2 days ago
         List<SeckillVoucher> seckillVoucherList =
                 seckillVoucherService.lambdaQuery()
@@ -65,7 +65,7 @@ public class SeckillVoucherDataRenewalInit {
     }
     
     public void renewalStock(){
-        log.info("==========将优惠券的库存数量恢复==========");
+        log.info("==========Restore voucher stock quantity==========");
         //Restore inventory quantity
         List<SeckillVoucher> seckillVoucherList = seckillVoucherService.list();
         for (SeckillVoucher seckillVoucher : seckillVoucherList) {

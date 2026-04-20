@@ -83,7 +83,7 @@ public class RedisVoucherData {
         boolean ok = finalCode != null && finalCode.equals(BaseCode.SUCCESS.getCode());
         if (!ok) {
             String reason = BaseCode.getMsg(finalCode == null ? -1 : finalCode);
-            log.error("Redis回滚最终失败|voucherId={}|userId={}|orderId={}|traceId={} reason={}", voucherId, userId, orderId, traceId, reason);
+            log.error("Redis rollback ultimately failed|voucherId={}|userId={}|orderId={}|traceId={} reason={}", voucherId, userId, orderId, traceId, reason);
             saveRollbackFailureLog(voucherId, userId, orderId, traceId, "redis rollback failed after retries: " + reason, finalCode);
             safeInc("seckill_rollback_retry_give_up", "component", "redis_voucher_data");
 
@@ -108,10 +108,10 @@ public class RedisVoucherData {
                     return result;
                 }
                 String reason = BaseCode.getMsg(result == null ? -1 : result);
-                log.warn("Redis回滚失败，准备重试|attempt={} reason={}", attempt + 1, reason);
+                log.warn("Redis rollback failed, preparing to retry|attempt={} reason={}", attempt + 1, reason);
             } catch (Exception e) {
                 lastCode = -1;
-                log.warn("Redis回滚异常，准备重试|attempt={} error={}", attempt + 1, e.getMessage());
+                log.warn("Redis rollback exception, preparing to retry|attempt={} error={}", attempt + 1, e.getMessage());
             }
             attempt++;
             if (attempt >= maxAttempts) {
@@ -158,7 +158,7 @@ public class RedisVoucherData {
             rollbackAlertService.sendRollbackAlert(logEntity);
 
         } catch (Exception e) {
-            log.warn("保存回滚失败日志异常", e);
+            log.warn("Exception while saving rollback failure log", e);
         }
     }
     

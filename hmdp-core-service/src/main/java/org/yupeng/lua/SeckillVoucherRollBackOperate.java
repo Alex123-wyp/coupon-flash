@@ -50,7 +50,7 @@ public class SeckillVoucherRollBackOperate {
         try {
             return Integer.valueOf(String.valueOf(obj));
         } catch (Exception e) {
-            log.warn("Lua回滚脚本返回类型无法转换为Integer: {}", obj);
+            log.warn("Lua rollback script return type cannot be converted to Integer: {}", obj);
             return null;
         }
     }

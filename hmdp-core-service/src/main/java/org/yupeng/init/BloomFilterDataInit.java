@@ -37,12 +37,12 @@ public class BloomFilterDataInit {
 
     @PostConstruct
     public void init() {
-        log.info("==========初始化商铺的布隆过滤器==========");
+        log.info("==========Initialize shop Bloom filter==========");
         List<Shop> shopList = shopService.list();
         for (Shop shop : shopList) {
             bloomFilterHandlerFactory.get(BLOOM_FILTER_HANDLER_SHOP).add(String.valueOf(shop.getId()));
         }
-        log.info("==========初始化优惠券的布隆过滤器==========");
+        log.info("==========Initialize voucher Bloom filter==========");
         List<SeckillVoucher> seckillVoucherlist = seckillVoucherService.list();
         for (SeckillVoucher seckillVoucher : seckillVoucherlist) {
             bloomFilterHandlerFactory.get(BLOOM_FILTER_HANDLER_VOUCHER).add(String.valueOf(seckillVoucher.getVoucherId()));

@@ -188,7 +188,7 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
             Thread t = new Thread(r, namePrefix + index.getAndIncrement());
             t.setDaemon(daemon);
             t.setUncaughtExceptionHandler((thread, ex) ->
-                    log.error("未捕获异常，线程={}, err={}", thread.getName(), ex.getMessage(), ex)
+                    log.error("Uncaught exception, thread={}, err={}", thread.getName(), ex.getMessage(), ex)
             );
             return t;
         }
@@ -245,7 +245,7 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
                     // 4. Confirm message XACK stream.orders g1 id
                     stringRedisTemplate.opsForStream().acknowledge(queueName, "g1", record.getId());
                 } catch (Exception e) {
-                    log.error("处理订单异常", e);
+                    log.error("Order processing exception", e);
                     handlePendingList();
                 }
             }
@@ -254,19 +254,19 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
         public void initStream(){
             Boolean exists = stringRedisTemplate.hasKey(queueName);
             if (BooleanUtil.isFalse(exists)) {
-                log.info("stream不存在，开始创建stream");
+                log.info("Stream does not exist, creating stream");
                 // Does not exist, needs to be created
                 stringRedisTemplate.opsForStream().createGroup(queueName, ReadOffset.latest(), "g1");
-                log.info("stream和group创建完毕");
+                log.info("Stream and group created");
                 return;
             }
             // The stream exists and determines whether the group exists.
             StreamInfo.XInfoGroups groups = stringRedisTemplate.opsForStream().groups(queueName);
             if(groups.isEmpty()){
-                log.info("group不存在，开始创建group");
+                log.info("Group does not exist, creating group");
                 // The group does not exist, create the group
                 stringRedisTemplate.opsForStream().createGroup(queueName, ReadOffset.latest(), "g1");
-                log.info("group创建完毕");
+                log.info("Group created");
             }
         }
 
@@ -293,7 +293,7 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
                     // 4. Confirm message XACK stream.orders g1 id
                     stringRedisTemplate.opsForStream().acknowledge(queueName, "g1", record.getId());
                 } catch (Exception e) {
-                    log.error("处理订单异常", e);
+                    log.error("Order processing exception", e);
                 }
             }
         }
@@ -311,7 +311,7 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
         // Determine whether the lock acquisition is successful
         if(!isLock){
             // Failed to acquire lock, return error or try again
-            log.error("不允许重复下单");
+            log.error("Duplicate orders are not allowed");
             return;
         }
         try {
@@ -350,7 +350,7 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
         // 2. Determine whether the result is 0
         if (r != 0) {
             // 2.1. If it is not 0, it means there is no purchase qualification.
-            return Result.fail(r == 1 ? "库存不足" : "不能重复下单");
+            return Result.fail(r == 1 ? "Insufficient stock" : "Duplicate orders are not allowed");
         }
         // 3. Get the proxy object
         proxy = (IVoucherOrderService) AopContext.currentProxy();
@@ -500,7 +500,7 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
                     allowed = allowedLevels.contains(level);
                 }
             } catch (Exception parseEx) {
-                log.warn("allowedLevels 解析失败, voucherId={}, raw={}",
+                log.warn("Failed to parse allowedLevels, voucherId={}, raw={}",
                         seckillVoucherFullModel.getVoucherId(), 
                         allowedLevelsStr, parseEx);
             }
@@ -512,7 +512,7 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
 
         //If not then throw exception, not allowed
         if (!allowed) {
-            throw new HmdpFrameException("当前会员级别不满足参与条件");
+            throw new HmdpFrameException("The current membership level does not meet the participation requirements");
         }
     }
 
@@ -544,7 +544,7 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
         // 5.2. Determine whether it exists
         if (count > 0) {
             // User has already purchased
-            log.error("用户已经购买过一次！");
+            log.error("User has already purchased once!");
             return;
         }
         // 6. Deduct inventory
@@ -556,7 +556,7 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
                 .update();
         if (!success) {
             // Deduction failed
-            log.error("库存不足！");
+            log.error("Insufficient stock!");
             return;
         }
         // 7.Create order
@@ -584,7 +584,7 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
                 .eq(VoucherOrder::getStatus,OrderStatus.NORMAL.getCode())
                 .one();
         if (Objects.nonNull(normalVoucherOrder)) {
-            log.warn("已存在此订单，voucherId：{},userId：{}", normalVoucherOrder.getVoucherId(), userId);
+            log.warn("Order already exists, voucherId={}, userId={}", normalVoucherOrder.getVoucherId(), userId);
             throw new HmdpFrameException(BaseCode.VOUCHER_ORDER_EXIST);
         }
         boolean success = seckillVoucherService.update()
@@ -593,7 +593,7 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
                 .gt("stock", 0)
                 .update();
         if (!success) {
-            throw new HmdpFrameException("优惠券库存不足！优惠券id:" + messageBody.getVoucherId());
+            throw new HmdpFrameException("Insufficient voucher stock! voucherId=" + messageBody.getVoucherId());
         }
         //Create Order voucher order table
         VoucherOrder voucherOrder = new VoucherOrder();
@@ -730,7 +730,7 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
                         voucherOrder.getUserId()
                 );
             } catch (Exception e) {
-                log.warn("自动发券失败，voucherId={}, err=\n{}", voucherOrder.getVoucherId(), e.getMessage());
+                log.warn("Auto-issue failed, voucherId={}, err=\n{}", voucherOrder.getVoucherId(), e.getMessage());
             }
         }
         return result;
@@ -802,7 +802,7 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
         try {
             verifyUserLevel(seckillVoucherFullModel, candidateUserId);
         } catch (Exception e) {
-            log.info("候选用户不满足人群规则，自动发券跳过。voucherId={}, userId={}", voucherId, candidateUserId);
+            log.info("Candidate user does not satisfy audience rules, skipping auto-issue. voucherId={}, userId={}", voucherId, candidateUserId);
             return false;
         }
         List<String> keys = buildSeckillKeys(voucherId);
@@ -811,7 +811,7 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
         String[] args = buildSeckillArgs(voucherId, candidateUserIdStr, seckillVoucherFullModel, orderId, traceId);
         SeckillVoucherDomain domain = seckillVoucherOperate.execute(keys, args);
         if (!Objects.equals(domain.getCode(), BaseCode.SUCCESS.getCode())) {
-            log.info("自动发券Lua扣减失败，code={}, voucherId={}, userId={}", domain.getCode(), voucherId, candidateUserId);
+            log.info("Auto-issue Lua deduction failed, code={}, voucherId={}, userId={}", domain.getCode(), voucherId, candidateUserId);
             return false;
         }
         SeckillVoucherMessage message = new SeckillVoucherMessage(
@@ -878,7 +878,7 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
                     // 2. Create an order
                     handleVoucherOrder(voucherOrder);
                 } catch (Exception e) {
-                    log.error("处理订单异常", e);
+                    log.error("Order processing exception", e);
                 }
             }
         }
@@ -897,7 +897,7 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
         // 2. Determine whether the result is 0
         if (r != 0) {
             // 2.1. If it is not 0, it means there is no purchase qualification.
-            return Result.fail(r == 1 ? "库存不足" : "不能重复下单");
+            return Result.fail(r == 1 ? "Insufficient stock" : "Duplicate orders are not allowed");
         }
         // 2.2. If it is 0, you are eligible to purchase and save the order information to the blocking queue.
         VoucherOrder voucherOrder = new VoucherOrder();
@@ -922,17 +922,17 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
         // 2. Determine whether the flash sale has started
         if (voucher.getBeginTime().isAfter(LocalDateTime.now())) {
             // Not started yet
-            return Result.fail("秒杀尚未开始！");
+            return Result.fail("Seckill has not started yet!");
         }
         // 3. Determine whether the flash sale has ended
         if (voucher.getEndTime().isBefore(LocalDateTime.now())) {
             // Not started yet
-            return Result.fail("秒杀已经结束！");
+            return Result.fail("Seckill has ended!");
         }
         // 4. Determine whether the inventory is sufficient
         if (voucher.getStock() < 1) {
             // Insufficient stock
-            return Result.fail("库存不足！");
+            return Result.fail("Insufficient stock!");
         }
 
         Long userId = UserHolder.getUser().getId();
@@ -944,7 +944,7 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
         // Determine whether the lock acquisition is successful
         if(!isLock){
             // Failed to acquire lock, return error or try again
-            return Result.fail("不允许重复下单");
+            return Result.fail("Duplicate orders are not allowed");
         }
         try {
             // Get the proxy object (transaction)
@@ -968,7 +968,7 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
             // 5.2. Determine whether it exists
             if (count > 0) {
                 // User has already purchased
-                return Result.fail("用户已经购买过一次！");
+                return Result.fail("User has already purchased once!");
             }
 
             // 6. Deduct inventory
@@ -978,7 +978,7 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
                     .update();
             if (!success) {
                 // Deduction failed
-                return Result.fail("库存不足！");
+                return Result.fail("Insufficient stock!");
             }
 
             // 7.Create order

@@ -11,9 +11,9 @@ public enum StockUpdateType {
     /**
      * Inventory operation type
      * */
-    DECREASE(-1, "扣减"),
+    DECREASE(-1, "Decrease"),
     
-    INCREASE(1, "增加"),
+    INCREASE(1, "Increase"),
     ;
     
     @Getter

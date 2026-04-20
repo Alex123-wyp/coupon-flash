@@ -25,6 +25,6 @@ public class TestController {
     public Result<String> queryShopById() {
         Counter counter = meterRegistry.counter("test_query_shop", "method", "queryShopById");
         counter.increment();
-        return Result.ok("指标上报成功，当前计数: " + counter.count());
+        return Result.ok("Metric reported successfully, current count: " + counter.count());
     }
 }

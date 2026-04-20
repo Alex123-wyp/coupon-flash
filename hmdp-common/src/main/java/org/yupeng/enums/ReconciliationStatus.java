@@ -11,10 +11,10 @@ public enum ReconciliationStatus {
     /**
      * reconciliation status
      * */
-    PENDING(1, "待处理"),
-    ABNORMAL(2, "异常"),
-    INCONSISTENT(3, "不一致"),
-    CONSISTENT(4, "一致"),
+    PENDING(1, "Pending"),
+    ABNORMAL(2, "Abnormal"),
+    INCONSISTENT(3, "Inconsistent"),
+    CONSISTENT(4, "Consistent"),
     
     ;
     

@@ -78,7 +78,7 @@ public class SeckillVoucherInvalidationConsumer extends AbstractConsumerHandler<
 
         SeckillVoucherInvalidationMessage body = message.getMessageBody();
         if (Objects.isNull(body.getVoucherId())) {
-            log.warn("收到缓存失效消息但载荷为空或voucherId缺失, uuid={}", message.getUuid());
+            log.warn("Received cache invalidation message with empty payload or missing voucherId, uuid={}", message.getUuid());
             return;
         }
         Long voucherId = body.getVoucherId();
@@ -105,7 +105,7 @@ public class SeckillVoucherInvalidationConsumer extends AbstractConsumerHandler<
     protected void afterConsumeFailure(final MessageExtend<SeckillVoucherInvalidationMessage> message, final Throwable throwable) {
         //Call the parent afterConsumeFailure() method in override class
         super.afterConsumeFailure(message, throwable);
-        log.warn("删除Redis缓存失败 voucherId={}", message.getMessageBody().getVoucherId(), throwable);
+        log.warn("Failed to delete Redis cache voucherId={}", message.getMessageBody().getVoucherId(), throwable);
         safeInc(errorTag(throwable));
     }
     

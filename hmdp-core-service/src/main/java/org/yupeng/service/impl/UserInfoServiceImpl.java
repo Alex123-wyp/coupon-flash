@@ -53,13 +53,13 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
     @Transactional(rollbackFor = Exception.class)
     public Result<Void> updateUserLevel(Long userId, Integer newLevel) {
         if (Objects.isNull(userId) || Objects.isNull(newLevel) || newLevel <= 0) {
-            return Result.fail("参数非法：userId/newLevel");
+            return Result.fail("Invalid parameters: userId/newLevel");
         }
         UserInfo userInfo = this.lambdaQuery()
                 .eq(UserInfo::getUserId, userId)
                 .one();
         if (Objects.isNull(userInfo)) {
-            return Result.fail("用户信息不存在");
+            return Result.fail("User information does not exist");
         }
         Integer oldLevel = userInfo.getLevel();
         if (Objects.equals(oldLevel, newLevel)) {
@@ -71,7 +71,7 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
                 .eq(UserInfo::getUserId, userId)
                 .update();
         if (!updated) {
-            return Result.fail("更新等级失败");
+            return Result.fail("Failed to update level");
         }
         // Delete user information cache
         redisCache.del(RedisKeyBuild.createRedisKey(RedisKeyManage.USER_INFO_KEY, userId));
@@ -89,7 +89,7 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
             );
         } catch (Exception e) {
             // Log the event without rolling back the business transaction
-            log.error("维护用户等级集合失败 userId={} oldLevel={} newLevel={}", userId, oldLevel, newLevel, e);
+            log.error("Failed to maintain user level sets userId={} oldLevel={} newLevel={}", userId, oldLevel, newLevel, e);
         }
         return Result.ok();
     }

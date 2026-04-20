@@ -393,6 +393,6 @@ public class RedisRateLimitHandler implements RateLimitHandler {
             rateLimitPenaltyPolicy.apply(ctx, BaseCode.SECKILL_RATE_LIMIT_USER_EXCEEDED);
             throw new HmdpFrameException(BaseCode.SECKILL_RATE_LIMIT_USER_EXCEEDED);
         }
-        throw new HmdpFrameException("操作频繁，请稍后再试");
+        throw new HmdpFrameException("Operations are too frequent, please try again later");
     }
 }

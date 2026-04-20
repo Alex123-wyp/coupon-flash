@@ -50,7 +50,7 @@ public class CacheUtil {
     public static void checkNotBlank(String... key) {
         for (String s : key) {
             if (StrUtil.isEmpty(s)) {
-                throw new RuntimeException("请求参数缺失");
+                throw new RuntimeException("Missing request parameter");
             }
         }
     }
@@ -62,7 +62,7 @@ public class CacheUtil {
      */
     public static void checkNotBlank(RedisKeyBuild redisKeyBuild) {
         if (StrUtil.isEmpty(redisKeyBuild.getRelKey())) {
-            throw new RuntimeException("请求参数缺失");
+            throw new RuntimeException("Missing request parameter");
         }
     }
 
@@ -74,7 +74,7 @@ public class CacheUtil {
     public static void checkNotBlank(Collection<String> list) {
         for (String s : list) {
             if (StrUtil.isEmpty(s)) {
-                throw new RuntimeException("请求参数缺失");
+                throw new RuntimeException("Missing request parameter");
             }
         }
     }
@@ -87,7 +87,7 @@ public class CacheUtil {
     public static void checkNotEmpty(Collection<?> list) {
         for (Object o : list) {
             if (o == null) {
-                throw new RuntimeException("请求参数缺失");
+                throw new RuntimeException("Missing request parameter");
             }
         }
     }
@@ -99,7 +99,7 @@ public class CacheUtil {
      */
     public static void checkNotEmpty(Object object) {
         if (isEmpty(object)) {
-            throw new RuntimeException("请求参数缺失");
+            throw new RuntimeException("Missing request parameter");
         }
     }
     

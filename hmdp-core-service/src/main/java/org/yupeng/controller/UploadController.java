@@ -32,10 +32,10 @@ public class UploadController {
             // save file
             image.transferTo(new File(SystemConstants.IMAGE_UPLOAD_DIR, fileName));
             // Return results
-            log.debug("文件上传成功，{}", fileName);
+            log.debug("File uploaded successfully, {}", fileName);
             return Result.ok(fileName);
         } catch (IOException e) {
-            throw new RuntimeException("文件上传失败", e);
+            throw new RuntimeException("File upload failed", e);
         }
     }
 
@@ -43,7 +43,7 @@ public class UploadController {
     public Result deleteBlogImg(@RequestParam("name") String filename) {
         File file = new File(SystemConstants.IMAGE_UPLOAD_DIR, filename);
         if (file.isDirectory()) {
-            return Result.fail("错误的文件名称");
+            return Result.fail("Invalid file name");
         }
         FileUtil.del(file);
         return Result.ok();

@@ -11,9 +11,9 @@ public enum OrderStatus {
     /**
      * Order status
      * */
-    NORMAL(1, "正常"),
+    NORMAL(1, "Normal"),
     
-    CANCEL(2, "取消"),
+    CANCEL(2, "Canceled"),
     ;
     
     @Getter

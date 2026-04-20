@@ -42,7 +42,7 @@ public class AutoIssueNotifyServiceImpl implements IAutoIssueNotifyService {
             if (!shouldNotify(voucherId, userId)) {
                 return;
             }
-            String content = String.format("自动发券成功 | voucherId=%s userId=%s orderId=%s", voucherId, userId, orderId);
+            String content = String.format("Auto-issue succeeded | voucherId=%s userId=%s orderId=%s", voucherId, userId, orderId);
             if (smsEnabled && StrUtil.isNotBlank(smsTo)) {
                 log.info("[AUTOISSUE_SMS] to={} content={}", smsTo, content);
             }
@@ -50,7 +50,7 @@ public class AutoIssueNotifyServiceImpl implements IAutoIssueNotifyService {
                 log.info("[AUTOISSUE_APP] userId={} content={}", userId, content);
             }
         } catch (Exception e) {
-            log.warn("发送自动发券通知异常", e);
+            log.warn("Exception while sending auto-issue notification", e);
         }
     }
 

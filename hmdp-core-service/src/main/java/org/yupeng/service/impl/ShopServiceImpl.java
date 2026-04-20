@@ -100,7 +100,7 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements IS
         Shop shop = queryByIdV4(id);
         
         if (shop == null) {
-            return Result.fail("店铺不存在！");
+            return Result.fail("Shop does not exist!");
         }
         // 7.Return
         return Result.ok(shop);
@@ -135,21 +135,21 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements IS
             shopLocalCache.put(shopRedisKey.getRelKey(), shop);
             return shop;
         }
-        log.info("查询商铺 从Redis缓存没有查询到 商铺id : {}",id);
+        log.info("Shop not found in Redis cache, shopId: {}", id);
         if (!bloomFilterHandlerFactory.get(BLOOM_FILTER_HANDLER_SHOP).contains(String.valueOf(id))) {
-            log.info("查询商铺 布隆过滤器判断不存在 商铺id : {}",id);
-            throw new RuntimeException("查询商铺不存在");
+            log.info("Bloom filter indicates the shop does not exist, shopId: {}", id);
+            throw new RuntimeException("Shop does not exist");
         }
         Boolean existResult = redisCache.hasKey(RedisKeyBuild.createRedisKey(RedisKeyManage.CACHE_SHOP_KEY_NULL, id));
         if (existResult){
-            throw new RuntimeException("查询商铺不存在");
+            throw new RuntimeException("Shop does not exist");
         }
         RLock lock = serviceLockTool.getLock(LockType.Reentrant, LOCK_SHOP_KEY, new String[]{String.valueOf(id)});
         lock.lock();
         try {
             existResult = redisCache.hasKey(RedisKeyBuild.createRedisKey(RedisKeyManage.CACHE_SHOP_KEY_NULL, id));
             if (existResult){
-                throw new RuntimeException("查询商铺不存在");
+                throw new RuntimeException("Shop does not exist");
             }
             //double-checing local cache and redis logic
             localCacheHit = shopLocalCache.get(shopRedisKey.getRelKey());
@@ -167,7 +167,7 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements IS
                         "这是一个空值",
                         CACHE_SHOP_TTL,
                         TimeUnit.MINUTES);
-                throw new RuntimeException("查询商铺不存在");
+                throw new RuntimeException("Shop does not exist");
             }
             shopLocalCache.put(RedisKeyBuild.createRedisKey(RedisKeyManage.CACHE_SHOP_KEY, id).getRelKey(), shop);
             redisCache.set(RedisKeyBuild.createRedisKey(RedisKeyManage.CACHE_SHOP_KEY, id),shop,
@@ -184,7 +184,7 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements IS
     public Result update(Shop shop) {
         Long id = shop.getId();
         if (id == null) {
-            return Result.fail("店铺id不能为空");
+            return Result.fail("Shop id cannot be null");
         }
         // 1. Update the database
         updateById(shop);

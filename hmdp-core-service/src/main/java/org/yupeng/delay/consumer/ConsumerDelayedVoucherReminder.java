@@ -106,19 +106,19 @@ public class ConsumerDelayedVoucherReminder implements ConsumerTask {
             Long voucherId = msg.getVoucherId();
             SeckillVoucherFullModel voucherFull = seckillVoucherService.queryByVoucherId(voucherId);
             if (voucherFull == null) {
-                log.warn("[DELAY_REMINDER_CONSUMER] 秒杀券不存在或缓存未命中 voucherId={}", voucherId);
+                log.warn("[DELAY_REMINDER_CONSUMER] Seckill voucher does not exist or cache missed voucherId={}", voucherId);
                 return;
             }
             Set<String> userIds = buildAudienceUserIds(voucherFull);
             if (CollectionUtil.isEmpty(userIds)) {
-                log.info("[DELAY_REMINDER_CONSUMER] 无符合规则的用户 voucherId={}", voucherId);
+                log.info("[DELAY_REMINDER_CONSUMER] No eligible users found voucherId={}", voucherId);
                 return;
             }
             int notified = notifyUsers(voucherId, msg.getBeginTime(), userIds);
-            log.info("[DELAY_REMINDER_CONSUMER] 完成提醒 voucherId={} totalUsers={} notified={}",
+            log.info("[DELAY_REMINDER_CONSUMER] Reminder completed voucherId={} totalUsers={} notified={}",
                     voucherId, userIds.size(), notified);
         } catch (Exception e) {
-            log.warn("[DELAY_REMINDER_CONSUMER] 执行异常", e);
+            log.warn("[DELAY_REMINDER_CONSUMER] Execution exception", e);
         }
     }
 
@@ -126,12 +126,12 @@ public class ConsumerDelayedVoucherReminder implements ConsumerTask {
         try {
             DelayedVoucherReminderMessage msg = JSON.parseObject(content, DelayedVoucherReminderMessage.class);
             if (msg == null || msg.getVoucherId() == null) {
-                log.warn("[DELAY_REMINDER_CONSUMER] 消息解析失败 content={}", content);
+                log.warn("[DELAY_REMINDER_CONSUMER] Failed to parse message content={}", content);
                 return null;
             }
             return msg;
         } catch (Exception ex) {
-            log.warn("[DELAY_REMINDER_CONSUMER] 消息反序列化异常 content={}", content, ex);
+            log.warn("[DELAY_REMINDER_CONSUMER] Message deserialization exception content={}", content, ex);
             return null;
         }
     }
@@ -149,7 +149,7 @@ public class ConsumerDelayedVoucherReminder implements ConsumerTask {
                 }
             }
         } else if (topBuyersEnabled) {
-            log.warn("[DELAY_REMINDER_CONSUMER] 店铺ID为空，跳过Top买家统计");
+            log.warn("[DELAY_REMINDER_CONSUMER] Shop ID is null, skipping top buyer statistics");
         }
         return userIds;
     }
@@ -273,7 +273,7 @@ public class ConsumerDelayedVoucherReminder implements ConsumerTask {
             redisCache.unionAndStoreForSet(base, others, dest);
             redisCache.expire(dest, 60, TimeUnit.SECONDS);
         } catch (Exception e) {
-            log.warn("[DELAY_REMINDER_CONSUMER] SET并集失败 levels={} label={}", levels, label, e);
+            log.warn("[DELAY_REMINDER_CONSUMER] SET union failed levels={} label={}", levels, label, e);
         }
         Set<Long> r = redisCache.distinctRandomMembersForSet(dest, Math.max(count, 1), Long.class);
         return new ArrayList<>(r);
@@ -339,12 +339,12 @@ public class ConsumerDelayedVoucherReminder implements ConsumerTask {
                 redisCache.unionAndStoreForSortedSet(base, others, destKey);
                 redisCache.expire(destKey, 60, TimeUnit.SECONDS);
             } catch (Exception e) {
-                log.warn("[DELAY_REMINDER_CONSUMER] ZSET并集失败 shopId={} range={}", shopId, rangeLabel, e);
+                log.warn("[DELAY_REMINDER_CONSUMER] ZSET union failed shopId={} range={}", shopId, rangeLabel, e);
             }
             Set<Long> topSet = redisCache.getReverseRangeForSortedSet(destKey, 0, Math.max(count - 1, 0), Long.class);
             return new ArrayList<>(topSet);
         } catch (Exception ex) {
-            log.warn("[DELAY_REMINDER_CONSUMER] 读取Redis Top买家失败 shopId={} days={} count={} ex={}",
+            log.warn("[DELAY_REMINDER_CONSUMER] Failed to read Redis top buyers shopId={} days={} count={} ex={}",
                     shopId, days, count, ex.getMessage());
             return Collections.emptyList();
         }

@@ -87,18 +87,18 @@ public class SeckillVoucherServiceImpl extends ServiceImpl<SeckillVoucherMapper,
         }
 
         //log info: Find voucher: not find in Redis cache, id: vocherId
-        log.info("查询秒杀优惠券 从Redis缓存没有查询到 秒杀优惠券的优惠券id : {}",voucherId);
+        log.info("Seckill voucher not found in Redis cache, voucherId: {}", voucherId);
 
         //call bloomFilterHandlerFactory if not exist, return RuntimeException
         if (!bloomFilterHandlerFactory.get(BLOOM_FILTER_HANDLER_VOUCHER).contains(String.valueOf(voucherId))) {
-            log.info("查询秒杀优惠券 布隆过滤器判断不存在 秒杀优惠券id : {}",voucherId);
-            throw new RuntimeException("查询秒杀优惠券不存在");
+            log.info("Bloom filter indicates the seckill voucher does not exist, voucherId: {}", voucherId);
+            throw new RuntimeException("Seckill voucher does not exist");
         }
 
         //bloom filter said, it may exsit, then find the redis, if not exist, return RuntimeException
         Boolean existResult = redisCache.hasKey(seckillVoucherNullRedisKey);
         if (existResult){
-            throw new RuntimeException("查询秒杀优惠券不存在");
+            throw new RuntimeException("Seckill voucher does not exist");
         }
         //exist, then get lock
         RLock lock = serviceLockTool.getLock(LockType.Reentrant, LOCK_SECKILL_VOUCHER_KEY, new String[]{String.valueOf(voucherId)});
@@ -118,7 +118,7 @@ public class SeckillVoucherServiceImpl extends ServiceImpl<SeckillVoucherMapper,
             //If find seckill voucher null redis key exist, then throw RuntimeException
             existResult = redisCache.hasKey(seckillVoucherNullRedisKey);
             if (existResult){
-                throw new RuntimeException("查询优惠券不存在");
+                throw new RuntimeException("Voucher does not exist");
             }
 
             //Find in database, if seckillVoucher is null, if it is null, then set seckillVoucherNullRedisKey in redis and return RuntimeException
@@ -128,7 +128,7 @@ public class SeckillVoucherServiceImpl extends ServiceImpl<SeckillVoucherMapper,
                         "这是一个空值",
                         CACHE_NULL_TTL,
                         TimeUnit.MINUTES);
-                throw new RuntimeException("查询秒杀优惠券不存在");
+                throw new RuntimeException("Seckill voucher does not exist");
             }
 
             long ttlSeconds = Math.max(
@@ -170,8 +170,8 @@ public class SeckillVoucherServiceImpl extends ServiceImpl<SeckillVoucherMapper,
     @ServiceLock(lockType= LockType.Read,name = UPDATE_SECKILL_VOUCHER_STOCK_LOCK,keys = {"#voucherId"})
     public void loadVoucherStock(Long voucherId){
         if (!bloomFilterHandlerFactory.get(BLOOM_FILTER_HANDLER_VOUCHER).contains(String.valueOf(voucherId))) {
-            log.info("加载库存 布隆过滤器判断不存在 秒杀优惠券id : {}",voucherId);
-            throw new RuntimeException("查询秒杀优惠券不存在");
+            log.info("Bloom filter indicates the seckill voucher does not exist while loading stock, voucherId: {}", voucherId);
+            throw new RuntimeException("Seckill voucher does not exist");
         }
         String stock = 
                 redisCache.get(RedisKeyBuild.createRedisKey(RedisKeyManage.SECKILL_STOCK_TAG_KEY, voucherId), String.class);

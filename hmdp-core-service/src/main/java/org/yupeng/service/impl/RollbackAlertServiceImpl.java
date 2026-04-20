@@ -54,7 +54,7 @@ public class RollbackAlertServiceImpl implements IRollbackAlertService {
                 log.warn("[ROLLBACK_EMAIL] to={} content={} ", emailTo, content);
             }
         } catch (Exception e) {
-            log.warn("发送回滚失败通知异常", e);
+            log.warn("Exception while sending rollback failure notification", e);
         }
     }
 
@@ -76,7 +76,7 @@ public class RollbackAlertServiceImpl implements IRollbackAlertService {
                         "" 
                         : 
                         rollbackFailureLog.getCreateTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-        return String.format("回滚失败告警 | voucherId=%s userId=%s orderId=%s traceId=%s attempts=%s source=%s time=%s detail=%s", 
+        return String.format("Rollback failure alert | voucherId=%s userId=%s orderId=%s traceId=%s attempts=%s source=%s time=%s detail=%s", 
                 rollbackFailureLog.getVoucherId(), 
                 rollbackFailureLog.getUserId(), 
                 rollbackFailureLog.getOrderId(), 

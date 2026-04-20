@@ -72,7 +72,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         // 1. Verify mobile phone number
         if (RegexUtils.isPhoneInvalid(phone)) {
             // 2. If it does not match, return an error message
-            return Result.fail("手机号格式错误！");
+            return Result.fail("Invalid phone number format!");
         }
         // 3. Comply and generate verification code
         String code = RandomUtil.randomNumbers(6);
@@ -81,7 +81,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         stringRedisTemplate.opsForValue().set(LOGIN_CODE_KEY + phone, code, LOGIN_CODE_TTL, TimeUnit.MINUTES);
 
         // 5.Send verification code
-        log.info("发送短信验证码成功，验证码：{}", code);
+        log.info("SMS verification code sent successfully, code: {}", code);
         // Return OK
         return Result.ok(code);
     }
@@ -93,14 +93,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         String phone = loginForm.getPhone();
         if (RegexUtils.isPhoneInvalid(phone)) {
             // 2. If it does not match, return an error message
-            return Result.fail("手机号格式错误！");
+            return Result.fail("Invalid phone number format!");
         }
         // 3. Get the verification code from redis and verify it
         String cacheCode = stringRedisTemplate.opsForValue().get(LOGIN_CODE_KEY + phone);
         String code = loginForm.getCode();
         if (cacheCode == null || !cacheCode.equals(code)) {
             // Inconsistent, error reported
-            return Result.fail("验证码错误");
+            return Result.fail("Incorrect verification code");
         }
 
         // 4. Query users based on mobile phone number

@@ -21,6 +21,6 @@ public @interface RepeatExecuteLimit {
     
     long durationTime() default 0L;
     
-    String message() default "提交频繁，请稍后重试";
+    String message() default "Submitted too frequently, please try again later";
     
 }

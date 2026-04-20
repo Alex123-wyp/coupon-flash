@@ -262,7 +262,7 @@ public class VoucherServiceImpl extends ServiceImpl<VoucherMapper, Voucher> impl
             redisCache.set(RedisKeyBuild.createRedisKey(RedisKeyManage.SECKILL_STOCK_TAG_KEY,
                     updateSeckillVoucherDto.getVoucherId()),String.valueOf(newRedisStock));
         }
-        log.info("修改库存成功！修改库存类型：{},修改前：数据库初始库存：{},redis旧库存：{},修改后：数据库初始库存：{},redis新库存：{}",
+        log.info("Stock updated successfully! updateType={}, before: dbInitialStock={}, oldRedisStock={}, after: dbInitialStock={}, newRedisStock={}",
                 stockUpdateType.getMsg(),
                 oldInitStock,
                 StrUtil.isBlank(oldRedisStockStr) ? null : oldRedisStockStr,
@@ -279,67 +279,112 @@ public class VoucherServiceImpl extends ServiceImpl<VoucherMapper, Voucher> impl
     
     @Override
     public void subscribe(final VoucherSubscribeDto voucherSubscribeDto) {
+//        Long voucherId = voucherSubscribeDto.getVoucherId();
+//        Long userId = UserHolder.getUser().getId();
+//        String userIdStr = String.valueOf(userId);
+//
+//        //Calculate unified TTL (seconds to expire)
+//        Long ttlSeconds = redisCache.getExpire(
+//                RedisKeyBuild.createRedisKey(RedisKeyManage.SECKILL_VOUCHER_TAG_KEY, voucherId),
+//                TimeUnit.SECONDS
+//        );
+//        if (Objects.isNull(ttlSeconds) || ttlSeconds <= 0) {
+//
+//            //Find the seckill voucher from the database
+//            SeckillVoucher sv = seckillVoucherService.lambdaQuery()
+//                    .eq(SeckillVoucher::getVoucherId, voucherId)
+//                    .one();
+//            //If sv exists and sv end time exists: then set the ttlSeconds
+//            if (Objects.nonNull(sv) && Objects.nonNull(sv.getEndTime())) {
+//                ttlSeconds = Math.max(
+//                        LocalDateTimeUtil.between(LocalDateTimeUtil.now(), sv.getEndTime()).getSeconds(),
+//                        1L
+//                );
+//            } else {
+//                ttlSeconds = 3600L;
+//            }
+//        }
+//        //Check whether the purchase has been made and determine whether the user is in the SECKILL_USER_TAG_KEY:{voucherId} collection (purchased collection)
+//        boolean purchased = Boolean.TRUE.equals(redisCache.isMemberForSet(
+//                RedisKeyBuild.createRedisKey(RedisKeyManage.SECKILL_USER_TAG_KEY, voucherId),
+//                userIdStr
+//        ));
+//
+//
+//        RedisKeyBuild statusKey = RedisKeyBuild.createRedisKey(RedisKeyManage.SECKILL_SUBSCRIBE_STATUS_TAG_KEY, voucherId);
+//        if (purchased) {
+//            redisCache.putHash(statusKey, userIdStr, SubscribeStatus.SUCCESS.getCode(), ttlSeconds, TimeUnit.SECONDS);
+//            redisCache.expire(statusKey, ttlSeconds, TimeUnit.SECONDS);
+//            return;
+//        }
+//
+//        // Add subscription set (SET), idempotent
+//        RedisKeyBuild setKey = RedisKeyBuild.createRedisKey(RedisKeyManage.SECKILL_SUBSCRIBE_USER_TAG_KEY, voucherId);
+//        Long added = redisCache.addForSet(setKey, userIdStr);
+//        redisCache.expire(setKey, ttlSeconds, TimeUnit.SECONDS);
+//
+//        // Join subscription queue (ZSET), only write sequential score on first join
+//        RedisKeyBuild zsetKey = RedisKeyBuild.createRedisKey(RedisKeyManage.SECKILL_SUBSCRIBE_ZSET_TAG_KEY, voucherId);
+//        if (Objects.nonNull(added) && added > 0) {
+//            redisCache.addForSortedSet(zsetKey, userIdStr, (double) System.currentTimeMillis(), ttlSeconds, TimeUnit.SECONDS);
+//        } else {
+//            // If already exists, only align TTL
+//            redisCache.expire(zsetKey, ttlSeconds, TimeUnit.SECONDS);
+//        }
+//
+//        // Update the subscription status to SUBSCRIBED (if it is already SUCCESS, it will not be downgraded)
+//        Integer prev = redisCache.getForHash(statusKey, userIdStr, Integer.class);
+//        if (!SubscribeStatus.SUCCESS.getCode().equals(prev)) {
+//            redisCache.putHash(statusKey, userIdStr, SubscribeStatus.SUBSCRIBED.getCode(), ttlSeconds, TimeUnit.SECONDS);
+//        }
+//        redisCache.expire(statusKey, ttlSeconds, TimeUnit.SECONDS);
+
+        //Get basic information
         Long voucherId = voucherSubscribeDto.getVoucherId();
         Long userId = UserHolder.getUser().getId();
         String userIdStr = String.valueOf(userId);
-        
-        //Calculate unified TTL (seconds to expire)
-        Long ttlSeconds = redisCache.getExpire(
-                RedisKeyBuild.createRedisKey(RedisKeyManage.SECKILL_VOUCHER_TAG_KEY, voucherId),
-                TimeUnit.SECONDS
-        );
-        if (Objects.isNull(ttlSeconds) || ttlSeconds <= 0) {
 
-            //Find the seckill voucher from the database
+        //Get the voucher info first
+        Long ttlSecond = redisCache.getExpire(RedisKeyBuild.createRedisKey(RedisKeyManage.SECKILL_VOUCHER_TAG_KEY, voucherId), TimeUnit.SECONDS);
+        if (Objects.isNull(ttlSecond) || ttlSecond <= 0) {
+            //Find the voucher from the local database
             SeckillVoucher sv = seckillVoucherService.lambdaQuery()
                     .eq(SeckillVoucher::getVoucherId, voucherId)
                     .one();
-            //If sv exists and sv end time exists: then set the ttlSeconds
             if (Objects.nonNull(sv) && Objects.nonNull(sv.getEndTime())) {
-                ttlSeconds = Math.max(
-                        LocalDateTimeUtil.between(LocalDateTimeUtil.now(), sv.getEndTime()).getSeconds(),
-                        1L
-                );
+                Long Duration = LocalDateTimeUtil.between(LocalDateTimeUtil.now(), sv.getEndTime()).getSeconds();
+                ttlSecond = Math.max(Duration, 1L);
             } else {
-                ttlSeconds = 3600L;
+                ttlSecond = 3600L;
             }
         }
-        //Check whether the purchase has been made and determine whether the user is in the SECKILL_USER_TAG_KEY:{voucherId} collection (purchased collection)
-        boolean purchased = Boolean.TRUE.equals(redisCache.isMemberForSet(
-                RedisKeyBuild.createRedisKey(RedisKeyManage.SECKILL_USER_TAG_KEY, voucherId),
-                userIdStr
-        ));
-        
-        
+        //Check whether the purchase has already been made and whether the user has already in the purchased collection
+        boolean purchased = Boolean.TRUE.equals(redisCache.isMemberForSet(RedisKeyBuild.createRedisKey(RedisKeyManage.SECKILL_USER_TAG_KEY, voucherId), userIdStr));
         RedisKeyBuild statusKey = RedisKeyBuild.createRedisKey(RedisKeyManage.SECKILL_SUBSCRIBE_STATUS_TAG_KEY, voucherId);
         if (purchased) {
-            redisCache.putHash(statusKey, userIdStr, SubscribeStatus.SUCCESS.getCode(), ttlSeconds, TimeUnit.SECONDS);
-            redisCache.expire(statusKey, ttlSeconds, TimeUnit.SECONDS);
+            redisCache.putHash(statusKey, userIdStr, SubscribeStatus.SUCCESS.getCode(), ttlSecond, TimeUnit.SECONDS);
+            redisCache.expire(statusKey, ttlSecond, TimeUnit.SECONDS);
             return;
         }
-        
-        // Add subscription set (SET), idempotent
+        //Add use to subscribe set idempotent
         RedisKeyBuild setKey = RedisKeyBuild.createRedisKey(RedisKeyManage.SECKILL_SUBSCRIBE_USER_TAG_KEY, voucherId);
         Long added = redisCache.addForSet(setKey, userIdStr);
-        redisCache.expire(setKey, ttlSeconds, TimeUnit.SECONDS);
-        
-        // Join subscription queue (ZSET), only write sequential score on first join
+        redisCache.expire(setKey, ttlSecond, TimeUnit.SECONDS);
+
+        //Join subscription queue, add to zset (send message based on the queue)
         RedisKeyBuild zsetKey = RedisKeyBuild.createRedisKey(RedisKeyManage.SECKILL_SUBSCRIBE_ZSET_TAG_KEY, voucherId);
         if (Objects.nonNull(added) && added > 0) {
-            redisCache.addForSortedSet(zsetKey, userIdStr, (double) System.currentTimeMillis(), ttlSeconds, TimeUnit.SECONDS);
+            redisCache.addForSortedSet(zsetKey, userIdStr, (double) System.currentTimeMillis(), ttlSecond, TimeUnit.SECONDS);
         } else {
-            // If already exists, only align TTL
-            redisCache.expire(zsetKey, ttlSeconds, TimeUnit.SECONDS);
+            //If already exists, only update expire time
+            redisCache.expire(zsetKey, ttlSecond, TimeUnit.SECONDS);
         }
-        
-        // Update the subscription status to SUBSCRIBED (if it is already SUCCESS, it will not be downgraded)
+        //Update status to SUBSCRIBED
         Integer prev = redisCache.getForHash(statusKey, userIdStr, Integer.class);
-        if (!SubscribeStatus.SUCCESS.getCode().equals(prev)) {
-            redisCache.putHash(statusKey, userIdStr, SubscribeStatus.SUBSCRIBED.getCode(), ttlSeconds, TimeUnit.SECONDS);
+        if(!SubscribeStatus.SUCCESS.getCode().equals(prev)){
+            redisCache.putHash(statusKey, userIdStr, SubscribeStatus.SUBSCRIBED.getCode(), ttlSecond, TimeUnit.SECONDS);
         }
-        redisCache.expire(statusKey, ttlSeconds, TimeUnit.SECONDS);
     }
-    
     @Override
     public void unsubscribe(final VoucherSubscribeDto voucherSubscribeDto) {
         Long voucherId = voucherSubscribeDto.getVoucherId();
@@ -532,7 +577,7 @@ public class VoucherServiceImpl extends ServiceImpl<VoucherMapper, Voucher> impl
 
         //If beginTime == null, return directly
         if (beginTime == null) {
-            log.warn("[DELAY_REMINDER] beginTime为空，跳过调度 voucherId={}", seckillVoucher.getVoucherId());
+            log.warn("[DELAY_REMINDER] beginTime is null, skipping scheduling voucherId={}", seckillVoucher.getVoucherId());
             return;
         }
 
@@ -548,7 +593,7 @@ public class VoucherServiceImpl extends ServiceImpl<VoucherMapper, Voucher> impl
 
         //If delay seconds less than 0, then return directly
         if (delaySeconds <= 0) {
-            log.info("[DELAY_REMINDER] beginTime过近或已开始，不进行延迟调度 voucherId={} beginTime={} delaySeconds={}",
+            log.info("[DELAY_REMINDER] beginTime is too close or already started, skipping delayed scheduling voucherId={} beginTime={} delaySeconds={}",
                     seckillVoucher.getVoucherId(), beginTime, delaySeconds);
             return;
         }
@@ -567,7 +612,7 @@ public class VoucherServiceImpl extends ServiceImpl<VoucherMapper, Voucher> impl
 
         //Send message to Kafka queue
         delayQueueContext.sendMessage(topic, content, delaySeconds, TimeUnit.SECONDS);
-        log.info("[DELAY_REMINDER] 已调度提醒消息 voucherId={} delaySeconds={} topic={}", seckillVoucher.getVoucherId(), delaySeconds, topic);
+        log.info("[DELAY_REMINDER] Reminder message scheduled voucherId={} delaySeconds={} topic={}", seckillVoucher.getVoucherId(), delaySeconds, topic);
     }
     
     @Override
@@ -585,6 +630,6 @@ public class VoucherServiceImpl extends ServiceImpl<VoucherMapper, Voucher> impl
         String topic = SpringUtil.getPrefixDistinctionName() + "-" + DELAY_VOUCHER_REMINDER;
         Integer delaySeconds = delayVoucherReminderDto.getDelaySeconds();
         delayQueueContext.sendMessage(topic, content, delayVoucherReminderDto.getDelaySeconds(), TimeUnit.SECONDS);
-        log.info("[测试延迟发送] 已调度提醒消息 voucherId={} delaySeconds={} topic={}", seckillVoucher.getVoucherId(), delaySeconds, topic);
+        log.info("[TEST_DELAY_SEND] Reminder message scheduled voucherId={} delaySeconds={} topic={}", seckillVoucher.getVoucherId(), delaySeconds, topic);
     }
 }

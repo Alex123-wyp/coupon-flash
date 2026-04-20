@@ -11,10 +11,10 @@ public enum BusinessType {
     /**
      * Business type
      * */
-    SUCCESS(1, "创建订单成功"),
-    TIMEOUT(2, "创建订单超时"),
-    FAIL(3, "创建订单失败"),
-    CANCEL(4, "主动取消"),
+    SUCCESS(1, "Order created successfully"),
+    TIMEOUT(2, "Order creation timed out"),
+    FAIL(3, "Order creation failed"),
+    CANCEL(4, "Canceled manually"),
    
     
     ;

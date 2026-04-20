@@ -11,11 +11,11 @@ public enum SubscribeStatus {
     /**
      * Whether to delete flash sale coupon order records
      * */
-    UNSUBSCRIBED(0, "已取消订阅或未订阅"),
+    UNSUBSCRIBED(0, "Unsubscribed or not subscribed"),
     
-    SUBSCRIBED(1, "已订阅到券提醒（在队列中）"),
+    SUBSCRIBED(1, "Subscribed to voucher reminders (in queue)"),
     
-    SUCCESS(2,"自动发券已成功（已创建订单）")
+    SUCCESS(2,"Auto-issue succeeded (order created)")
     ;
     
     @Getter

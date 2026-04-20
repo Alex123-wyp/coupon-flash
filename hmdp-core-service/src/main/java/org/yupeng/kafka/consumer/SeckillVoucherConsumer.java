@@ -105,7 +105,7 @@ public class SeckillVoucherConsumer extends AbstractConsumerHandler<SeckillVouch
             Thread t = new Thread(r, namePrefix + index.getAndIncrement());
             t.setDaemon(daemon);
             t.setUncaughtExceptionHandler((thread, ex) ->
-                    log.error("未捕获异常，线程={}, err={}", thread.getName(), ex.getMessage(), ex)
+                    log.error("Uncaught exception, thread={}, err={}", thread.getName(), ex.getMessage(), ex)
             );
             return t;
         }
@@ -136,7 +136,7 @@ public class SeckillVoucherConsumer extends AbstractConsumerHandler<SeckillVouch
         long delayTime = System.currentTimeMillis() - producerTimeTimestamp;
         //If the message timeout reaches the threshold (10 seconds)
         if (delayTime > MESSAGE_DELAY_TIME){
-            log.info("消费到kafka的创建优惠券消息延迟时间大于了 {} 毫秒 此订单消息被丢弃 订单号 : {}",
+            log.info("Kafka order-creation message delay exceeded {} ms, dropping this order message orderId={}",
                     delayTime,message.getMessageBody().getOrderId());
             long traceId = snowflakeIdGenerator.nextId();
             redisVoucherData.rollbackRedisVoucherData(
@@ -157,7 +157,7 @@ public class SeckillVoucherConsumer extends AbstractConsumerHandler<SeckillVouch
                         traceId,
                         message);
             } catch (Exception e) {
-                log.warn("保存对账日志失败(延迟丢弃)", e);
+                log.warn("Failed to save reconciliation log (delayed discard)", e);
             }
             return false;
         }
@@ -184,13 +184,13 @@ public class SeckillVoucherConsumer extends AbstractConsumerHandler<SeckillVouch
                 );
                 redisCache.delForSortedSet(subscribeZSetKey, String.valueOf(userId));
             } catch (Exception e) {
-                log.warn("清理订阅ZSET成员失败，voucherId={}, userId={}, err={}", messageBody.getVoucherId(), userId, e.getMessage());
+                log.warn("Failed to remove subscription ZSET member, voucherId={}, userId={}, err={}", messageBody.getVoucherId(), userId, e.getMessage());
             }
             if (Boolean.TRUE.equals(messageBody.getAutoIssue())) {
                 try {
                     autoIssueNotifyService.sendAutoIssueNotify(voucherId, userId, orderId);
                 } catch (Exception e) {
-                    log.warn("自动发券通知发送失败，voucherId={}, userId={}, orderId={}, err={}",
+                    log.warn("Failed to send auto-issue notification, voucherId={}, userId={}, orderId={}, err={}",
                             voucherId, userId, orderId, e.getMessage());
                 }
             }
@@ -213,7 +213,7 @@ public class SeckillVoucherConsumer extends AbstractConsumerHandler<SeckillVouch
                     redisCache.expire(dailyKey, 90, TimeUnit.DAYS);
                 }
             } catch (Exception e) {
-                log.warn("统计店铺Top买家失败，忽略不影响主流程", e);
+                log.warn("Failed to calculate shop top buyers, ignored because it does not affect the main flow", e);
             }
         });
     }
@@ -249,7 +249,7 @@ public class SeckillVoucherConsumer extends AbstractConsumerHandler<SeckillVouch
                     message
             );
         } catch (Exception e) {
-            log.warn("保存对账日志失败(消费失败)", e);
+            log.warn("Failed to save reconciliation log (consume failure)", e);
         }
     }
 }

@@ -64,7 +64,7 @@ public class SeckillAccessTokenServiceImpl implements ISeckillAccessTokenService
             return existing != null ? existing : token;
         }
         safeInc("seckill_access_token_issue_success", "component", "service_impl");
-        log.info("获取到令牌成功！令牌：{}", token);
+        log.info("Access token issued successfully! token={}", token);
         return token;
     }
 

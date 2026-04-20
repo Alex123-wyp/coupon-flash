@@ -11,9 +11,9 @@ public enum VoucherStatus {
     /**
      * Coupon status 
      * */
-    AVAILABLE(1, "上架"),
-    UNAVAILABLE(2, "下架"),
-    EXPIRED(3, "过期");
+    AVAILABLE(1, "Available"),
+    UNAVAILABLE(2, "Unavailable"),
+    EXPIRED(3, "Expired");
     
     ;
     
