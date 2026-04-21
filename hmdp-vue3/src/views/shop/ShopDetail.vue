@@ -4,8 +4,25 @@ import { useRouter, useRoute } from 'vue-router'
 import { ArrowLeft, ArrowRight, Location, Timer } from '@element-plus/icons-vue'
 import { ElLoading } from 'element-plus'
 import { getShopById } from '@/api/shop'
-import { getVoucherList, issueSeckillAccessToken, seckillVoucher, getSeckillOrderId, getVoucherOrderIdByVoucherId, cancelVoucherOrder, subscribeVoucher, unsubscribeVoucher, getSubscribeStatusBatch } from '@/api/voucher'
+import {
+  getVoucherList,
+  issueSeckillAccessToken,
+  seckillVoucher,
+  getSeckillOrderId,
+  getVoucherOrderIdByVoucherId,
+  cancelVoucherOrder,
+  subscribeVoucher,
+  unsubscribeVoucher,
+  getSubscribeStatusBatch
+} from '@/api/voucher'
 import { useUserStore } from '@/stores'
+import {
+  formatDiscountLabel,
+  formatReviewCount,
+  formatSeckillWindow,
+  formatVoucherStock,
+  uiCopy
+} from '@/constants/uiCopy'
 
 const router = useRouter()
 const route = useRoute()
@@ -80,13 +97,16 @@ const isSubscribeSuccess = (voucherId) => getSubscribeCode(voucherId) === 2
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 
-const pollSeckillOrder = async (orderId, { delay = 800, timeoutMs = 11000 } = {}) => {
+const pollSeckillOrder = async (
+  orderId,
+  { delay = 800, timeoutMs = 11000 } = {}
+) => {
   const end = Date.now() + timeoutMs
   while (Date.now() < end) {
     try {
       const { data } = await getSeckillOrderId(String(orderId))
       if (data) {
-        ElMessage.success('抢购成功')
+        ElMessage.success(uiCopy.shop.purchaseSuccess)
         return data
       }
     } catch (e) {
@@ -95,7 +115,7 @@ const pollSeckillOrder = async (orderId, { delay = 800, timeoutMs = 11000 } = {}
     const remaining = end - Date.now()
     await sleep(Math.min(delay, Math.max(0, remaining)))
   }
-  ElMessage.warning('确认订单超时，请稍后在订单页查看')
+  ElMessage.warning(uiCopy.shop.purchasePending)
   return null
 }
 
@@ -108,7 +128,7 @@ const queryShopById = async (shopId) => {
     shop.value = data
   } catch (error) {
     console.error(error)
-    ElMessage.error('获取店铺详情失败')
+    ElMessage.error(uiCopy.shop.loadShopFailed)
   }
 }
 
@@ -123,35 +143,12 @@ const queryVoucher = async (shopId) => {
     await refreshSubscribeStatusBatch()
   } catch (error) {
     console.error(error)
-    ElMessage.error('获取优惠券列表失败')
+    ElMessage.error(uiCopy.shop.loadVoucherFailed)
   }
 }
 
 // Format time
-const formatTime = (v) => {
-  const b = new Date(v.beginTime)
-  const e = new Date(v.endTime)
-  return (
-    b.getMonth() +
-    1 +
-    '月' +
-    b.getDate() +
-    '日 ' +
-    b.getHours() +
-    ':' +
-    formatMinutes(b.getMinutes()) +
-    ' ~ ' +
-    e.getHours() +
-    ':' +
-    formatMinutes(e.getMinutes())
-  )
-}
-
-// Format minutes
-const formatMinutes = (m) => {
-  if (m < 10) m = '0' + m
-  return m
-}
+const formatTime = (v) => formatSeckillWindow(v.beginTime, v.endTime)
 
 // Format the price and support both strings and numbers
 const formatPrice = (price) => {
@@ -172,7 +169,7 @@ const isEnd = (v) => {
 // Seckill purchase flow (get the token first, then place the order with the token)
 const seckill = async (v) => {
   if (!userStore.token) {
-    ElMessage.error('请先登录')
+    ElMessage.error(uiCopy.shop.loginRequired)
     setTimeout(() => {
       router.push('/login')
     }, 200)
@@ -180,23 +177,23 @@ const seckill = async (v) => {
   }
 
   if (isNotBegin(v)) {
-    ElMessage.error('优惠券抢购尚未开始！')
+    ElMessage.error(uiCopy.shop.notStarted)
     return
   }
 
   if (isEnd(v)) {
-    ElMessage.error('优惠券抢购已经结束！')
+    ElMessage.error(uiCopy.shop.ended)
     return
   }
 
   if (Number(v.stock) < 1) {
-    ElMessage.error('库存不足，请刷新再试试！')
+    ElMessage.error(uiCopy.shop.outOfStock)
     return
   }
 
   // Prevent duplicate purchases after a successful purchase
   if (isPurchased(v.id)) {
-    ElMessage.error('您已购买该券，不能重复购买')
+    ElMessage.error(uiCopy.shop.alreadyPurchased)
     return
   }
 
@@ -210,14 +207,14 @@ const seckill = async (v) => {
     loading = ElLoading.service({
       fullscreen: true,
       lock: true,
-      text: '正在确认订单，请稍等…',
+      text: uiCopy.shop.confirmingOrder,
       background: 'rgba(0,0,0,0.35)',
       customClass: 'seckill-overlay'
     })
     // 1) Acquire the access token first
     const tokenRes = await issueSeckillAccessToken(v.id)
     if (!tokenRes?.success || !tokenRes?.data) {
-      ElMessage.error(tokenRes?.errorMsg || '令牌获取失败，请稍后重试')
+      ElMessage.error(tokenRes?.errorMsg || uiCopy.shop.tokenFailed)
       return
     }
     const accessToken = String(tokenRes.data)
@@ -225,7 +222,10 @@ const seckill = async (v) => {
     const res = await seckillVoucher(v.id, accessToken)
     // Poll for order confirmation only when the seckill API call succeeds
     if (res && res.success) {
-      const order = await pollSeckillOrder(String(res.data), { delay: 800, timeoutMs: 11000 })
+      const order = await pollSeckillOrder(String(res.data), {
+        delay: 800,
+        timeoutMs: 11000
+      })
       // After receiving the order successfully, re-query the purchase status and disable the button
       if (order) {
         try {
@@ -238,12 +238,12 @@ const seckill = async (v) => {
         }
       }
     } else {
-      ElMessage.error(res?.errorMsg || '抢购失败')
+      ElMessage.error(res?.errorMsg || uiCopy.shop.purchaseFailed)
       return
     }
   } catch (error) {
     console.error(error)
-    ElMessage.error('抢购失败')
+    ElMessage.error(uiCopy.shop.purchaseFailed)
   } finally {
     seckillInProgress.value = false
     if (loading) loading.close()
@@ -253,7 +253,7 @@ const seckill = async (v) => {
 // Cancel a claimed voucher
 const cancelVoucher = async (v) => {
   if (!userStore.token) {
-    ElMessage.error('请先登录')
+    ElMessage.error(uiCopy.shop.loginRequired)
     setTimeout(() => {
       router.push('/login')
     }, 200)
@@ -263,23 +263,23 @@ const cancelVoucher = async (v) => {
   try {
     const res = await cancelVoucherOrder(String(v.id))
     if (res?.success && String(res.data) === 'true') {
-      ElMessage.success('已取消领取')
+      ElMessage.success(uiCopy.shop.cancelSuccess)
       // Update the local state and refresh the list to sync stock
       purchasedMap.value[String(v.id)] = false
       await queryVoucher(route.params.id)
     } else {
-      ElMessage.error(res?.errorMsg || '取消失败')
+      ElMessage.error(res?.errorMsg || uiCopy.shop.cancelFailed)
     }
   } catch (error) {
     console.error(error)
-    ElMessage.error('取消失败')
+    ElMessage.error(uiCopy.shop.cancelFailed)
   }
 }
 
 // Subscribe to restock reminders
 const subscribeToVoucher = async (v) => {
   if (!userStore.token) {
-    ElMessage.error('请先登录')
+    ElMessage.error(uiCopy.shop.loginRequired)
     setTimeout(() => router.push('/login'), 200)
     return
   }
@@ -287,20 +287,20 @@ const subscribeToVoucher = async (v) => {
   try {
     const res = await subscribeVoucher(String(v.id))
     if (res?.success) {
-      ElMessage.success('已订阅到券提醒')
+      ElMessage.success(uiCopy.shop.subscribeSuccess)
       subscribeStatusMap.value[String(v.id)] = 1
     } else {
-      ElMessage.error(res?.errorMsg || '订阅失败')
+      ElMessage.error(res?.errorMsg || uiCopy.shop.subscribeFailed)
     }
   } catch (e) {
-    ElMessage.error('订阅失败')
+    ElMessage.error(uiCopy.shop.subscribeFailed)
   }
 }
 
 // Cancel restock reminder subscription
 const unsubscribeFromVoucher = async (v) => {
   if (!userStore.token) {
-    ElMessage.error('请先登录')
+    ElMessage.error(uiCopy.shop.loginRequired)
     setTimeout(() => router.push('/login'), 200)
     return
   }
@@ -308,13 +308,13 @@ const unsubscribeFromVoucher = async (v) => {
   try {
     const res = await unsubscribeVoucher(String(v.id))
     if (res?.success) {
-      ElMessage.success('已取消订阅')
+      ElMessage.success(uiCopy.shop.unsubscribeSuccess)
       subscribeStatusMap.value[String(v.id)] = 0
     } else {
-      ElMessage.error(res?.errorMsg || '取消订阅失败')
+      ElMessage.error(res?.errorMsg || uiCopy.shop.unsubscribeFailed)
     }
   } catch (e) {
-    ElMessage.error('取消订阅失败')
+    ElMessage.error(uiCopy.shop.unsubscribeFailed)
   }
 }
 
@@ -360,12 +360,12 @@ onMounted(() => {
           text-color="#F63"
           show-score
         />
-        <span>{{ shop.comments }}条</span>
+        <span>{{ formatReviewCount(shop.comments) }}</span>
       </div>
-      <div class="shop-rate-info">口味:4.9 环境:4.8 服务:4.7</div>
+      <div class="shop-rate-info">{{ uiCopy.shop.reviewBreakdown }}</div>
       <div class="shop-rank">
         <img src="/src/assets/imgs/bd.png" width="63" height="20" alt="" />
-        <span>拱墅区好评榜第3名</span>
+        <span>{{ uiCopy.shop.ranking }}</span>
         <div>
           <el-icon><ArrowRight /></el-icon>
         </div>
@@ -407,10 +407,10 @@ onMounted(() => {
       <span>
         <el-icon><Timer /></el-icon>
       </span>
-      <div>营业时间</div>
+      <div>{{ uiCopy.shop.businessHours }}</div>
       <div>{{ shop.openHours }}</div>
       <span class="line-right">
-        查看详情
+        {{ uiCopy.common.viewDetails }}
         <el-icon><ArrowRight /></el-icon>
       </span>
     </div>
@@ -420,8 +420,8 @@ onMounted(() => {
     <!-- Vouchers -->
     <div class="shop-voucher">
       <div>
-        <span class="voucher-icon">券</span>
-        <span style="font-weight: bold">代金券</span>
+        <span class="voucher-icon">{{ uiCopy.shop.voucherLabel }}</span>
+        <span style="font-weight: bold">{{ uiCopy.shop.voucherTitle }}</span>
       </div>
       <div class="voucher-box" v-for="v in filteredVouchers" :key="v.id">
         <div class="voucher-circle">
@@ -434,38 +434,53 @@ onMounted(() => {
           <div class="voucher-subtitle">{{ v.subTitle }}</div>
           <div class="voucher-price">
             <div>￥ {{ formatPrice(v.payValue) }}</div>
-            <span>{{ (v.payValue * 10) / v.actualValue }}折</span>
+            <span>{{ formatDiscountLabel(v.payValue, v.actualValue) }}</span>
           </div>
         </div>
         <div class="voucher-right">
           <div v-if="v.type" class="seckill-box">
             <div
               class="voucher-btn"
-              :class="{ 'disable-btn': isNotBegin(v) || v.stock < 1 || isPurchased(v.id) }"
+              :class="{
+                'disable-btn': isNotBegin(v) || v.stock < 1 || isPurchased(v.id)
+              }"
               @click="seckill(v)"
             >
-              限时抢购
+              {{ uiCopy.shop.flashSale }}
             </div>
             <div class="seckill-stock">
-              剩余 <span>{{ v.stock }}</span> 张
+              {{ formatVoucherStock(v.stock) }}
             </div>
             <div class="seckill-time">{{ formatTime(v) }}</div>
             <div v-if="isPurchased(v.id)" class="seckill-status">
-              <span class="purchased-tag">已购</span>
-              <span class="cancel-link" @click="cancelVoucher(v)">取消领取</span>
+              <span class="purchased-tag">{{ uiCopy.shop.claimed }}</span>
+              <span class="cancel-link" @click="cancelVoucher(v)">{{
+                uiCopy.shop.cancelClaim
+              }}</span>
             </div>
             <!-- Show the restock subscription reminder when stock is 0 and the voucher has not been purchased -->
-            <div v-else-if="Number(v.stock) < 1 && !isPurchased(v.id)" class="subscribe-box">
+            <div
+              v-else-if="Number(v.stock) < 1 && !isPurchased(v.id)"
+              class="subscribe-box"
+            >
               <div v-if="isSubscribed(v.id)" class="subscribe-status">
-                <span class="subscribed-tag">已订阅到券提醒</span>
-                <span class="cancel-subscribe" @click="unsubscribeFromVoucher(v)">取消订阅</span>
+                <span class="subscribed-tag">{{
+                  uiCopy.shop.subscribedReminder
+                }}</span>
+                <span
+                  class="cancel-subscribe"
+                  @click="unsubscribeFromVoucher(v)"
+                  >{{ uiCopy.shop.unsubscribe }}</span
+                >
               </div>
               <div v-else class="subscribe-status">
-                <span class="subscribe-link" @click="subscribeToVoucher(v)">到券提醒</span>
+                <span class="subscribe-link" @click="subscribeToVoucher(v)">{{
+                  uiCopy.shop.restockReminder
+                }}</span>
               </div>
             </div>
           </div>
-          <div class="voucher-btn" v-else>抢购</div>
+          <div class="voucher-btn" v-else>{{ uiCopy.shop.claimNow }}</div>
         </div>
       </div>
     </div>
@@ -475,21 +490,15 @@ onMounted(() => {
     <!-- Comments -->
     <div class="shop-comments">
       <div class="comments-head">
-        <div>网友评价 <span>（119）</span></div>
+        <div>{{ uiCopy.shop.reviewsTitle }} <span>(119)</span></div>
         <div>
           <el-icon><ArrowRight /></el-icon>
         </div>
       </div>
       <div class="comment-tags">
-        <div class="tag">味道赞(19)</div>
-        <div class="tag">牛肉赞(16)</div>
-        <div class="tag">菜品不错(11)</div>
-        <div class="tag">回头客(4)</div>
-        <div class="tag">分量足(4)</div>
-        <div class="tag">停车方便(3)</div>
-        <div class="tag">海鲜棒(3)</div>
-        <div class="tag">饮品赞(3)</div>
-        <div class="tag">朋友聚餐(6)</div>
+        <div class="tag" v-for="tag in uiCopy.shop.tags" :key="tag">
+          {{ tag }}
+        </div>
       </div>
       <div class="comment-list">
         <div class="comment-box" v-for="i in 3" :key="i">
@@ -500,13 +509,15 @@ onMounted(() => {
             />
           </div>
           <div class="comment-info">
-            <div class="comment-user">叶小乙 <span>Lv5</span></div>
+            <div class="comment-user">
+              {{ uiCopy.samples.reviewer }} <span>Lv5</span>
+            </div>
             <div style="display: flex">
-              打分
+              {{ uiCopy.samples.rating }}
               <el-rate disabled v-model="rate"></el-rate>
             </div>
             <div style="padding: 5px 0; font-size: 14px">
-              某平台上买的券，价格可以当工作餐吃，虽然价格便宜，但是这家店一点都没有...
+              {{ uiCopy.samples.reviewText }}
             </div>
             <div class="comment-images">
               <img
@@ -526,7 +537,7 @@ onMounted(() => {
                 alt=""
               />
             </div>
-            <div>浏览641 &nbsp;&nbsp;&nbsp;&nbsp;评论5</div>
+            <div>{{ uiCopy.samples.stats }}</div>
           </div>
         </div>
         <div
@@ -538,7 +549,7 @@ onMounted(() => {
             margin-top: 10px;
           "
         >
-          <div>查看全部119条评价</div>
+          <div>{{ uiCopy.samples.viewAllReviews }}</div>
           <div>
             <el-icon><ArrowRight /></el-icon>
           </div>

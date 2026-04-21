@@ -178,14 +178,17 @@ public class SeckillVoucherConsumer extends AbstractConsumerHandler<SeckillVouch
         Long orderId = messageBody.getOrderId();
         SECKILL_ORDER_CONSUME_TASK_EXECUTOR.execute(() -> {
             try {
+                //Remove the user who has already consumed successfully from the SECKILL_SUBSCRIBE_ZSET_TAG_KEY
                 RedisKeyBuild subscribeZSetKey = RedisKeyBuild.createRedisKey(
                         RedisKeyManage.SECKILL_SUBSCRIBE_ZSET_TAG_KEY,
                         messageBody.getVoucherId()
                 );
                 redisCache.delForSortedSet(subscribeZSetKey, String.valueOf(userId));
             } catch (Exception e) {
+                //If failed to remove, log
                 log.warn("Failed to remove subscription ZSET member, voucherId={}, userId={}, err={}", messageBody.getVoucherId(), userId, e.getMessage());
             }
+            //If open notification method, try to send the notification to seller
             if (Boolean.TRUE.equals(messageBody.getAutoIssue())) {
                 try {
                     autoIssueNotifyService.sendAutoIssueNotify(voucherId, userId, orderId);
@@ -195,6 +198,7 @@ public class SeckillVoucherConsumer extends AbstractConsumerHandler<SeckillVouch
                 }
             }
             try {
+                //Statistics on voucher purchases
                 SeckillVoucherFullModel voucherFull = seckillVoucherService.queryByVoucherId(voucherId);
                 if (Objects.isNull(voucherFull)) {
                     return;

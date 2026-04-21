@@ -17,8 +17,10 @@ public class DelayQueueProduceCombine {
     private final IsolationRegionSelector isolationRegionSelector;
     
     private final List<DelayProduceQueue> delayProduceQueueList = new ArrayList<>();
-    
+
+
     public DelayQueueProduceCombine(DelayQueueBasePart delayQueueBasePart,String topic){
+        //Get the isolation region count from the producer
         Integer isolationRegionCount = delayQueueBasePart.getDelayQueueProperties().getIsolationRegionCount();
         isolationRegionSelector =new IsolationRegionSelector(isolationRegionCount);
         for(int i = 0; i < isolationRegionCount; i++) {
@@ -30,4 +32,5 @@ public class DelayQueueProduceCombine {
         int index = isolationRegionSelector.getIndex();
         delayProduceQueueList.get(index).offer(content, delayTime, timeUnit);
     }
+
 }

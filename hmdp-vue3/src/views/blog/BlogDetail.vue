@@ -13,6 +13,7 @@ import {
 } from '@/api/blog/blog'
 import { getUser } from '@/api/user'
 import { formatTime } from '@/utils/format'
+import { formatLikesCount, formatPerPerson, uiCopy } from '@/constants/uiCopy'
 
 const route = useRoute()
 const router = useRouter()
@@ -42,7 +43,7 @@ const initData = async () => {
   console.log('id', id)
   try {
     const blogData = await getBlogById(id)
-    console.log('博客数据:', blogData)
+    console.log('Blog data:', blogData)
 
     if (blogData && blogData.data.images) {
       blogData.data.images = blogData.data.images.split(',')
@@ -50,8 +51,8 @@ const initData = async () => {
       blogData.data.images = []
     }
     blog.value = blogData.data
-    console.log('变换后的博客数据:', blog.value)
-    console.log('变换后的博客图片数据:', blog.value.images)
+    console.log('Normalized blog data:', blog.value)
+    console.log('Normalized blog images:', blog.value.images)
 
     await nextTick()
     initSwiper()
@@ -62,8 +63,8 @@ const initData = async () => {
       queryLoginUser()
     ])
   } catch (error) {
-    console.error('获取博客详情失败', error)
-    ElMessage.error('获取博客详情失败')
+    console.error('Failed to fetch blog details', error)
+    ElMessage.error(uiCopy.blog.loadBlogFailed)
   }
 }
 onMounted(() => {
@@ -74,7 +75,7 @@ onMounted(() => {
 const queryShopById = async (shopId) => {
   try {
     const { data } = await getShopById(shopId)
-    console.log('店铺数据:', data)
+    console.log('Shop data:', data)
     if (data && data.images) {
       data.image = data.images.split(',')[0]
     } else {
@@ -82,8 +83,8 @@ const queryShopById = async (shopId) => {
     }
     shop.value = data
   } catch (error) {
-    console.error('获取店铺信息失败', error)
-    ElMessage.error('获取店铺信息失败')
+    console.error('Failed to fetch shop information', error)
+    ElMessage.error(uiCopy.blog.loadShopFailed)
   }
 }
 
@@ -93,8 +94,8 @@ const queryLikeList = async (id) => {
     const { data } = await getBlogLikes(id)
     likes.value = data
   } catch (error) {
-    console.error('获取点赞列表失败', error)
-    ElMessage.error('获取点赞列表失败')
+    console.error('Failed to fetch likes list', error)
+    ElMessage.error(uiCopy.blog.loadLikesFailed)
   }
 }
 
@@ -107,8 +108,8 @@ const addLike = async () => {
     blog.value = data
     await queryLikeList(blog.value.id)
   } catch (error) {
-    console.error('点赞失败', error)
-    ElMessage.error('点赞失败')
+    console.error('Failed to like the post', error)
+    ElMessage.error(uiCopy.blog.likeFailed)
   }
 }
 
@@ -121,7 +122,7 @@ const queryLoginUser = async () => {
       await checkFollowed()
     }
   } catch (error) {
-    console.error('获取用户信息失败', error)
+    console.error('Failed to fetch user information', error)
   }
 }
 
@@ -131,8 +132,8 @@ const checkFollowed = async () => {
     const { data } = await isFollowed(blog.value.userId)
     followed.value = data
   } catch (error) {
-    console.error('获取关注状态失败', error)
-    ElMessage.error('获取关注状态失败')
+    console.error('Failed to fetch follow status', error)
+    ElMessage.error(uiCopy.profile.loadFollowStateFailed)
   }
 }
 
@@ -140,11 +141,11 @@ const checkFollowed = async () => {
 const handleFollow = async () => {
   try {
     await follow(blog.value.userId, !followed.value)
-    ElMessage.success(followed.value ? '已取消关注' : '已关注')
+    ElMessage.success(uiCopy.blog.followToast(followed.value))
     followed.value = !followed.value
   } catch (error) {
-    console.error('关注/取消关注失败', error)
-    ElMessage.error('操作失败')
+    console.error('Failed to update follow status', error)
+    ElMessage.error(uiCopy.blog.followFailed)
   }
 }
 
@@ -295,7 +296,7 @@ const go = (index) => {
         <div class="swiper-item" v-for="(img, i) in blog.images" :key="i">
           <img
             :src="`/src/assets${img}`"
-            alt=""
+            :alt="uiCopy.common.blogImageAlt"
             style="width: 100%"
             height="100%"
           />
@@ -309,7 +310,7 @@ const go = (index) => {
               `/src/assets${blog.icon}` ||
               '/src/assets/imgs/icons/default-icon.png'
             "
-            alt=""
+            :alt="uiCopy.common.avatarAlt"
           />
         </div>
         <div class="basic-info">
@@ -322,7 +323,7 @@ const go = (index) => {
             @click="handleFollow"
             v-show="!user || user.id !== blog.userId"
           >
-            {{ followed ? '取消关注' : '关注' }}
+            {{ uiCopy.blog.followState(followed) }}
           </div>
         </div>
       </div>
@@ -339,7 +340,7 @@ const go = (index) => {
                   : `/src/assets${shop.image}`
                 : '/src/assets/imgs/icons/default-icon.png'
             "
-            alt=""
+            :alt="shop.name"
           />
         </div>
         <div style="width: 80%">
@@ -347,7 +348,7 @@ const go = (index) => {
           <div>
             <el-rate v-model="shop.score" disabled></el-rate>
           </div>
-          <div class="shop-avg">￥{{ shop.avgPrice }}/人</div>
+          <div class="shop-avg">{{ formatPerPerson(shop.avgPrice) }}</div>
         </div>
       </div>
 
@@ -375,7 +376,7 @@ const go = (index) => {
             <img :src="u.icon || '/imgs/icons/default-icon.png'" alt="" />
           </div>
           <div style="margin-left: 10px; text-align: center; line-height: 24px">
-            {{ blog.liked }}人点赞
+            {{ formatLikesCount(blog.liked) }}
           </div>
         </div>
       </div>
@@ -384,7 +385,7 @@ const go = (index) => {
 
       <div class="blog-comments">
         <div class="comments-head">
-          <div>网友评价 <span>（119）</span></div>
+          <div>{{ uiCopy.blog.sampleReviewTitle }} <span>(119)</span></div>
           <div>
             <el-icon><ArrowRight /></el-icon>
           </div>
@@ -394,37 +395,39 @@ const go = (index) => {
             <div class="comment-icon">
               <img
                 src="https://p0.meituan.net/userheadpicbackend/57e44d6eba01aad0d8d711788f30a126549507.jpg%4048w_48h_1e_1c_1l%7Cwatermark%3D0"
-                alt=""
+                :alt="uiCopy.common.avatarAlt"
               />
             </div>
             <div class="comment-info">
-              <div class="comment-user">叶小乙 <span>Lv5</span></div>
+              <div class="comment-user">
+                {{ uiCopy.samples.reviewer }} <span>Lv5</span>
+              </div>
               <div style="display: flex">
-                打分
+                {{ uiCopy.samples.rating }}
                 <el-rate disabled v-model="score"></el-rate>
               </div>
               <div style="padding: 5px 0; font-size: 14px">
-                某平台上买的券，价格可以当工作餐吃，虽然价格便宜，但是这家店一点都没有...
+                {{ uiCopy.samples.reviewText }}
               </div>
               <div class="comment-images">
                 <img
                   src="https://qcloud.dpfile.com/pc/6T7MfXzx7USPIkSy7jzm40qZSmlHUF2jd-FZUL6WpjE9byagjLlrseWxnl1LcbuSGybIjx5eX6WNgCPvcASYAw.jpg"
-                  alt=""
+                  :alt="uiCopy.common.blogImageAlt"
                 />
                 <img
                   src="https://qcloud.dpfile.com/pc/sZ5q-zgglv4VXEWU71xCFjnLM_jUHq-ylq0GKivtrz3JksWQ1f7oBWZsxm1DWgcaGybIjx5eX6WNgCPvcASYAw.jpg"
-                  alt=""
+                  :alt="uiCopy.common.blogImageAlt"
                 />
                 <img
                   src="https://qcloud.dpfile.com/pc/xZy6W4NwuRFchlOi43DVLPFsx7KWWvPqifE1JTe_jreqdsBYA9CFkeSm2ZlF0OVmGybIjx5eX6WNgCPvcASYAw.jpg"
-                  alt=""
+                  :alt="uiCopy.common.blogImageAlt"
                 />
                 <img
                   src="https://qcloud.dpfile.com/pc/xZy6W4NwuRFchlOi43DVLPFsx7KWWvPqifE1JTe_jreqdsBYA9CFkeSm2ZlF0OVmGybIjx5eX6WNgCPvcASYAw.jpg"
-                  alt=""
+                  :alt="uiCopy.common.blogImageAlt"
                 />
               </div>
-              <div>浏览641 &nbsp;&nbsp;&nbsp;&nbsp;评论5</div>
+              <div>{{ uiCopy.samples.stats }}</div>
             </div>
           </div>
           <div
@@ -436,7 +439,7 @@ const go = (index) => {
               margin-top: 10px;
             "
           >
-            <div>查看全部119条评价</div>
+            <div>{{ uiCopy.samples.viewAllReviews }}</div>
             <div>
               <el-icon><ArrowRight /></el-icon>
             </div>

@@ -3,6 +3,7 @@ import axios from 'axios'
 import JSONbig from 'json-bigint'
 import { useUserStore } from '@/stores'
 import router from '@/router'
+import { uiCopy } from '@/constants/uiCopy'
 const baseURL = '/api'
 const instance = axios.create({
   // TODO 1. Set the base address and timeout period
@@ -40,7 +41,7 @@ instance.interceptors.response.use(
     // Check the execution result
     if (response.status !== 200) {
       // TODO 3. Business processing failed and a pop-up window prompt was given.
-      ElMessage.error(response.data.errorMsg || '响应拦截器提示：服务异常')
+      ElMessage.error(response.data.errorMsg || uiCopy.request.serviceError)
       return Promise.reject(response.data.errorMsg)
     }
     return response.data
@@ -48,12 +49,12 @@ instance.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       // TODO 4. Not logged in or the token has expired. Jump to the login page.
-      ElMessage.error('响应拦截器提示：请先登录')
+      ElMessage.error(uiCopy.request.loginRequired)
       router.push('/login')
       return
     }
     // TODO 5. Handle common errors
-    ElMessage.error(error.response?.data.message || '响应拦截器提示：服务异常')
+    ElMessage.error(error.response?.data.message || uiCopy.request.serviceError)
     return Promise.reject(error)
   }
 )

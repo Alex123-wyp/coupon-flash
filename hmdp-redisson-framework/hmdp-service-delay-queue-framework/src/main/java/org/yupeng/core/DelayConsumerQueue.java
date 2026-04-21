@@ -32,10 +32,13 @@ public class DelayConsumerQueue extends DelayBaseQueue{
     private final ConsumerTask consumerTask;
     
     public DelayConsumerQueue(DelayQueuePart delayQueuePart, String relTopic){
+
         super(delayQueuePart.getDelayQueueBasePart().getRedissonClient(),relTopic);
+
         this.listenStartThreadPool = new ThreadPoolExecutor(1,1,60, 
                 TimeUnit.SECONDS,new LinkedBlockingQueue<>(),r -> new Thread(Thread.currentThread().getThreadGroup(), r,
                 "listen-start-thread-" + listenStartThreadCount.getAndIncrement()));
+
         this.executeTaskThreadPool = new ThreadPoolExecutor(
                 delayQueuePart.getDelayQueueBasePart().getDelayQueueProperties().getCorePoolSize(),
                 delayQueuePart.getDelayQueueBasePart().getDelayQueueProperties().getMaximumPoolSize(),
@@ -44,10 +47,13 @@ public class DelayConsumerQueue extends DelayBaseQueue{
                 new LinkedBlockingQueue<>(delayQueuePart.getDelayQueueBasePart().getDelayQueueProperties().getWorkQueueSize()),
                 r -> new Thread(Thread.currentThread().getThreadGroup(), r, 
                         "delay-queue-consume-thread-" + executeTaskThreadCount.getAndIncrement()));
+
         this.consumerTask = delayQueuePart.getConsumerTask();
+
     }
     
     public synchronized void listenStart(){
+
         if (!runFlag.get()) {
             runFlag.set(true);
             listenStartThreadPool.execute(() -> {

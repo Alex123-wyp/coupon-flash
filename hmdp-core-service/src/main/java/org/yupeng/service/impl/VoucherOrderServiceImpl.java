@@ -659,10 +659,19 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
         }
         return null;
     }
-    
+
+    /**
+     * Cancel order
+     * @param cancelVoucherOrderDto
+     * @return
+     */
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Boolean cancel(CancelVoucherOrderDto cancelVoucherOrderDto) {
+
+        /**
+         * Find voucher order
+         */
         VoucherOrder voucherOrder = lambdaQuery()
                 .eq(VoucherOrder::getUserId, UserHolder.getUser().getId())
                 .eq(VoucherOrder::getVoucherId, cancelVoucherOrderDto.getVoucherId())
@@ -671,17 +680,27 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
         if (Objects.isNull(voucherOrder)) {
             throw new HmdpFrameException(BaseCode.SECKILL_VOUCHER_ORDER_NOT_EXIST);
         }
+        /**
+         * Find seckill voucher order
+         */
         SeckillVoucher seckillVoucher = seckillVoucherService.lambdaQuery()
                 .eq(SeckillVoucher::getVoucherId, cancelVoucherOrderDto.getVoucherId())
                 .one();
         if (Objects.isNull(seckillVoucher)) {
             throw new HmdpFrameException(BaseCode.SECKILL_VOUCHER_NOT_EXIST);
         }
+
+        /**
+         * Update voucher order table
+         */
         boolean updateResult = lambdaUpdate().set(VoucherOrder::getStatus, OrderStatus.CANCEL.getCode())
                 .set(VoucherOrder::getUpdateTime, LocalDateTimeUtil.now())
                 .eq(VoucherOrder::getUserId, UserHolder.getUser().getId())
                 .eq(VoucherOrder::getVoucherId, cancelVoucherOrderDto.getVoucherId())
                 .update();
+        /**
+         * Save to voucher_reconcile_log table
+         */
         long traceId = snowflakeIdGenerator.nextId();
         VoucherReconcileLogDto voucherReconcileLogDto = new VoucherReconcileLogDto();
         voucherReconcileLogDto.setOrderId(voucherOrder.getId());
@@ -695,10 +714,15 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
         voucherReconcileLogDto.setLogType(LogType.RESTORE.getCode());
         voucherReconcileLogDto.setBusinessType( BusinessType.CANCEL.getCode());
         boolean saveReconcileLogResult = voucherReconcileLogService.saveReconcileLog(voucherReconcileLogDto);
-        
+
+        //seckillVoucher table voucher roll back (We do not save stock in voucher order table, hence no need to roll back in that table)
         boolean rollbackStockResult = seckillVoucherService.rollbackStock(cancelVoucherOrderDto.getVoucherId());
-        
+
         Boolean result = updateResult && saveReconcileLogResult && rollbackStockResult;
+
+        /**
+         * roll back to delete stock from stock key
+         */
         if (result) {
             redisVoucherData.rollbackRedisVoucherData(
                     SeckillVoucherOrderOperate.YES,
@@ -713,6 +737,10 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
             redisCache.delForHash(RedisKeyBuild.createRedisKey(RedisKeyManage.SECKILL_SUBSCRIBE_STATUS_TAG_KEY, 
                     cancelVoucherOrderDto.getVoucherId()),
                     String.valueOf(voucherOrder.getUserId()));
+
+            /**
+             * Substract 1 from SECKILL_SHOP_TOP_BUYERS_DAILY_TAG_KEY
+             */
             Voucher voucher = voucherService.getById(voucherOrder.getVoucherId());
             if (Objects.nonNull(voucher)) {
                 String day = voucherOrder.getCreateTime().format(DateTimeFormatter.BASIC_ISO_DATE);
@@ -723,7 +751,9 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
                 );
                 redisCache.incrementScoreForSortedSet(dailyKey, String.valueOf(voucherOrder.getUserId()), -1.0);
             }
-            
+            /**
+             * Auto issue voucher to the earliest subscriber
+             */
             try {
                 autoIssueVoucherToEarliestSubscriber(
                         voucherOrder.getVoucherId(), 
@@ -738,6 +768,8 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
     
     @Override
     public boolean autoIssueVoucherToEarliestSubscriber(final Long voucherId, final Long excludeUserId) {
+
+        //Find seckillVoucherFullModel first in redis, and then database
         SeckillVoucherFullModel seckillVoucherFullModel = seckillVoucherService.queryByVoucherId(voucherId);
         if (Objects.isNull(seckillVoucherFullModel) 
                 || 
@@ -746,21 +778,26 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
                 Objects.isNull(seckillVoucherFullModel.getEndTime())) {
             return false;
         }
+        //Load stock from the database first (Because we delete redis data by rolling back in previous action)
         seckillVoucherService.loadVoucherStock(voucherId);
+        //Find the candidate
         String candidateUserIdStr = findEarliestCandidate(voucherId, excludeUserId);
         if (StrUtil.isBlank(candidateUserIdStr)) {
             return false;
         }
         return issueToCandidate(voucherId, candidateUserIdStr, seckillVoucherFullModel);
     }
-    
+
+
     private String findEarliestCandidate(final Long voucherId, final Long excludeUserId) {
+
         RedisKeyBuild subscribeZSetKey = RedisKeyBuild.createRedisKey(RedisKeyManage.SECKILL_SUBSCRIBE_ZSET_TAG_KEY, voucherId);
         RedisKeyBuild purchasedSetKey = RedisKeyBuild.createRedisKey(RedisKeyManage.SECKILL_USER_TAG_KEY, voucherId);
         
         final long pageCount = 1L;
         long offset = 0L;
         while (true) {
+            //Fetch the user from redis
             Set<ZSetOperations.TypedTuple<String>> page = redisCache.rangeByScoreWithScoreForSortedSet(
                     subscribeZSetKey,
                     Double.NEGATIVE_INFINITY,
@@ -769,28 +806,38 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
                     pageCount,
                     String.class
             );
+            //If page does not exist, return
             if (CollectionUtil.isEmpty(page)) {
                 return null;
             }
+            //Get the current user from the page that has been fetched before, take the next element from the iterator
             ZSetOperations.TypedTuple<String> tuple = page.iterator().next();
+            //If that tuple is null, or its value is null, continue
             if (Objects.isNull(tuple) || Objects.isNull(tuple.getValue())) {
                 offset++;
                 continue;
             }
+            //Assign value to uidStr
             String uidStr = tuple.getValue();
+            //If uidStr = null, continue
             if (StrUtil.isBlank(uidStr)) {
                 offset++;
                 continue;
             }
+            //if excludedUser Id != null and the current user id = excluded user id, continue search
             if (Objects.nonNull(excludeUserId) && Objects.equals(uidStr, String.valueOf(excludeUserId))) {
                 offset++;
                 continue;
             }
+
+            //If the current user has already purchased the voucher, then continue search
             Boolean purchased = redisCache.isMemberForSet(purchasedSetKey, uidStr);
             if (BooleanUtil.isTrue(purchased)) {
                 offset++;
                 continue;
             }
+
+            //Finally return the selected user
             return uidStr;
         }
     }
@@ -798,22 +845,35 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
     private boolean issueToCandidate(final Long voucherId, 
                                      final String candidateUserIdStr, 
                                      final SeckillVoucherFullModel seckillVoucherFullModel) {
+
         Long candidateUserId = Long.valueOf(candidateUserIdStr);
+        //We have to verify user level first
         try {
             verifyUserLevel(seckillVoucherFullModel, candidateUserId);
         } catch (Exception e) {
             log.info("Candidate user does not satisfy audience rules, skipping auto-issue. voucherId={}, userId={}", voucherId, candidateUserId);
             return false;
         }
+
+        /**
+         * Build keys and args as params transfer to lua script operator
+         */
         List<String> keys = buildSeckillKeys(voucherId);
         long orderId = snowflakeIdGenerator.nextId();
         long traceId = snowflakeIdGenerator.nextId();
         String[] args = buildSeckillArgs(voucherId, candidateUserIdStr, seckillVoucherFullModel, orderId, traceId);
+        /**
+         *Do in lua script: seckillVoucher stock subtraction, add user to set to mark as already purchased, record log
+         */
         SeckillVoucherDomain domain = seckillVoucherOperate.execute(keys, args);
+        //If not succeed, record in log and return false
         if (!Objects.equals(domain.getCode(), BaseCode.SUCCESS.getCode())) {
             log.info("Auto-issue Lua deduction failed, code={}, voucherId={}, userId={}", domain.getCode(), voucherId, candidateUserId);
             return false;
         }
+        /**
+         * Build the message that need to send to kafka queue, and notify seller and make database consistent
+         */
         SeckillVoucherMessage message = new SeckillVoucherMessage(
                 candidateUserId,
                 voucherId,

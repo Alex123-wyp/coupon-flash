@@ -2,7 +2,7 @@
   "shopType": [
     {
       "id": 1,
-      "name": "美食",
+      "name": "Food",
       "icon": "/types/ms.png",
       "sort": 1
     },
@@ -14,49 +14,49 @@
     },
     {
       "id": 3,
-      "name": "丽人·美发",
+      "name": "Beauty & Hair",
       "icon": "/types/lrmf.png",
       "sort": 3
     },
     {
       "id": 4,
-      "name": "健身运动",
+      "name": "Fitness",
       "icon": "/types/jsyd.png",
       "sort": 10
     },
     {
       "id": 5,
-      "name": "按摩·足疗",
+      "name": "Massage & Foot Spa",
       "icon": "/types/amzl.png",
       "sort": 5
     },
     {
       "id": 6,
-      "name": "美容SPA",
+      "name": "Beauty Spa",
       "icon": "/types/spa.png",
       "sort": 6
     },
     {
       "id": 7,
-      "name": "亲子游乐",
+      "name": "Family Fun",
       "icon": "/types/qzyl.png",
       "sort": 7
     },
     {
       "id": 8,
-      "name": "酒吧",
+      "name": "Bars",
       "icon": "/types/jiuba.png",
       "sort": 8
     },
     {
       "id": 9,
-      "name": "轰趴馆",
+      "name": "Party House",
       "icon": "/types/hpg.png",
       "sort": 9
     },
     {
       "id": 10,
-      "name": "美睫·美甲",
+      "name": "Lashes & Nails",
       "icon": "/types/mjmj.png",
       "sort": 4
     }
@@ -64,27 +64,27 @@
   "friends": [
     {
       "id": 1,
-      "name": "小明"
+      "name": "Ming"
     },
     {
       "id": 2,
-      "name": "小红"
+      "name": "Hong"
     },
     {
       "id": 3,
-      "name": "小刚"
+      "name": "Gang"
     },
     {
       "id": 4,
-      "name": "小花"
+      "name": "Hua"
     },
     {
       "id": 5,
-      "name": "小李"
+      "name": "Li"
     },
     {
       "id": 6,
-      "name": "小赵"
+      "name": "Zhao"
     }
   ]
 }

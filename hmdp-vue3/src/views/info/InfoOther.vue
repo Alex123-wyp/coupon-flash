@@ -4,6 +4,7 @@ import { useRouter, useRoute } from 'vue-router'
 import { ArrowLeft, ChatDotRound } from '@element-plus/icons-vue'
 import { useUserStore } from '@/stores'
 import { getUser, getUserInfo } from '@/api/user'
+import { formatCommentCount, uiCopy } from '@/constants/uiCopy'
 import {
   getBlogsOfUser,
   isFollowed,
@@ -21,8 +22,8 @@ const loginUser = ref({})
 const activeName = ref('1')
 const info = ref({})
 const blogs = ref([])
-const followed = ref(false) // 是否关注了
-const commonFollows = ref([]) // 共同关注
+const followed = ref(false) // Whether the current user follows this profile
+const commonFollows = ref([]) // Mutual follows
 
 // Lifecycle hooks
 onMounted(() => {
@@ -37,7 +38,7 @@ const queryBlogs = () => {
       blogs.value = data
     })
     .catch(() => {
-      ElMessage.error('获取用户笔记失败')
+      ElMessage.error(uiCopy.profile.loadUserPostsFailed)
     })
 }
 
@@ -49,7 +50,7 @@ const queryLoginUser = () => {
       loginUser.value = data
     })
     .catch(() => {
-      ElMessage.error('获取登录用户信息失败')
+      ElMessage.error(uiCopy.profile.loadLoginUserFailed)
     })
 }
 
@@ -72,11 +73,11 @@ const queryUser = () => {
           followed.value = data
         })
         .catch(() => {
-          ElMessage.error('获取关注状态失败')
+          ElMessage.error(uiCopy.profile.loadFollowStateFailed)
         })
     })
     .catch(() => {
-      ElMessage.error('获取用户信息失败')
+      ElMessage.error(uiCopy.profile.loadUserFailed)
     })
 }
 
@@ -96,7 +97,7 @@ const queryUserInfo = () => {
       userStore.setUserInfo(data)
     })
     .catch(() => {
-      ElMessage.error('获取用户详情失败')
+      ElMessage.error(uiCopy.profile.loadUserDetailFailed)
     })
 }
 
@@ -106,18 +107,18 @@ const queryCommonFollow = () => {
       commonFollows.value = data
     })
     .catch(() => {
-      ElMessage.error('获取共同关注失败')
+      ElMessage.error(uiCopy.profile.mutualFollowsFailed)
     })
 }
 
 const handleFollow = () => {
   follow(user.value.id, !followed.value)
     .then(() => {
-      ElMessage.success(followed.value ? '已取消关注' : '已关注')
+      ElMessage.success(uiCopy.profile.followToast(followed.value))
       followed.value = !followed.value
     })
     .catch(() => {
-      ElMessage.error('操作失败')
+      ElMessage.error(uiCopy.blog.followFailed)
     })
 }
 
@@ -151,43 +152,51 @@ const toOtherInfo = (id) => {
             '/src/assets' + user.icon ||
             '/src/assets/imgs/icons/default-icon.png'
           "
-          alt=""
+          :alt="uiCopy.common.avatarAlt"
         />
       </div>
       <div class="basic-info">
         <div class="name">{{ user.nickName }}</div>
-        <span>{{ info.city || '杭州' }}</span>
+        <span>{{ info.city || uiCopy.common.city }}</span>
       </div>
       <div class="logout-btn" @click="handleFollow" style="text-align: center">
-        {{ followed ? '取消关注' : '关注' }}
+        {{ uiCopy.profile.followAction(followed) }}
       </div>
     </div>
 
     <div class="introduce">
       <span v-if="info.introduce">{{ info.introduce }}</span>
-      <span v-else>这个人很懒，什么都没有留下</span>
+      <span v-else>{{ uiCopy.profile.emptyState }}</span>
     </div>
 
     <div class="content">
       <el-tabs v-model="activeName" @tab-click="handleClick">
-        <el-tab-pane label="笔记" name="1">
+        <el-tab-pane :label="uiCopy.profile.tabs.posts" name="1">
           <div v-for="b in blogs" :key="b.id" class="blog-item">
             <div class="blog-img">
-              <img :src="'/src/assets' + b.images.split(',')[0]" alt="" />
+              <img
+                :src="'/src/assets' + b.images.split(',')[0]"
+                :alt="uiCopy.common.blogImageAlt"
+              />
             </div>
             <div class="blog-info">
               <div class="blog-title" v-html="b.title"></div>
               <div class="blog-liked">
-                <img src="/src/assets/imgs/thumbup.png" alt="" /> {{ b.liked }}
+                <img
+                  src="/src/assets/imgs/thumbup.png"
+                  :alt="uiCopy.blog.likesSummary(b.liked)"
+                />
+                {{ b.liked }}
               </div>
               <div class="blog-comments">
-                <el-icon><ChatDotRound /></el-icon> {{ b.comments }}
+                <el-icon><ChatDotRound /></el-icon>
+                {{ formatCommentCount(b.comments) }}
               </div>
             </div>
           </div>
         </el-tab-pane>
-        <el-tab-pane label="共同关注" name="2">
-          <div>你们都关注了：</div>
+        <el-tab-pane :label="uiCopy.profile.tabs.mutualFollows" name="2">
+          <div>{{ uiCopy.profile.mutualFollowsIntro }}</div>
           <div class="follow-info" v-for="u in commonFollows" :key="u.id">
             <div class="follow-info-icon" @click="toOtherInfo(u.id)">
               <img
@@ -195,14 +204,14 @@ const toOtherInfo = (id) => {
                   '/src/assets' + u.icon ||
                   '/src/assets/imgs/icons/default-icon.png'
                 "
-                alt=""
+                :alt="uiCopy.common.avatarAlt"
               />
             </div>
             <div class="follow-info-name">
               <div class="name">{{ u.nickName }}</div>
             </div>
             <div class="follow-info-btn" @click="toOtherInfo(u.id)">
-              去主页看看
+              {{ uiCopy.profile.visitProfile }}
             </div>
           </div>
         </el-tab-pane>

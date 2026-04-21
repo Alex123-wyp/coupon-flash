@@ -4,6 +4,7 @@ import { ArrowLeft } from '@element-plus/icons-vue'
 import { useUserStore } from '@/stores'
 import router from '@/router'
 import { userLogin } from '@/api/user'
+import { uiCopy } from '@/constants/uiCopy'
 const formRef = ref()
 const userStore = useUserStore()
 const form = ref({
@@ -18,44 +19,47 @@ const goBack = () => {
 }
 
 const login = async () => {
-  console.log('登录功能待实现')
+  console.log('Password sign-in is not implemented yet')
   try {
     await formRef.value.validate()
     const res = await userLogin(form.value)
-    console.log('登录成功:', res)
-    console.log('登录成功token:', res.data)
+    console.log('Login successful:', res)
+    console.log('Login token:', res.data)
     if (res.data) {
       userStore.setToken(res.data)
-      console.log('token已设置:', userStore.getToken())
-      ElMessage.success('登录成功')
+      console.log('Token stored:', userStore.getToken())
+      ElMessage.success(uiCopy.auth.loginSuccess)
       router.push('/index')
     } else {
-      ElMessage.error('登录失败：未获取到token')
+      ElMessage.error(uiCopy.auth.loginMissingToken)
     }
   } catch (error) {
-    console.error('登录失败:', error)
-    ElMessage.error('登录失败：' + (error.message || '未知错误'))
+    console.error('Login failed:', error)
+    ElMessage.error(
+      uiCopy.auth.loginFailedPrefix +
+        (error.message || uiCopy.auth.unknownError)
+    )
   }
 }
 
 // Add form validation rules
 const rules = {
   phone: [
-    { required: true, message: '请输入手机号', trigger: 'blur' },
+    { required: true, message: uiCopy.auth.phoneRequired, trigger: 'blur' },
     {
       pattern: /^1[3-9]\d{9}$/,
-      message: '手机号格式不正确',
+      message: uiCopy.auth.phoneInvalid,
       trigger: 'blur'
     }
   ],
   password: [
-    { required: true, message: '请输入密码', trigger: 'blur' },
-    { min: 6, message: '密码长度不能少于6位', trigger: 'blur' }
+    { required: true, message: uiCopy.auth.passwordRequired, trigger: 'blur' },
+    { min: 6, message: uiCopy.auth.passwordMin, trigger: 'blur' }
   ],
   radio: [
     {
       required: true,
-      message: '必选',
+      message: uiCopy.auth.required,
       trigger: 'change'
     }
   ]
@@ -68,7 +72,9 @@ const rules = {
       <div class="header-back-btn" @click="goBack">
         <el-icon><ArrowLeft /></el-icon>
       </div>
-      <div class="header-title">密码登录&nbsp;&nbsp;&nbsp;</div>
+      <div class="header-title">
+        {{ uiCopy.auth.passwordLoginTitle }}&nbsp;&nbsp;&nbsp;
+      </div>
     </div>
     <div class="content">
       <!-- Replace with el-form -->
@@ -80,27 +86,31 @@ const rules = {
         class="login-form"
       >
         <el-form-item prop="phone">
-          <el-input placeholder="请输入手机号" v-model="form.phone"> </el-input>
+          <el-input
+            :placeholder="uiCopy.auth.phonePlaceholder"
+            v-model="form.phone"
+          >
+          </el-input>
         </el-form-item>
         <div style="height: 5px"></div>
         <el-form-item prop="password">
           <el-input
-            placeholder="请输入密码"
+            :placeholder="uiCopy.auth.passwordPlaceholder"
             v-model="form.password"
             show-password
           >
           </el-input>
         </el-form-item>
         <div style="text-align: center; color: #8c939d; margin: 5px 0">
-          <a href="javascript:void(0)">忘记密码</a>
+          <a href="javascript:void(0)">{{ uiCopy.auth.forgotPassword }}</a>
         </div>
         <el-button
           @click="login"
           style="width: 100%; background-color: #f63; color: #fff"
-          >登录</el-button
+          >{{ uiCopy.auth.login }}</el-button
         >
         <div style="text-align: right; color: #333333; margin: 5px 0">
-          <router-link to="/register">验证码登录</router-link>
+          <router-link to="/register">{{ uiCopy.auth.codeLogin }}</router-link>
         </div>
         <div class="login-radio">
           <el-form-item prop="radio">
@@ -108,10 +118,11 @@ const rules = {
             </el-checkbox>
           </el-form-item>
           <div>
-            我已阅读并同意
-            <a href="javascript:void(0)"> 《黑马点评用户服务协议》</a>、
-            <a href="javascript:void(0)">《隐私政策》</a>
-            等，接受免除或者限制责任、诉讼管辖约定等粗体标示条款
+            {{ uiCopy.auth.agreementPrefix }}
+            <a href="javascript:void(0)"> {{ uiCopy.auth.agreementName }}</a
+            >,
+            <a href="javascript:void(0)">{{ uiCopy.auth.privacyPolicy }}</a>
+            {{ uiCopy.auth.agreementSuffix }}
           </div>
         </div>
       </el-form>

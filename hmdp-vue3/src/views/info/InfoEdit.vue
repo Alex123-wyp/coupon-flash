@@ -5,6 +5,7 @@ import { ElMessage } from 'element-plus'
 import { ArrowLeft, ArrowRight } from '@element-plus/icons-vue'
 import { useUserStore } from '@/stores'
 import { getUser, getUserInfo } from '@/api/user'
+import { uiCopy } from '@/constants/uiCopy'
 
 const router = useRouter()
 const userStore = useUserStore()
@@ -35,11 +36,11 @@ const checkLogin = () => {
           }
         })
         .catch(() => {
-          ElMessage.error('获取用户详情失败')
+          ElMessage.error(uiCopy.profile.loadUserDetailFailed)
         })
     })
     .catch(() => {
-      ElMessage.error('获取用户信息失败')
+      ElMessage.error(uiCopy.profile.loadUserFailed)
       router.push('/login')
     })
 }
@@ -55,13 +56,13 @@ const goBack = () => {
       <div class="header-back-btn" @click="goBack">
         <el-icon><ArrowLeft /></el-icon>
       </div>
-      <div class="header-title">资料编辑</div>
+      <div class="header-title">{{ uiCopy.profile.editProfile }}</div>
     </div>
 
     <div class="edit-container">
       <div class="info-box">
         <div class="info-item">
-          <div class="info-label">头像</div>
+          <div class="info-label">{{ uiCopy.profile.avatar }}</div>
           <div class="info-btn">
             <img
               width="35"
@@ -69,7 +70,7 @@ const goBack = () => {
                 '/src/assets' + user.icon ||
                 '/src/assets/imgs/icons/default-icon.png'
               "
-              alt="用户头像"
+              :alt="uiCopy.common.avatarAlt"
             />
             <div>
               <el-icon><ArrowRight /></el-icon>
@@ -78,7 +79,7 @@ const goBack = () => {
         </div>
         <div class="divider"></div>
         <div class="info-item">
-          <div class="info-label">昵称</div>
+          <div class="info-label">{{ uiCopy.profile.nickname }}</div>
           <div class="info-btn">
             <div>{{ user.nickName }}</div>
             <div>
@@ -88,10 +89,10 @@ const goBack = () => {
         </div>
         <div class="divider"></div>
         <div class="info-item">
-          <div class="info-label">个人介绍</div>
+          <div class="info-label">{{ uiCopy.profile.bio }}</div>
           <div class="info-btn">
             <div style="overflow: hidden; width: 150px; text-align: right">
-              {{ info.introduce || '介绍一下自己' }}
+              {{ info.introduce || uiCopy.profile.tellUsAboutYourself }}
             </div>
             <div>
               <el-icon><ArrowRight /></el-icon>
@@ -102,9 +103,9 @@ const goBack = () => {
 
       <div class="info-box">
         <div class="info-item">
-          <div class="info-label">性别</div>
+          <div class="info-label">{{ uiCopy.profile.gender }}</div>
           <div class="info-btn">
-            <div>{{ info.gender || '选择' }}</div>
+            <div>{{ info.gender || uiCopy.profile.choose }}</div>
             <div>
               <el-icon><ArrowRight /></el-icon>
             </div>
@@ -112,9 +113,9 @@ const goBack = () => {
         </div>
         <div class="divider"></div>
         <div class="info-item">
-          <div class="info-label">城市</div>
+          <div class="info-label">{{ uiCopy.profile.city }}</div>
           <div class="info-btn">
-            <div>{{ info.city || '选择' }}</div>
+            <div>{{ info.city || uiCopy.profile.choose }}</div>
             <div>
               <el-icon><ArrowRight /></el-icon>
             </div>
@@ -122,9 +123,9 @@ const goBack = () => {
         </div>
         <div class="divider"></div>
         <div class="info-item">
-          <div class="info-label">生日</div>
+          <div class="info-label">{{ uiCopy.profile.birthday }}</div>
           <div class="info-btn">
-            <div>{{ info.birthday || '添加' }}</div>
+            <div>{{ info.birthday || uiCopy.profile.add }}</div>
             <div>
               <el-icon><ArrowRight /></el-icon>
             </div>
@@ -134,9 +135,9 @@ const goBack = () => {
 
       <div class="info-box">
         <div class="info-item">
-          <div class="info-label">我的积分</div>
+          <div class="info-label">{{ uiCopy.profile.points }}</div>
           <div class="info-btn">
-            <div>查看积分</div>
+            <div>{{ uiCopy.profile.viewPoints }}</div>
             <div>
               <el-icon><ArrowRight /></el-icon>
             </div>
@@ -144,9 +145,11 @@ const goBack = () => {
         </div>
         <div class="divider"></div>
         <div class="info-item">
-          <div class="info-label">会员等级</div>
+          <div class="info-label">{{ uiCopy.profile.membership }}</div>
           <div class="info-btn">
-            <div><a href="javascript:void(0)">成为VIP尊享特权</a></div>
+            <div>
+              <a href="javascript:void(0)">{{ uiCopy.profile.vipCta }}</a>
+            </div>
             <div>
               <el-icon><ArrowRight /></el-icon>
             </div>

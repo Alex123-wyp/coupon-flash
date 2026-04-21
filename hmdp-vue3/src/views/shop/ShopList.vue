@@ -29,13 +29,16 @@
         </el-dropdown>
       </div>
       <div class="sort-item" @click="sortAndQuery('')">
-        距离 <el-icon class="el-icon--right"><ArrowDown /></el-icon>
+        {{ uiCopy.shop.sort.distance }}
+        <el-icon class="el-icon--right"><ArrowDown /></el-icon>
       </div>
       <div class="sort-item" @click="sortAndQuery('comments')">
-        人气 <el-icon class="el-icon--right"><ArrowDown /></el-icon>
+        {{ uiCopy.shop.sort.popular }}
+        <el-icon class="el-icon--right"><ArrowDown /></el-icon>
       </div>
       <div class="sort-item" @click="sortAndQuery('score')">
-        评分 <el-icon class="el-icon--right"><ArrowDown /></el-icon>
+        {{ uiCopy.shop.sort.rating }}
+        <el-icon class="el-icon--right"><ArrowDown /></el-icon>
       </div>
     </div>
 
@@ -47,7 +50,7 @@
         :key="s.id"
         @click="toDetail(s.id)"
       >
-        <div class="shop-img"><img :src="s.images" alt="" /></div>
+        <div class="shop-img"><img :src="s.images" :alt="s.name" /></div>
         <div class="shop-info">
           <div class="shop-title shop-item">{{ s.name }}</div>
           <div class="shop-rate shop-item">
@@ -59,7 +62,7 @@
               text-color="#F63"
               show-score
             />
-            <span>{{ s.comments }}条</span>
+            <span>{{ formatReviewCount(s.comments) }}</span>
           </div>
           <div class="shop-area shop-item">
             <span>{{ s.area }}</span>
@@ -71,7 +74,9 @@
               }}
             </span>
           </div>
-          <div class="shop-avg shop-item">￥{{ s.avgPrice }}/人</div>
+          <div class="shop-avg shop-item">
+            {{ formatPerPerson(s.avgPrice) }}
+          </div>
           <div class="shop-address shop-item">
             <el-icon><Location /></el-icon>
             <span>{{ s.address }}</span>
@@ -88,6 +93,7 @@ import { useRouter, useRoute } from 'vue-router'
 import { ArrowLeft, ArrowDown, Search, Location } from '@element-plus/icons-vue'
 import { getShopList, getShopTypeList } from '@/api/shop'
 import { throttle } from '@/utils/scroll'
+import { formatPerPerson, formatReviewCount, uiCopy } from '@/constants/uiCopy'
 
 const router = useRouter()
 const route = useRoute()
@@ -113,7 +119,7 @@ const queryTypes = async () => {
     console.log('getShopTypeList', types.value)
   } catch (error) {
     console.error(error)
-    ElMessage.error('获取店铺类型失败')
+    ElMessage.error(uiCopy.shop.loadTypesFailed)
   }
 }
 
@@ -126,7 +132,7 @@ const queryShops = async () => {
     shops.value = shops.value.concat(data)
   } catch (error) {
     console.error(error)
-    ElMessage.error('获取店铺列表失败')
+    ElMessage.error(uiCopy.shop.loadShopsFailed)
   }
 }
 
@@ -174,8 +180,8 @@ const onScroll = throttle((e) => {
 const initData = () => {
   params.value.typeId = Number(route.query.type) || 0
   typeName.value = route.query.name || ''
-  shops.value = [] // 清空店铺列表
-  params.value.current = 1 // 重置页码
+  shops.value = [] // Clear the current shop list
+  params.value.current = 1 // Reset the page number
   queryTypes()
   queryShops()
 }

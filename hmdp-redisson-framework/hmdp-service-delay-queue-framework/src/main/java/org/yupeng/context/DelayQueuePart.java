@@ -19,4 +19,5 @@ public class DelayQueuePart {
         this.delayQueueBasePart = delayQueueBasePart;
         this.consumerTask = consumerTask;
     }
+
 }

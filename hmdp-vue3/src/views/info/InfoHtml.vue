@@ -6,6 +6,13 @@ import { ArrowLeft, Edit, ChatDotRound } from '@element-plus/icons-vue'
 import { useUserStore } from '@/stores'
 import { getUser, getUserBlog, getUserInfo } from '@/api/user'
 import {
+  formatCommentCount,
+  formatFollowerTab,
+  formatFollowingTab,
+  formatLikesCount,
+  uiCopy
+} from '@/constants/uiCopy'
+import {
   indexQueryHotBlogsScroll,
   indexAddLike,
   indexQueryBlogById
@@ -18,11 +25,11 @@ const userStore = useUserStore()
 const user = ref({})
 const info = ref({})
 const blogs = ref([])
-const blogs2 = ref([]) // 关注的人的博客
+const blogs2 = ref([]) // Posts from followed users
 const activeName = ref('1')
 const params = reactive({
-  minTime: 0, // 上一次拉取到的时间戳
-  offset: 0 // 偏移量
+  minTime: 0, // Timestamp from the previous fetch
+  offset: 0 // Feed offset for duplicate timestamps
 })
 const isReachBottom = ref(false)
 
@@ -44,7 +51,7 @@ const queryUser = () => {
       queryBlogs()
     })
     .catch(() => {
-      ElMessage.error('获取用户信息失败')
+      ElMessage.error(uiCopy.profile.loadUserFailed)
       router.push('/login')
     })
 }
@@ -52,7 +59,7 @@ const queryBlogs = () => {
   getUserBlog()
     .then(({ data }) => (blogs.value = data))
     .catch(() => {
-      ElMessage.error('获取用户博客失败')
+      ElMessage.error(uiCopy.profile.loadUserPostsFailed)
     })
 }
 const queryUserInfo = () => {
@@ -68,7 +75,7 @@ const queryUserInfo = () => {
       // sessionStorage.setItem('userInfo', JSON.stringify(data))
     })
     .catch(() => {
-      ElMessage.error('获取用户详情失败')
+      ElMessage.error(uiCopy.profile.loadUserDetailFailed)
     })
   // Get user details locally
   // const userInfo = sessionStorage.getItem('userInfo')
@@ -96,7 +103,7 @@ const queryBlogsOfFollow = (clear) => {
       Object.assign(params, newParams)
     })
     .catch(() => {
-      ElMessage.error('获取关注博客失败')
+      ElMessage.error(uiCopy.profile.loadFollowedPostsFailed)
     })
 }
 
@@ -126,7 +133,7 @@ const addLike = (b) => {
       queryBlogById(b)
     })
     .catch(() => {
-      ElMessage.error('点赞失败')
+      ElMessage.error(uiCopy.blog.likeFailed)
       b.liked++
     })
 }
@@ -138,7 +145,7 @@ const queryBlogById = (b) => {
       b.isLike = data.isLike
     })
     .catch(() => {
-      ElMessage.error('获取博客详情失败')
+      ElMessage.error(uiCopy.blog.loadBlogFailed)
       b.liked++
     })
 }
@@ -169,7 +176,7 @@ const onScroll = (e) => {
       <div class="header-back-btn" @click="goBack">
         <el-icon><ArrowLeft /></el-icon>
       </div>
-      <div class="header-title">个人主页</div>
+      <div class="header-title">{{ uiCopy.profile.title }}</div>
     </div>
 
     <div class="basic">
@@ -179,53 +186,66 @@ const onScroll = (e) => {
             '/src/assets' + user.icon ||
             '/src/assets/imgs/icons/default-icon.png'
           "
-          alt="用户头像"
+          :alt="uiCopy.common.avatarAlt"
         />
       </div>
       <div class="basic-info">
         <div class="name">{{ user.nickName }}</div>
-        <span>杭州</span>
-        <div class="edit-btn" @click="toEdit">编辑资料</div>
+        <span>{{ info.city || uiCopy.common.city }}</span>
+        <div class="edit-btn" @click="toEdit">
+          {{ uiCopy.profile.editProfile }}
+        </div>
       </div>
-      <div class="logout-btn" @click="logout">退出登录</div>
+      <div class="logout-btn" @click="logout">{{ uiCopy.profile.logout }}</div>
     </div>
 
     <div class="introduce">
       <span v-if="info.introduce">{{ info.introduce }}</span>
       <span v-else
-        >添加个人简介，让大家更好的认识你 <el-icon><Edit /></el-icon
+        >{{ uiCopy.profile.addBio }} <el-icon><Edit /></el-icon
       ></span>
     </div>
 
     <div class="content">
       <el-tabs v-model="activeName" @tab-click="handleClick">
-        <el-tab-pane label="笔记" name="1">
+        <el-tab-pane :label="uiCopy.profile.tabs.posts" name="1">
           <div v-for="b in blogs" :key="b.id" class="blog-item">
             <div class="blog-img">
               <img
                 :src="'/src/assets' + b.images.split(',')[0]"
-                alt="博客图片"
+                :alt="uiCopy.common.blogImageAlt"
               />
             </div>
             <div class="blog-info">
               <div class="blog-title">{{ b.title }}</div>
               <div class="blog-liked">
-                <img src="/src/assets/imgs/thumbup.png" alt="点赞" />
-                {{ b.liked }}
+                <img
+                  src="/src/assets/imgs/thumbup.png"
+                  :alt="uiCopy.blog.likesSummary(b.liked)"
+                />
+                {{ formatLikesCount(b.liked) }}
               </div>
               <div class="blog-comments">
-                <el-icon><ChatDotRound /></el-icon> {{ b.comments }}
+                <el-icon><ChatDotRound /></el-icon>
+                {{ formatCommentCount(b.comments) }}
               </div>
             </div>
           </div>
         </el-tab-pane>
-        <el-tab-pane label="评价" name="2">评价</el-tab-pane>
-        <el-tab-pane label="粉丝(0)" name="3">粉丝(0)</el-tab-pane>
-        <el-tab-pane label="关注(0)" name="4">
+        <el-tab-pane :label="uiCopy.profile.tabs.reviews" name="2">
+          {{ uiCopy.profile.tabs.reviews }}
+        </el-tab-pane>
+        <el-tab-pane :label="formatFollowerTab(0)" name="3">
+          {{ formatFollowerTab(0) }}
+        </el-tab-pane>
+        <el-tab-pane :label="formatFollowingTab(0)" name="4">
           <div class="blog-list" @scroll="onScroll">
             <div class="blog-box" v-for="b in blogs2" :key="b.id">
               <div class="blog-img2" @click="router.push(`/blog/${b.id}`)">
-                <img :src="'/src/assets' + b.img" alt="博客图片" />
+                <img
+                  :src="'/src/assets' + b.img"
+                  :alt="uiCopy.common.blogImageAlt"
+                />
               </div>
               <div class="blog-title">{{ b.title }}</div>
               <div class="blog-foot">
@@ -235,7 +255,7 @@ const onScroll = (e) => {
                       '/src/assets' + b.icon ||
                       '/src/assets/imgs/icons/default-icon.png'
                     "
-                    alt="用户头像"
+                    :alt="uiCopy.common.avatarAlt"
                   />
                 </div>
                 <div class="blog-user-name">{{ b.name }}</div>

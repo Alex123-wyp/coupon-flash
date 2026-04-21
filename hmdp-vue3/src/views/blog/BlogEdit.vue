@@ -3,6 +3,7 @@ import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ArrowRight, Search } from '@element-plus/icons-vue'
 import { useUserStore } from '@/stores'
+import { uiCopy } from '@/constants/uiCopy'
 import {
   uploadBlogImage,
   deleteBlogImage,
@@ -16,15 +17,15 @@ const userStore = useUserStore()
 
 // Data definitions
 const fileInput = ref(null)
-const fileList = ref([]) // 文件列表
+const fileList = ref([]) // Uploaded image list
 const params = reactive({
   title: '',
   content: ''
 })
 const showDialog = ref(false)
-const shops = ref([]) // 商户信息
-const shopName = ref('') // 商户名称
-const selectedShop = ref({}) // 选中的商户
+const shops = ref([]) // Shop options
+const shopName = ref('') // Selected shop name
+const selectedShop = ref({}) // Selected shop object
 
 // Lifecycle hooks
 onMounted(() => {
@@ -51,7 +52,7 @@ const queryShops = () => {
       shops.value = res.data
     })
     .catch((err) => {
-      ElMessage.error(err.message || '获取商户列表失败')
+      ElMessage.error(err.message || uiCopy.blog.loadShopListFailed)
     })
 }
 
@@ -113,7 +114,7 @@ const fileSelected = (event) => {
       fileList.value.push('/imgs' + res.data)
     })
     .catch((err) => {
-      ElMessage.error(err.message || '上传图片失败')
+      ElMessage.error(err.message || uiCopy.blog.uploadFailed)
     })
 }
 
@@ -124,7 +125,7 @@ const deletePic = (index) => {
       fileList.value.splice(index, 1)
     })
     .catch((err) => {
-      ElMessage.error(err.message || '删除图片失败')
+      ElMessage.error(err.message || uiCopy.blog.deleteFailed)
     })
 }
 
@@ -134,15 +135,15 @@ const goBack = () => {
 
 const publishBlog = async () => {
   if (!params.title) {
-    ElMessage.warning('请输入标题')
+    ElMessage.warning(uiCopy.blog.enterTitle)
     return
   }
   if (!params.content) {
-    ElMessage.warning('请输入内容')
+    ElMessage.warning(uiCopy.blog.enterContent)
     return
   }
   if (fileList.value.length === 0) {
-    ElMessage.warning('请上传图片')
+    ElMessage.warning(uiCopy.blog.uploadRequired)
     return
   }
 
@@ -155,11 +156,11 @@ const publishBlog = async () => {
     }
 
     await createBlog(blogData)
-    ElMessage.success('发布成功')
+    ElMessage.success(uiCopy.blog.publishSuccess)
     router.push('/infoHtml')
   } catch (error) {
-    console.error('发布失败', error)
-    ElMessage.error('发布失败')
+    console.error('Failed to publish the post', error)
+    ElMessage.error(uiCopy.blog.publishFailed)
   }
 }
 </script>
@@ -170,8 +171,10 @@ const publishBlog = async () => {
       <div class="left" @click="goBack">
         <i class="iconfont icon-arrow-left"></i>
       </div>
-      <div class="title">发布笔记</div>
-      <div class="right" @click="publishBlog">发布</div>
+      <div class="title">{{ uiCopy.blog.publishTitle }}</div>
+      <div class="right" @click="publishBlog">
+        {{ uiCopy.blog.publishAction }}
+      </div>
     </div>
 
     <div class="upload-box">
@@ -184,11 +187,11 @@ const publishBlog = async () => {
       />
       <div class="upload-btn" @click="openFileDialog">
         <i class="iconfont icon-camera"></i>
-        <span>上传图片</span>
+        <span>{{ uiCopy.blog.uploadImage }}</span>
       </div>
       <div class="pic-list" v-if="fileList.length > 0">
         <div class="pic-box" v-for="(f, i) in fileList" :key="i">
-          <img :src="`/src/assets${f}`" alt="图片" />
+          <img :src="`/src/assets${f}`" :alt="uiCopy.common.uploadedImageAlt" />
           <div class="delete" @click="deletePic(i)">
             <i class="iconfont icon-close"></i>
           </div>
@@ -197,23 +200,27 @@ const publishBlog = async () => {
     </div>
 
     <div class="blog-title">
-      <input type="text" v-model="params.title" placeholder="标题" />
+      <input
+        type="text"
+        v-model="params.title"
+        :placeholder="uiCopy.blog.titlePlaceholder"
+      />
     </div>
 
     <div class="blog-content">
       <textarea
         v-model="params.content"
-        placeholder="分享你的美食体验..."
+        :placeholder="uiCopy.blog.contentPlaceholder"
       ></textarea>
     </div>
 
     <div class="divider"></div>
 
     <div class="blog-shop" @click="showDialog = true">
-      <div class="shop-left">关联商户</div>
+      <div class="shop-left">{{ uiCopy.blog.linkedShop }}</div>
       <div v-if="selectedShop.name">{{ selectedShop.name }}</div>
       <div v-else>
-        去选择&nbsp;<el-icon><ArrowRight /></el-icon>
+        {{ uiCopy.blog.selectPrompt }}&nbsp;<el-icon><ArrowRight /></el-icon>
       </div>
     </div>
 
@@ -221,20 +228,20 @@ const publishBlog = async () => {
 
     <el-dialog
       v-model="showDialog"
-      title="选择商户"
+      :title="uiCopy.blog.chooseShop"
       width="90%"
       :show-close="false"
       :close-on-click-modal="false"
     >
       <div class="search-bar">
         <div class="city-select">
-          杭州 <el-icon><ArrowRight /></el-icon>
+          {{ uiCopy.common.city }} <el-icon><ArrowRight /></el-icon>
         </div>
         <div class="search-input">
           <el-icon @click="queryShops"><Search /></el-icon>
           <el-input
             v-model="shopName"
-            placeholder="搜索商户名称"
+            :placeholder="uiCopy.blog.searchShopName"
             @keyup.enter="queryShops"
           ></el-input>
         </div>

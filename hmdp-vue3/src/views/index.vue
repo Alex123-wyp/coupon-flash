@@ -9,6 +9,7 @@ import { ref } from 'vue'
 import router from '@/router'
 import FootBar from '@/components/FootBar.vue'
 import { User } from '@element-plus/icons-vue'
+import { uiCopy } from '@/constants/uiCopy'
 const isReachBottom = ref(false)
 const types = ref([])
 const blogs = ref([])
@@ -17,22 +18,22 @@ const current = ref(1)
 // Get product list data on home page
 const queryTypes = async () => {
   try {
-    console.log('获取首页商品列表数据')
+    console.log('Fetching featured shop data')
     const response = await indexQueryTypes()
-    console.log('获取首页商品列表数据:', response.data)
+    console.log('Featured shop data:', response.data)
     // const data = await response.json()
     types.value = response.data
   } catch (error) {
-    console.log('获取首页商品列表数据失败:', error)
+    console.log('Failed to fetch featured shop data:', error)
   }
 }
 queryTypes()
 // Get homepage blog data
 const queryHotBlogsScroll = async () => {
   try {
-    console.log('获取首页博客数据')
+    console.log('Fetching homepage blog data')
     const { data } = await indexQueryHotBlogsScroll()
-    console.log('获取首页博客数据:', data)
+    console.log('Homepage blog data:', data)
     data.forEach((b) => {
       if (b && b.images) {
         b.img = b.images.split(',')[0]
@@ -42,7 +43,7 @@ const queryHotBlogsScroll = async () => {
     })
     blogs.value = blogs.value.concat(data)
   } catch (error) {
-    console.log('获取首页博客数据失败:', error)
+    console.log('Failed to fetch homepage blog data:', error)
   }
 }
 queryHotBlogsScroll()
@@ -98,9 +99,11 @@ const toInfo = () => {
 
 <template>
   <div class="search-bar">
-    <div class="city-btn">杭州 <i class="el-icon-arrow-down"></i></div>
+    <div class="city-btn">
+      {{ uiCopy.common.city }} <i class="el-icon-arrow-down"></i>
+    </div>
     <div class="search-input">
-      <el-input size="mini" placeholder="请输入商户名、地点">
+      <el-input size="mini" :placeholder="uiCopy.home.searchPlaceholder">
         <template v-slot:prefix>
           <i class="el-input__icon el-icon-search"></i>
         </template>
@@ -118,7 +121,7 @@ const toInfo = () => {
       @click="toShopList(t.id, t.name)"
     >
       <div class="type-view">
-        <img :src="'src/assets/imgs' + t.icon" alt="" />
+        <img :src="'src/assets/imgs' + t.icon" :alt="t.name" />
       </div>
       <div class="type-text">{{ t.name }}</div>
     </div>
@@ -126,14 +129,14 @@ const toInfo = () => {
   <div class="blog-list" @scroll="onScroll">
     <div class="blog-box" v-for="b in blogs" :key="b.id">
       <div class="blog-img" @click="toBlogDetail(b)">
-        <img :src="'src/assets' + b.img" alt="" />
+        <img :src="'src/assets' + b.img" :alt="uiCopy.common.blogImageAlt" />
       </div>
       <div class="blog-title">{{ b.title }}</div>
       <div class="blog-foot">
         <div class="blog-user-icon">
           <img
             :src="b.icon || 'src/assets/imgs/icons/default-icon.png'"
-            alt=""
+            :alt="uiCopy.common.avatarAlt"
           />
         </div>
         <div class="blog-user-name">{{ b.name }}</div>

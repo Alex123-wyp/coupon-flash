@@ -140,6 +140,7 @@ public class ConsumerDelayedVoucherReminder implements ConsumerTask {
         String allowedLevelsStr = voucherFull.getAllowedLevels();
         Integer minLevel = voucherFull.getMinLevel();
         Long shopId = voucherFull.getShopId();
+        //
         List<UserInfo> userInfos = queryEligibleUserInfos(allowedLevelsStr, minLevel);
         Set<String> userIds = toUserIdSet(userInfos);
         if (topBuyersEnabled && Objects.nonNull(shopId)) {
@@ -155,8 +156,11 @@ public class ConsumerDelayedVoucherReminder implements ConsumerTask {
     }
 
     private List<UserInfo> queryEligibleUserInfos(String allowedLevelsStr, Integer minLevel) {
+
         if (StrUtil.isNotBlank(allowedLevelsStr)) {
+            //Parse allowed level to the voucher
             Set<Integer> allowed = parseAllowedLevels(allowedLevelsStr);
+            //
             if (CollectionUtil.isNotEmpty(allowed)) {
                 List<Long> fromRedis = readUserIdsFromLevelSets(new ArrayList<>(allowed), maxNotifyUsers);
                 if (CollectionUtil.isNotEmpty(fromRedis)) {
@@ -170,14 +174,17 @@ public class ConsumerDelayedVoucherReminder implements ConsumerTask {
                     }
                     return list;
                 }
+                //If redis is null, then check the database
                 return userInfoService.lambdaQuery()
                         .select(UserInfo::getUserId, UserInfo::getLevel)
                         .in(UserInfo::getLevel, allowed)
                         .last("limit " + maxNotifyUsers)
                         .list();
             }
+
             int useMin = Objects.nonNull(minLevel) ? minLevel : defaultMinLevel;
             List<Long> fromRedis = readUserIdsFromLevelSets(buildLevelRange(useMin, maxUserLevel), maxNotifyUsers);
+
             if (CollectionUtil.isNotEmpty(fromRedis)) {
                 List<UserInfo> list = new ArrayList<>(fromRedis.size());
                 for (Long uid : fromRedis) { 
@@ -189,6 +196,7 @@ public class ConsumerDelayedVoucherReminder implements ConsumerTask {
                 }
                 return list;
             }
+
             return userInfoService.lambdaQuery()
                     .select(UserInfo::getUserId, UserInfo::getLevel)
                     .ge(UserInfo::getLevel, useMin)
@@ -232,6 +240,8 @@ public class ConsumerDelayedVoucherReminder implements ConsumerTask {
                 .list();
     }
 
+
+
     private List<Integer> buildLevelRange(int min, int max) {
         int from = Math.max(min, 1);
         int to = Math.max(max, from);
@@ -243,23 +253,31 @@ public class ConsumerDelayedVoucherReminder implements ConsumerTask {
     }
 
     private List<Long> readUserIdsFromLevelSets(List<Integer> levels, int count) {
-        if (CollectionUtil.isEmpty(levels)) { 
+        //Is it null list?
+        if (CollectionUtil.isEmpty(levels)) {
             return Collections.emptyList(); 
         }
+        //Create a key list, the size is allowed level number
         List<RedisKeyBuild> keys = new ArrayList<>(levels.size());
+        //For each allowed level list element, create a key -> SECKILL_USER_LEVEL_MEMBERS_TAG_KEY + lv
         for (Integer lv : levels) {
             if (lv == null) { 
                 continue; 
             }
             keys.add(RedisKeyBuild.createRedisKey(RedisKeyManage.SECKILL_USER_LEVEL_MEMBERS_TAG_KEY, lv));
         }
-        if (keys.isEmpty()) { 
+        if (keys.isEmpty()) {
             return Collections.emptyList();
         }
+
         if (keys.size() == 1) {
             Set<Long> r = redisCache.distinctRandomMembersForSet(keys.get(0), Math.max(count, 1), Long.class);
             return new ArrayList<>(r);
         }
+
+        /**
+         * If level size >= 2,
+         */
         String label;
         if (levels.size() >= 2) { 
             label = levels.get(0) + "-" + levels.get(levels.size()-1); 

@@ -572,7 +572,9 @@ public class VoucherServiceImpl extends ServiceImpl<VoucherMapper, Voucher> impl
     
     public void sendDelayedVoucherReminder(SeckillVoucher seckillVoucher){
 
-
+        /**
+         * Calculate specific how much seconds should delay
+         */
         LocalDateTime beginTime = seckillVoucher.getBeginTime();
 
         //If beginTime == null, return directly
@@ -598,6 +600,9 @@ public class VoucherServiceImpl extends ServiceImpl<VoucherMapper, Voucher> impl
             return;
         }
 
+        /**
+         * Create and send message to the delayed queue
+         */
         //Create delayed voucher reminder message
         DelayedVoucherReminderMessage msg = new DelayedVoucherReminderMessage(
                 seckillVoucher.getVoucherId(),
